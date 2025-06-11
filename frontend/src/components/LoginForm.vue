@@ -1,0 +1,87 @@
+<script setup lang="ts">
+import lightModeImage from '@/assets/images/light-mode.png'
+import darkModeImage from '@/assets/images/dark-mode.png'
+</script>
+
+<template>
+  <section class="flex-1 max-w-[50vw] h-[calc(100vh-2rem)] m-4 pl-10 pt-5">
+    <label class="dui-swap dui-swap-rotate">
+      <input type="checkbox" class="dui-theme-controller" value="synthwave" />
+      <img :src="darkModeImage" class="dui-swap-off h-10 w-10" />
+      <img :src="lightModeImage" class="dui-swap-on h-10 w-10" />
+    </label>
+
+    <h2 class="text-black text-xl font-semibold my-10">PawPal</h2>
+
+    <h1 class="text-black text-5xl font-bold my-1">Hello,</h1>
+
+    <h1 class="text-black text-5xl font-bold">welcome back!</h1>
+
+    <p class="text-black font-normal my-5 text-xl">These pets need a loving home!</p>
+
+    <form class="flex flex-col gap-4 my-10 mr-[25vw]">
+      <!-- Email field group -->
+      <div class="flex flex-col">
+        <label class="dui-input dui-validator">
+          <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g
+              stroke-linejoin="round"
+              stroke-linecap="round"
+              stroke-width="2.5"
+              fill="none"
+              stroke="currentColor"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+            </g>
+          </svg>
+          <input type="email" placeholder="mail@site.com" required />
+        </label>
+        <div class="dui-validator-hint hidden text-error">Enter valid email address</div>
+      </div>
+
+      <!-- Password field group -->
+      <div class="flex flex-col">
+        <label class="dui-input">
+          <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <g
+              stroke-linejoin="round"
+              stroke-linecap="round"
+              stroke-width="2.5"
+              fill="none"
+              stroke="currentColor"
+            >
+              <path
+                d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
+              ></path>
+              <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+            </g>
+          </svg>
+          <input
+            type="password"
+            required
+            placeholder="Password"
+            minlength="8"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+            title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
+          />
+        </label>
+
+        <div>
+          <button class="mt-2 text-gray-500 font-semibold cursor-pointer" type="button">
+            Forgot password?
+          </button>
+        </div>
+
+        <button class="dui-btn dui-btn-primary max-w-[7vw] mt-7" type="submit">Sign In</button>
+      </div>
+    </form>
+
+    <div class="mt-15 flex flex-col gap-1">
+      <p>Don't have an account?<a href="#" class="ml-1 font-bold text-violet-500">Sign Up</a></p>
+      <p>
+        Are you a shelter staff?<a href="#" class="ml-1 font-bold text-violet-500">Sign In Here</a>
+      </p>
+    </div>
+  </section>
+</template>

@@ -4,4 +4,6 @@
   themes:
     light --default,
     dark --prefersdark;
+
+  prefix: "dui-";
 }
