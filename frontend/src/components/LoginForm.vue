@@ -1,6 +1,17 @@
 <script setup lang="ts">
+import { withDefaults, defineProps, reactive } from 'vue'
+import { RouterLink } from 'vue-router'
+
 import lightModeImage from '@/assets/images/light-mode.png'
 import darkModeImage from '@/assets/images/dark-mode.png'
+
+interface Props {
+  loginType?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  loginType: 'adopter',
+})
 </script>
 
 <template>
@@ -11,13 +22,18 @@ import darkModeImage from '@/assets/images/dark-mode.png'
       <img :src="lightModeImage" class="dui-swap-on h-10 w-10" />
     </label>
 
-    <h2 class="text-black text-xl font-semibold my-10">PawPal</h2>
+    <h2 class="text-black text-xl font-semibold my-10" v-if="loginType === 'adopter'">PawPal</h2>
+
+    <h2 class="text-black text-xl font-semibold my-10" v-else>PawPal | Shelter Staff</h2>
 
     <h1 class="text-black text-5xl font-bold my-1">Hello,</h1>
 
     <h1 class="text-black text-5xl font-bold">welcome back!</h1>
 
-    <p class="text-black font-normal my-5 text-xl">These pets need a loving home!</p>
+    <p class="text-black font-normal my-5 text-xl" v-if="loginType === 'adopter'">
+      These pets need a loving home!
+    </p>
+    <p class="text-black font-normal my-5 text-xl" v-else>People are looking for pets to adopt!</p>
 
     <form class="flex flex-col gap-4 my-10 mr-[25vw]">
       <!-- Email field group -->
@@ -79,8 +95,18 @@ import darkModeImage from '@/assets/images/dark-mode.png'
 
     <div class="mt-15 flex flex-col gap-1">
       <p>Don't have an account?<a href="#" class="ml-1 font-bold text-violet-500">Sign Up</a></p>
-      <p>
-        Are you a shelter staff?<a href="#" class="ml-1 font-bold text-violet-500">Sign In Here</a>
+      <p v-if="loginType === 'adopter'">
+        Are you a shelter staff?<RouterLink
+          to="/shelter-staff-login"
+          class="ml-1 font-bold text-violet-500"
+          >Sign In Here</RouterLink
+        >
+      </p>
+
+      <p v-else="">
+        Are you an adopter?<RouterLink to="/" class="ml-1 font-bold text-violet-500"
+          >Sign In Here</RouterLink
+        >
       </p>
     </div>
   </section>
