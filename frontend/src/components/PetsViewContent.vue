@@ -9,8 +9,8 @@ import PetCard from './PetCard.vue'
 
       <div class="h-10 bg-amber-900 my-5 text-white">Sort and search header</div>
 
-      <div class="flex-1 grid grid-cols-4 place-items-center gap-4">
-        <PetCard v-for="n in 12" :key="n" />
+      <div class="flex-1 grid grid-cols-5 place-items-center gap-4">
+        <PetCard v-for="n in 10" :key="n" />
       </div>
     </div>
   </section>
