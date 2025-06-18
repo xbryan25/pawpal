@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import statusIcon from '@/assets/images/status-icon.svg'
+
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
@@ -31,9 +33,9 @@ import statusIcon from '@/assets/images/status-icon.svg'
       <h2 class="dui-card-title justify-center text-xl 2xl:text-2xl font-bold">Tabby</h2>
       <p class="text-center max-h-5 font-bold text-[#989595]">Pugaan Shelter</p>
       <div class="dui-card-actions justify-center">
-        <button class="btn btn-primary font-bold cursor-pointer hover:underline">
+        <RouterLink class="btn btn-primary font-bold cursor-pointer hover:underline" to="/pets/view/sample-id">
           View Details
-        </button>
+        </RouterLink>
       </div>
     </div>
   </div>

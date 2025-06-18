@@ -18,32 +18,32 @@ import samplePet5 from '@/assets/images/sample-pet-5.webp'
         <div class="flex-1 flex flex-row gap-2">
           <div class="flex flex-col gap-2">
             <div
-              class="h-[5vw] w-[5vw] bg-green-200 transition-transform duration-300 hover:scale-105 cursor-pointer"
+              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
             >
               <img :src="samplePet1" class="w-full h-full object-cover rounded-lg" />
             </div>
             <div
-              class="h-[5vw] w-[5vw] bg-green-200 transition-transform duration-300 hover:scale-105 cursor-pointer"
+              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
             >
               <img :src="samplePet2" class="w-full h-full object-cover rounded-lg" />
             </div>
             <div
-              class="h-[5vw] w-[5vw] bg-green-200 transition-transform duration-300 hover:scale-105 cursor-pointer"
+              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
             >
               <img :src="samplePet3" class="w-full h-full object-cover rounded-lg" />
             </div>
             <div
-              class="h-[5vw] w-[5vw] bg-green-200 transition-transform duration-300 hover:scale-105 cursor-pointer"
+              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
             >
               <img :src="samplePet4" class="w-full h-full object-cover rounded-lg" />
             </div>
             <div
-              class="h-[5vw] w-[5vw] bg-green-200 transition-transform duration-300 hover:scale-105 cursor-pointer"
+              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
             >
               <img :src="samplePet5" class="w-full h-full object-cover rounded-lg" />
             </div>
           </div>
-          <div class="flex-1 bg-green-200 rounded-lg">
+          <div class="flex-1 rounded-lg">
             <img :src="samplePet1" class="w-full h-full object-cover rounded-lg" />
           </div>
         </div>

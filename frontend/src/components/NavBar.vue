@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router';
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
@@ -10,7 +10,7 @@ import { RouterLink } from 'vue-router';
       </div>
       <div class="flex-1 w-full bg-[#AAAAAA]">
         <div class="mx-10 my-10 flex flex-col gap-3">
-          <p class="font-semibold text-xl">Pets</p>
+          <RouterLink class="font-semibold text-xl" to="/pets/view">Pets</RouterLink>
           <p class="font-semibold text-xl">Applications</p>
           <p class="font-semibold text-xl">Reports</p>
         </div>
