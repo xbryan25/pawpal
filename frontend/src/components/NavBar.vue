@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RouterLink } from 'vue-router';
+</script>
 
 <template>
   <nav class="h-screen w-[13vw] bg-[#f2f2f2] dark:bg-[#434343]">
