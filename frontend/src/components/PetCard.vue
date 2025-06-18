@@ -31,7 +31,9 @@ import statusIcon from '@/assets/images/status-icon.svg'
       <h2 class="dui-card-title justify-center text-xl 2xl:text-2xl font-bold">Tabby</h2>
       <p class="text-center max-h-5 font-bold text-[#989595]">Pugaan Shelter</p>
       <div class="dui-card-actions justify-center">
-        <button class="btn btn-primary font-bold">View Details</button>
+        <button class="btn btn-primary font-bold cursor-pointer hover:underline">
+          View Details
+        </button>
       </div>
     </div>
   </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PetCard from './PetCard.vue'
+import SearchAndSortHeader from './SearchAndSortHeader.vue'
 </script>
 
 <template>
@@ -7,7 +8,7 @@ import PetCard from './PetCard.vue'
     <div class="p-5 h-full flex flex-col">
       <h1 class="text-6xl font-semibold">Pets</h1>
 
-      <div class="h-10 bg-amber-900 my-5 text-white">Sort and search header</div>
+      <SearchAndSortHeader />
 
       <div class="flex-1 grid grid-cols-5 place-items-center gap-4">
         <PetCard v-for="n in 10" :key="n" />
