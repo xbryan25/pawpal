@@ -8,7 +8,7 @@ frontend/build/
 frontend/.vite
 
 # Environment variables
-.env
+backend/app/.env
 .env.*
 
 # Logs
