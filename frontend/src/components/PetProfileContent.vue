@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import PetCard from './PetCard.vue'
-import SearchAndSortHeader from './SearchAndSortHeader.vue'
-
 import samplePet1 from '@/assets/images/sample-pet-1.jpg'
 import samplePet2 from '@/assets/images/sample-pet-2.jpg'
 import samplePet3 from '@/assets/images/sample-pet-3.jpg'
