@@ -3,6 +3,7 @@ import AdopterLoginView from '@/views/AdopterLoginView.vue'
 import ShelterStaffLoginView from '@/views/ShelterStaffLoginView.vue'
 import PetsView from '@/views/PetsView.vue'
 import PetProfileView from '@/views/PetProfileView.vue'
+import ApplicationsView from '@/views/ApplicationsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,12 @@ const router = createRouter({
       name: 'adopterPetProfileView',
       component: PetProfileView,
       meta: { title: 'Pet Profile' },
+    },
+    {
+      path: '/applications/view',
+      name: 'adopterApplicationsView',
+      component: ApplicationsView,
+      meta: { title: 'Applications View' },
     },
   ],
 })

@@ -11,7 +11,7 @@ import { RouterLink } from 'vue-router'
       <div class="flex-1 w-full bg-[#AAAAAA]">
         <div class="mx-10 my-10 flex flex-col gap-3">
           <RouterLink class="font-semibold text-xl" to="/pets/view">Pets</RouterLink>
-          <p class="font-semibold text-xl">Applications</p>
+          <RouterLink class="font-semibold text-xl" to="/applications/view">Applications</RouterLink>
           <p class="font-semibold text-xl">Reports</p>
         </div>
       </div>
