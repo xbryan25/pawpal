@@ -26,6 +26,6 @@ frontend/package-lock.json
 
 # ----------------- Backend --------------
 .idea/
-venv/
 __pycache__
-backend/src/app/db/books.db
+/backend/.venv/
+/backend/.idea/
