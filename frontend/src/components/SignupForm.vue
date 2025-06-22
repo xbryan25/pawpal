@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { withDefaults, reactive } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import axios from 'axios'
 
 import lightModeImage from '@/assets/images/light-mode.png'
 import darkModeImage from '@/assets/images/dark-mode.png'
@@ -29,7 +30,10 @@ const newUserForm = reactive<NewUser>({
   role: '',
 })
 
-const handleSubmit = () => {
+const router = useRouter()
+const apiUrl = import.meta.env.VITE_API_URL
+
+const handleSubmit = async () => {
   const newUser: NewUser = {
     firstName: newUserForm.firstName,
     lastName: newUserForm.lastName,
@@ -42,7 +46,15 @@ const handleSubmit = () => {
     role: newUserForm.role,
   }
 
-  console.log(newUser)
+  try {
+    const response = await axios.post(`${apiUrl}/user/signup`, newUser)
+
+    console.log(response.data)
+
+    router.push('/user/login')
+  } catch (error) {
+    console.error('Error adding account', error)
+  }
 }
 </script>
 
@@ -62,26 +74,27 @@ const handleSubmit = () => {
     <h1 class="text-black text-center text-5xl font-bold">Create an account</h1>
 
     <div class="flex flex-col items-center w-[80%]">
-      <div class="flex dui-join gap-2 pt-5 w-full">
-        <input
-          v-model="newUserForm.role"
-          class="flex-1 dui-join-item dui-btn"
-          type="radio"
-          name="options"
-          value="adopter"
-          aria-label="Adopter"
-        />
-        <input
-          v-model="newUserForm.role"
-          class="flex-1 dui-join-item dui-btn"
-          type="radio"
-          name="options"
-          value="shelter_staff"
-          aria-label="Shelter Staff"
-        />
-      </div>
+      <form class="flex flex-col gap-2 mb-2 w-full" @submit.prevent="handleSubmit">
+        <div class="flex dui-join gap-2 pt-5 mb-3 w-full">
+          <input
+            v-model="newUserForm.role"
+            class="flex-1 dui-join-item dui-btn"
+            type="radio"
+            name="options"
+            value="adopter"
+            aria-label="Adopter"
+            required
+          />
+          <input
+            v-model="newUserForm.role"
+            class="flex-1 dui-join-item dui-btn"
+            type="radio"
+            name="options"
+            value="shelter_staff"
+            aria-label="Shelter Staff"
+          />
+        </div>
 
-      <form class="flex flex-col gap-2 mt-5 mb-2 w-full" @submit.prevent="handleSubmit">
         <!-- First name and last name group -->
         <div>
           <!-- First name and last name labels -->

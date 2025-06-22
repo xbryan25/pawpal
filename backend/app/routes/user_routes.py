@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from app.controllers.user_controller import login_controller
 
 user_bp = Blueprint("user_bp", __name__)
@@ -14,3 +14,12 @@ def login():
 def login_get():
     print("reach here?")
     return jsonify({"message": "Test"}), 200
+
+
+@user_bp.route("/signup", methods=["POST"])
+def new_user_signup():
+    new_user_data = request.get_json()
+
+    print(new_user_data)
+
+    return jsonify({"message": "Success"}), 200
