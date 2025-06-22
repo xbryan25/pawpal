@@ -49,14 +49,14 @@ import darkModeImage from '@/assets/images/dark-mode.png'
           <div class="flex flex-row gap-2">
             <!-- First name input -->
             <div class="flex-1 flex flex-col">
-              <label class="dui-input">
+              <label class="dui-input w-full">
                 <input type="text" placeholder="e.g. John" required />
               </label>
             </div>
 
             <!-- Last name input -->
             <div class="flex-1 flex flex-col">
-              <label class="dui-input">
+              <label class="dui-input w-full">
                 <input type="text" placeholder="e.g. Doe" required />
               </label>
             </div>
@@ -112,7 +112,7 @@ import darkModeImage from '@/assets/images/dark-mode.png'
           <div class="flex flex-row gap-2">
             <!-- Phone number input -->
             <div class="flex flex-col w-[50%]">
-              <label class="dui-input">
+              <label class="dui-input w-full">
                 <input
                   type="tel"
                   id="mobile"
