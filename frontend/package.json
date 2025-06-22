@@ -16,11 +16,13 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.8",
     "autoprefixer": "^10.4.21",
+    "cally": "^0.8.0",
     "daisyui": "^5.0.43",
     "pinia": "^3.0.1",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8",
     "vue": "^3.5.13",
+    "vue-cal": "^5.0.1-rc.25",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {

@@ -4,18 +4,19 @@ import ShelterStaffLoginView from '@/views/ShelterStaffLoginView.vue'
 import PetsView from '@/views/PetsView.vue'
 import PetProfileView from '@/views/PetProfileView.vue'
 import ApplicationsView from '@/views/ApplicationsView.vue'
+import SignupView from '@/views/SignupView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/user/login',
       name: 'adopterLoginView',
       component: AdopterLoginView,
       meta: { title: 'Login' },
     },
     {
-      path: '/shelter-staff-login',
+      path: '/user/shelter-staff-login',
       name: 'shelterStaffLoginView',
       component: ShelterStaffLoginView,
       meta: { title: 'Login' },
@@ -37,6 +38,12 @@ const router = createRouter({
       name: 'adopterApplicationsView',
       component: ApplicationsView,
       meta: { title: 'Applications View' },
+    },
+    {
+      path: '/user/signup',
+      name: 'SignupView',
+      component: SignupView,
+      meta: { title: 'Signup View' },
     },
   ],
 })

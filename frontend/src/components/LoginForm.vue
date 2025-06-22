@@ -94,17 +94,21 @@ const props = withDefaults(defineProps<Props>(), {
     </form>
 
     <div class="mt-15 flex flex-col gap-1">
-      <p>Don't have an account?<a href="#" class="ml-1 font-bold text-violet-500">Sign Up</a></p>
+      <p>
+        Don't have an account?<RouterLink to="/user/signup" class="ml-1 font-bold text-violet-500"
+          >Sign Up</RouterLink
+        >
+      </p>
       <p v-if="loginType === 'adopter'">
         Are you a shelter staff?<RouterLink
-          to="/shelter-staff-login"
+          to="/user/shelter-staff-login"
           class="ml-1 font-bold text-violet-500"
           >Sign In Here</RouterLink
         >
       </p>
 
       <p v-else="">
-        Are you an adopter?<RouterLink to="/" class="ml-1 font-bold text-violet-500"
+        Are you an adopter?<RouterLink to="/user/login" class="ml-1 font-bold text-violet-500"
           >Sign In Here</RouterLink
         >
       </p>
