@@ -8,7 +8,7 @@ frontend/build/
 frontend/.vite
 
 # Environment variables
-.env
+backend/app/.env
 .env.*
 
 # Logs
@@ -26,6 +26,6 @@ frontend/package-lock.json
 
 # ----------------- Backend --------------
 .idea/
-.venv/
 __pycache__
-backend/src/app/db/books.db
+/backend/.venv/
+/backend/.idea/
