@@ -1,9 +1,49 @@
 <script setup lang="ts">
-import { withDefaults } from 'vue'
+import { withDefaults, reactive } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import lightModeImage from '@/assets/images/light-mode.png'
 import darkModeImage from '@/assets/images/dark-mode.png'
+
+interface NewUser {
+  firstName: string
+  lastName: string
+  gender: string
+  birthDate: string
+  address: string
+  phoneNumber: string
+  email: string
+  password: string
+  role: string
+}
+
+const newUserForm = reactive<NewUser>({
+  firstName: '',
+  lastName: '',
+  gender: '',
+  birthDate: '',
+  address: '',
+  phoneNumber: '',
+  email: '',
+  password: '',
+  role: '',
+})
+
+const handleSubmit = () => {
+  const newUser: NewUser = {
+    firstName: newUserForm.firstName,
+    lastName: newUserForm.lastName,
+    gender: newUserForm.gender,
+    birthDate: newUserForm.birthDate,
+    address: newUserForm.address,
+    phoneNumber: newUserForm.phoneNumber,
+    email: newUserForm.email,
+    password: newUserForm.password,
+    role: newUserForm.role,
+  }
+
+  console.log(newUser)
+}
 </script>
 
 <template>
@@ -24,20 +64,24 @@ import darkModeImage from '@/assets/images/dark-mode.png'
     <div class="flex flex-col items-center w-[80%]">
       <div class="flex dui-join gap-2 pt-5 w-full">
         <input
+          v-model="newUserForm.role"
           class="flex-1 dui-join-item dui-btn"
           type="radio"
           name="options"
+          value="adopter"
           aria-label="Adopter"
         />
         <input
+          v-model="newUserForm.role"
           class="flex-1 dui-join-item dui-btn"
           type="radio"
           name="options"
+          value="shelter_staff"
           aria-label="Shelter Staff"
         />
       </div>
 
-      <form class="flex flex-col gap-2 mt-5 mb-2 w-full">
+      <form class="flex flex-col gap-2 mt-5 mb-2 w-full" @submit.prevent="handleSubmit">
         <!-- First name and last name group -->
         <div>
           <!-- First name and last name labels -->
@@ -50,14 +94,26 @@ import darkModeImage from '@/assets/images/dark-mode.png'
             <!-- First name input -->
             <div class="flex-1 flex flex-col">
               <label class="dui-input w-full">
-                <input type="text" placeholder="e.g. John" required />
+                <input
+                  v-model="newUserForm.firstName"
+                  maxlength="128"
+                  type="text"
+                  placeholder="e.g. John"
+                  required
+                />
               </label>
             </div>
 
             <!-- Last name input -->
             <div class="flex-1 flex flex-col">
               <label class="dui-input w-full">
-                <input type="text" placeholder="e.g. Doe" required />
+                <input
+                  v-model="newUserForm.lastName"
+                  maxlength="127"
+                  type="text"
+                  placeholder="e.g. Doe"
+                  required
+                />
               </label>
             </div>
           </div>
@@ -74,7 +130,11 @@ import darkModeImage from '@/assets/images/dark-mode.png'
           <div class="flex gap-2">
             <!-- Gender select -->
             <div class="flex-1">
-              <select class="dui-select w-full appearance-none px-3 py-2" required>
+              <select
+                v-model="newUserForm.gender"
+                class="dui-select w-full appearance-none px-3 py-2"
+                required
+              >
                 <option value="" disabled selected>-</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -85,7 +145,12 @@ import darkModeImage from '@/assets/images/dark-mode.png'
 
             <!-- Birth date input -->
             <div class="flex-1">
-              <input type="date" class="dui-input w-full px-3 py-2" required />
+              <input
+                v-model="newUserForm.birthDate"
+                type="date"
+                class="dui-input w-full px-3 py-2"
+                required
+              />
             </div>
           </div>
         </div>
@@ -98,7 +163,13 @@ import darkModeImage from '@/assets/images/dark-mode.png'
           </div>
 
           <label class="dui-input w-full">
-            <input type="text" placeholder="e.g. John" required />
+            <input
+              v-model="newUserForm.address"
+              maxlength="255"
+              type="text"
+              placeholder="e.g. John"
+              required
+            />
           </label>
         </div>
 
@@ -114,6 +185,8 @@ import darkModeImage from '@/assets/images/dark-mode.png'
             <div class="flex flex-col w-[50%]">
               <label class="dui-input w-full">
                 <input
+                  v-model="newUserForm.phoneNumber"
+                  maxlength="11"
                   type="tel"
                   id="mobile"
                   name="mobile"
@@ -134,7 +207,13 @@ import darkModeImage from '@/assets/images/dark-mode.png'
           </div>
 
           <label class="dui-input w-full">
-            <input type="email" placeholder="e.g. test@test.com" required />
+            <input
+              v-model="newUserForm.email"
+              maxlength="255"
+              type="email"
+              placeholder="e.g. test@test.com"
+              required
+            />
           </label>
         </div>
 
@@ -146,7 +225,13 @@ import darkModeImage from '@/assets/images/dark-mode.png'
           </div>
 
           <label class="dui-input w-full">
-            <input type="password" placeholder="Enter your password" required />
+            <input
+              v-model="newUserForm.password"
+              maxlength="255"
+              type="password"
+              placeholder="Enter your password"
+              required
+            />
           </label>
         </div>
 
