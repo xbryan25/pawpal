@@ -240,9 +240,12 @@ const handleSubmit = async () => {
           <label class="dui-input w-full">
             <input
               v-model="newUserForm.password"
+              minlength="8"
               maxlength="255"
               type="password"
               placeholder="Enter your password"
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
               required
             />
           </label>
