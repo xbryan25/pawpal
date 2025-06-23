@@ -5,8 +5,6 @@ from flask_jwt_extended import JWTManager
 
 from .config import Config
 
-
-
 from .services.cloudinary_service import configure_cloudinary
 
 db = SQLAlchemy()
@@ -25,7 +23,9 @@ def create_app():
     jwt.init_app(app)
     CORS(app, origins='*')
 
+    # from app.models import User, Shelter
+
     from .routes import user_bp
-    app.register_blueprint(user_bp, url_prefix='')
+    app.register_blueprint(user_bp, url_prefix='/user')
 
     return app

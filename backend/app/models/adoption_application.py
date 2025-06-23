@@ -7,7 +7,7 @@ import uuid
 from app.models.enums import ApplicationStatusEnum
 
 
-class AdoptionApplications(db.Model):
+class AdoptionApplication(db.Model):
     __tablename__ = 'adoption_applications'
 
     aa_id = db.Column(BINARY(16), primary_key=True, default=lambda: uuid.uuid4().bytes)
