@@ -4,6 +4,7 @@ from app.services.user_service import authenticate_user
 from app.models.user import User
 from app import db
 from datetime import datetime
+import uuid
 
 
 def user_login_controller():
@@ -15,7 +16,9 @@ def user_login_controller():
     if not user:
         return jsonify({"error": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=user.id)
+    uuid_str = str(uuid.UUID(bytes=user.user_id))
+    access_token = create_access_token(identity=uuid_str)
+
     return jsonify(access_token=access_token), 200
 
 
