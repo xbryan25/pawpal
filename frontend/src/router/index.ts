@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthToken } from '@/composables/useAuthToken'
 import AdopterLoginView from '@/views/AdopterLoginView.vue'
 import ShelterStaffLoginView from '@/views/ShelterStaffLoginView.vue'
 import PetsView from '@/views/PetsView.vue'
@@ -25,7 +26,7 @@ const router = createRouter({
       path: '/pets/view',
       name: 'adopterPetsView',
       component: PetsView,
-      meta: { title: 'Pets View' },
+      meta: { title: 'Pets View', requiresAuth: true },
     },
     {
       path: '/pets/view/sample-id',
@@ -46,6 +47,16 @@ const router = createRouter({
       meta: { title: 'Signup View' },
     },
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const { token } = useAuthToken()
+
+  if (to.meta.requiresAuth && !token) {
+    next('/user/login')
+  } else {
+    next()
+  }
 })
 
 export default router

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { withDefaults, defineProps, reactive } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import axios from 'axios'
+import useCookies from 'cookie-universal'
 
 import lightModeImage from '@/assets/images/light-mode.png'
 import darkModeImage from '@/assets/images/dark-mode.png'
@@ -9,9 +11,48 @@ interface Props {
   loginType?: string
 }
 
+interface UserCredentials {
+  email: string
+  password: string
+}
+
 const props = withDefaults(defineProps<Props>(), {
   loginType: 'adopter',
 })
+
+const userForm = reactive<UserCredentials>({
+  email: '',
+  password: '',
+})
+
+const router = useRouter()
+const apiUrl = import.meta.env.VITE_API_URL
+
+const cookies = useCookies()
+
+const handleSubmit = async () => {
+  const userCredentials: UserCredentials = {
+    email: userForm.email,
+    password: userForm.password,
+  }
+
+  try {
+    const response = await axios.post(`${apiUrl}/user/login`, userCredentials)
+
+    const accessToken = response.data.access_token
+
+    cookies.set('access_token', accessToken, {
+      path: '/',
+      maxAge: 60,
+      sameSite: 'strict',
+      secure: true,
+    })
+
+    router.push('/pets/view')
+  } catch (error) {
+    console.error('Error adding account', error)
+  }
+}
 </script>
 
 <template>
@@ -35,7 +76,7 @@ const props = withDefaults(defineProps<Props>(), {
     </p>
     <p class="text-black font-normal my-5 text-xl" v-else>People are looking for pets to adopt!</p>
 
-    <form class="flex flex-col gap-4 my-10 mr-[25vw]">
+    <form class="flex flex-col gap-4 my-10 mr-[25vw]" @submit.prevent="handleSubmit">
       <!-- Email field group -->
       <div class="flex flex-col">
         <label class="dui-input dui-validator">
@@ -51,7 +92,7 @@ const props = withDefaults(defineProps<Props>(), {
               <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
             </g>
           </svg>
-          <input type="email" placeholder="mail@site.com" required />
+          <input v-model="userForm.email" type="email" placeholder="mail@site.com" required />
         </label>
         <div class="dui-validator-hint hidden text-error">Enter valid email address</div>
       </div>
@@ -74,21 +115,13 @@ const props = withDefaults(defineProps<Props>(), {
             </g>
           </svg>
           <input
+            v-model="userForm.password"
             type="password"
             required
             placeholder="Password"
             minlength="8"
             title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
           />
-
-          <!-- <input
-            type="password"
-            required
-            placeholder="Password"
-            minlength="8"
-            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-            title="Must be more than 8 characters, including number, lowercase letter, uppercase letter"
-          /> -->
         </label>
 
         <div>
