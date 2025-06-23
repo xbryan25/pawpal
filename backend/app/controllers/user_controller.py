@@ -1,9 +1,12 @@
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token
 from app.services.user_service import authenticate_user
+from app.models.user import User
+from app import db
+from datetime import datetime
 
 
-def login_controller():
+def user_login_controller():
     data = request.json
     email = data.get("email")
     password = data.get("password")
@@ -14,3 +17,42 @@ def login_controller():
 
     access_token = create_access_token(identity=user.id)
     return jsonify(access_token=access_token), 200
+
+
+def user_signup_controller():
+    data = request.json
+
+    # Check if email already exists
+    if User.query.filter_by(email=data["email"]).first():
+        return jsonify({"error": "Email already exists"}), 409
+
+    # Optional: validate required fields here
+
+    try:
+        print(data)
+
+        new_user = User(
+            name=f"{data['firstName']} {data['lastName']}",
+            gender=data["gender"],
+            address=data["address"],
+            phone_number=data["phoneNumber"],
+            birth_date=datetime.strptime(data["birthDate"], "%Y-%m-%d").date(),
+            email=data["email"],
+            role=data["role"],
+            profile_url="https://placehold.co/128x128",
+            shelter_id=None
+            # shelter_id=None if data["role"] == "adopter" else data.get("shelterId")
+        )
+
+        # password.setter gets triggered
+        new_user.password = data["password"]
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return jsonify({"message": "User created successfully"}), 201
+
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

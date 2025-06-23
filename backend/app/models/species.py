@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.mysql import BINARY, ENUM
 from app import db
 
 import uuid

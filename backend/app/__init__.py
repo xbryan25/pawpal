@@ -23,6 +23,8 @@ def create_app():
     jwt.init_app(app)
     CORS(app, origins='*')
 
+    # from app.models import User, Shelter
+
     from .routes import user_bp
     app.register_blueprint(user_bp, url_prefix='/user')
 

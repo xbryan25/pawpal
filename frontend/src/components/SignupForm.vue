@@ -109,7 +109,7 @@ const handleSubmit = async () => {
               <label class="dui-input w-full">
                 <input
                   v-model="newUserForm.firstName"
-                  maxlength="128"
+                  maxlength="127"
                   type="text"
                   placeholder="e.g. John"
                   required

@@ -1,25 +1,14 @@
 from flask import Blueprint, jsonify, request
-from app.controllers.user_controller import login_controller
+from app.controllers.user_controller import user_login_controller, user_signup_controller
 
 user_bp = Blueprint("user_bp", __name__)
 
 
 @user_bp.route("/login", methods=["POST"])
 def login():
-    print("reach here?")
-    return login_controller()
-
-
-@user_bp.route("/login", methods=["GET"])
-def login_get():
-    print("reach here?")
-    return jsonify({"message": "Test"}), 200
+    return user_login_controller()
 
 
 @user_bp.route("/signup", methods=["POST"])
 def new_user_signup():
-    new_user_data = request.get_json()
-
-    print(new_user_data)
-
-    return jsonify({"message": "Success"}), 200
+    return user_signup_controller()
