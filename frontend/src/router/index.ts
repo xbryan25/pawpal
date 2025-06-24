@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthToken } from '@/composables/useAuthToken'
+import { getToken } from '@/utils/getToken'
+import { isTokenValid } from '@/utils/isTokenValid'
 import AdopterLoginView from '@/views/AdopterLoginView.vue'
 import ShelterStaffLoginView from '@/views/ShelterStaffLoginView.vue'
 import PetsView from '@/views/PetsView.vue'
@@ -7,9 +8,8 @@ import PetProfileView from '@/views/PetProfileView.vue'
 import ApplicationsView from '@/views/ApplicationsView.vue'
 import SignupView from '@/views/SignupView.vue'
 
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
+
+const routes = [
     {
       path: '/user/login',
       name: 'adopterLoginView',
@@ -46,13 +46,18 @@ const router = createRouter({
       component: SignupView,
       meta: { title: 'Signup View' },
     },
-  ],
+  ]
+
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: routes,
 })
 
 router.beforeEach((to, from, next) => {
-  const { token } = useAuthToken()
+  // Use getToken because router is outside Vue3
+  const token = getToken()
 
-  if (to.meta.requiresAuth && !token) {
+  if (to.meta.requiresAuth && (!token || !isTokenValid(token))) {
     next('/user/login')
   } else {
     next()

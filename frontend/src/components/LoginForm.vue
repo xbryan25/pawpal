@@ -28,6 +28,9 @@ const userForm = reactive<UserCredentials>({
 const router = useRouter()
 const apiUrl = import.meta.env.VITE_API_URL
 
+// import.meta.env.VITE_COOKIE_SECURE is a string
+const isSecure = import.meta.env.VITE_COOKIE_SECURE === 'true'
+
 const cookies = useCookies()
 
 const handleSubmit = async () => {
@@ -43,9 +46,9 @@ const handleSubmit = async () => {
 
     cookies.set('access_token', accessToken, {
       path: '/',
-      maxAge: 60,
+      maxAge: 60 * 15, // Per minute
       sameSite: 'strict',
-      secure: true,
+      secure: isSecure,
     })
 
     router.push('/pets/view')
