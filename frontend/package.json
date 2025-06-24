@@ -18,10 +18,13 @@
     "autoprefixer": "^10.4.21",
     "axios": "^1.10.0",
     "cally": "^0.8.0",
+    "cookie-universal": "^2.2.2",
     "daisyui": "^5.0.43",
+    "jwt-decode": "^4.0.0",
     "pinia": "^3.0.1",
     "postcss": "^8.5.4",
     "tailwindcss": "^4.1.8",
+    "universal-cookie": "^8.0.1",
     "vue": "^3.5.13",
     "vue-cal": "^5.0.1-rc.25",
     "vue-router": "^4.5.0"
