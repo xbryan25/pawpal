@@ -17,7 +17,7 @@ interface NewUser {
   email: string
   password: string
   role: string
-  selectedShelter: string | null
+  shelterId: string
 }
 
 const newUserForm = reactive<NewUser>({
@@ -30,13 +30,16 @@ const newUserForm = reactive<NewUser>({
   email: '',
   password: '',
   role: '',
-  selectedShelter: '',
+  shelterId: '',
 })
+
+const selectedShelter = ref<string>('')
 
 const router = useRouter()
 const apiUrl = import.meta.env.VITE_API_URL
 
-const shelters = ['Shelter1', 'Shelter2']
+let shelters: { shelter_id: string; name: string }[] = []
+let shelter_names: string[] = []
 
 const handleSubmit = async () => {
   const newUser: NewUser = {
@@ -49,7 +52,7 @@ const handleSubmit = async () => {
     email: newUserForm.email,
     password: newUserForm.password,
     role: newUserForm.role,
-    selectedShelter: newUserForm.selectedShelter,
+    shelterId: shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || '',
   }
 
   try {
@@ -62,6 +65,19 @@ const handleSubmit = async () => {
     console.error('Error adding account', error)
   }
 }
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/shelter/list`)
+
+    console.log(response.data)
+
+    shelters = response.data
+    shelter_names = shelters.map((shelter) => shelter.name)
+  } catch (error) {
+    console.error('Error retrieving shelter list', error)
+  }
+})
 </script>
 
 <template>
@@ -221,8 +237,8 @@ const handleSubmit = async () => {
 
             <div v-if="newUserForm.role === 'shelter_staff'" class="flex flex-col flex-1">
               <SearchableCombobox
-                v-model="newUserForm.selectedShelter"
-                :options="shelters"
+                v-model="selectedShelter"
+                :options="shelter_names"
                 placeholder="Select a shelter"
               />
             </div>

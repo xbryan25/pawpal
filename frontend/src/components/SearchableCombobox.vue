@@ -45,7 +45,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="comboRef" class="relative w-full max-w-xs">
+  <div ref="comboRef" class="relative w-full">
     <div class="relative">
       <input
         type="text"
@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
         @input="isOpen = true"
         @keydown.escape="isOpen = false"
         :placeholder="props.placeholder || 'Select an option'"
-        class="dui-input dui-input-bordered w-full pr-10"
+        class="dui-input dui-input-bordered w-full"
       />
 
       <svg
