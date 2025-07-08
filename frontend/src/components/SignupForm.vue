@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { withDefaults, reactive } from 'vue'
+import { reactive, ref, watch, onBeforeUnmount, onMounted, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import axios from 'axios'
 
 import lightModeImage from '@/assets/images/light-mode.png'
 import darkModeImage from '@/assets/images/dark-mode.png'
+import SearchableCombobox from './SearchableCombobox.vue'
 
 interface NewUser {
   firstName: string
@@ -16,6 +17,7 @@ interface NewUser {
   email: string
   password: string
   role: string
+  selectedShelter: string | null
 }
 
 const newUserForm = reactive<NewUser>({
@@ -28,10 +30,13 @@ const newUserForm = reactive<NewUser>({
   email: '',
   password: '',
   role: '',
+  selectedShelter: '',
 })
 
 const router = useRouter()
 const apiUrl = import.meta.env.VITE_API_URL
+
+const shelters = ['Shelter1', 'Shelter2']
 
 const handleSubmit = async () => {
   const newUser: NewUser = {
@@ -44,6 +49,7 @@ const handleSubmit = async () => {
     email: newUserForm.email,
     password: newUserForm.password,
     role: newUserForm.role,
+    selectedShelter: newUserForm.selectedShelter,
   }
 
   try {
@@ -170,7 +176,7 @@ const handleSubmit = async () => {
 
         <!-- Address group -->
         <div>
-          <!-- Gender and birth date labels -->
+          <!-- Address label -->
           <div class="flex flex-row gap-2 mb-1">
             <h3 class="flex-1 font-medium">Address</h3>
           </div>
@@ -191,11 +197,14 @@ const handleSubmit = async () => {
           <!-- Phone number label -->
           <div class="flex flex-row gap-2 mb-1">
             <h3 class="flex-1 font-medium">Phone Number</h3>
+            <h3 v-if="newUserForm.role === 'shelter_staff'" class="flex-1 font-medium">
+              Assigned Shelter
+            </h3>
           </div>
 
           <div class="flex flex-row gap-2">
             <!-- Phone number input -->
-            <div class="flex flex-col w-[50%]">
+            <div class="flex flex-col flex-1">
               <label class="dui-input w-full">
                 <input
                   v-model="newUserForm.phoneNumber"
@@ -209,6 +218,16 @@ const handleSubmit = async () => {
                 />
               </label>
             </div>
+
+            <div v-if="newUserForm.role === 'shelter_staff'" class="flex flex-col flex-1">
+              <SearchableCombobox
+                v-model="newUserForm.selectedShelter"
+                :options="shelters"
+                placeholder="Select a shelter"
+              />
+            </div>
+
+            <div v-else class="flex-1"></div>
           </div>
         </div>
 
@@ -251,8 +270,16 @@ const handleSubmit = async () => {
           </label>
         </div>
 
-        <button class="dui-btn dui-btn-primary w-full mt-5 text-xl" type="submit">
+        <button
+          v-if="newUserForm.role === 'adopter'"
+          class="dui-btn dui-btn-primary w-full mt-5 text-xl"
+          type="submit"
+        >
           Create account
+        </button>
+
+        <button v-else class="dui-btn dui-btn-primary w-full mt-5 text-xl" type="submit">
+          Proceed
         </button>
       </form>
     </div>

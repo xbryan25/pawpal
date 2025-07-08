@@ -43,15 +43,14 @@ def user_signup_controller():
             email=data["email"],
             role=data["role"],
             profile_url="https://placehold.co/128x128",
-            shelter_id=None
-            # shelter_id=None if data["role"] == "adopter" else data.get("shelterId")
+            shelter_id=None if data["role"] == "adopter" else data.get("selectedShelter")
         )
 
         # password.setter gets triggered
         new_user.password = data["password"]
 
-        db.session.add(new_user)
-        db.session.commit()
+        # db.session.add(new_user)
+        # db.session.commit()
 
         return jsonify({"message": "User created successfully"}), 201
 

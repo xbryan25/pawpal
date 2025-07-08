@@ -2,7 +2,7 @@
 import { withDefaults, defineProps, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import axios from 'axios'
-import useCookies from 'cookie-universal'
+import Cookies from 'universal-cookie'
 
 import lightModeImage from '@/assets/images/light-mode.png'
 import darkModeImage from '@/assets/images/dark-mode.png'
@@ -31,7 +31,7 @@ const apiUrl = import.meta.env.VITE_API_URL
 // import.meta.env.VITE_COOKIE_SECURE is a string
 const isSecure = import.meta.env.VITE_COOKIE_SECURE === 'true'
 
-const cookies = useCookies()
+const cookies = new Cookies()
 
 const handleSubmit = async () => {
   const userCredentials: UserCredentials = {
