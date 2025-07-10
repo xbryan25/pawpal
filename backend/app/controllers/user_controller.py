@@ -12,10 +12,13 @@ def user_login_controller():
     data = request.json
     email = data.get("email")
     password = data.get("password")
+    login_type = data.get("loginType")
 
     user = authenticate_user(email, password)
     if not user:
-        return jsonify({"error": "Invalid credentials"}), 401
+        return jsonify({"error": "Invalid credentials."}), 401
+    elif user.role.value != login_type:
+        return jsonify({"error": "Invalid login type."}), 401
 
     uuid_str = str(uuid.UUID(bytes=user.user_id))
     access_token = create_access_token(identity=uuid_str)
