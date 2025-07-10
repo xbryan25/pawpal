@@ -10,7 +10,7 @@ class GenderEnum(enum.Enum):
 
 class RoleEnum(enum.Enum):
     adopter = "adopter"
-    shelter_staff = "shelter staff"
+    shelter_staff = "shelter_staff"
     admin = "admin"
 
 

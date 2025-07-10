@@ -2,6 +2,7 @@ from flask import request, jsonify
 from flask_jwt_extended import create_access_token
 from app.services.user_service import authenticate_user
 from app.models.user import User
+from app.models.shelter import Shelter
 from app import db
 from datetime import datetime
 import uuid
@@ -11,10 +12,13 @@ def user_login_controller():
     data = request.json
     email = data.get("email")
     password = data.get("password")
+    login_type = data.get("loginType")
 
     user = authenticate_user(email, password)
     if not user:
-        return jsonify({"error": "Invalid credentials"}), 401
+        return jsonify({"error": "Invalid credentials."}), 401
+    elif user.role.value != login_type:
+        return jsonify({"error": "Invalid login type."}), 401
 
     uuid_str = str(uuid.UUID(bytes=user.user_id))
     access_token = create_access_token(identity=uuid_str)
@@ -32,8 +36,6 @@ def user_signup_controller():
     # Optional: validate required fields here
 
     try:
-        print(data)
-
         new_user = User(
             name=f"{data['firstName']} {data['lastName']}",
             gender=data["gender"],
@@ -43,12 +45,22 @@ def user_signup_controller():
             email=data["email"],
             role=data["role"],
             profile_url="https://placehold.co/128x128",
-            shelter_id=None
-            # shelter_id=None if data["role"] == "adopter" else data.get("shelterId")
+            shelter_id=None if data["role"] == "adopter" else uuid.UUID(data.get("shelterId")).bytes
         )
 
         # password.setter gets triggered
         new_user.password = data["password"]
+
+        # test_shelter = Shelter(
+        #     name=f"Test Shelter",
+        #     email="test@email.com",
+        #     address="Test Address",
+        #     phone_number="09865698651",
+        #     created_at=datetime.now(),
+        # )
+        #
+        # db.session.add(test_shelter)
+        # db.session.commit()
 
         db.session.add(new_user)
         db.session.commit()

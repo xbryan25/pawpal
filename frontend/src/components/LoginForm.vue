@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { withDefaults, defineProps, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import axios from 'axios'
-import useCookies from 'cookie-universal'
+import axios, { AxiosError } from 'axios'
+import Cookies from 'universal-cookie'
+import { useToast, POSITION } from 'vue-toastification'
 
 import lightModeImage from '@/assets/images/light-mode.png'
 import darkModeImage from '@/assets/images/dark-mode.png'
@@ -14,6 +15,7 @@ interface Props {
 interface UserCredentials {
   email: string
   password: string
+  loginType: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -23,6 +25,7 @@ const props = withDefaults(defineProps<Props>(), {
 const userForm = reactive<UserCredentials>({
   email: '',
   password: '',
+  loginType: '',
 })
 
 const router = useRouter()
@@ -31,12 +34,15 @@ const apiUrl = import.meta.env.VITE_API_URL
 // import.meta.env.VITE_COOKIE_SECURE is a string
 const isSecure = import.meta.env.VITE_COOKIE_SECURE === 'true'
 
-const cookies = useCookies()
+const cookies = new Cookies()
+
+const toast = useToast()
 
 const handleSubmit = async () => {
   const userCredentials: UserCredentials = {
     email: userForm.email,
     password: userForm.password,
+    loginType: props.loginType,
   }
 
   try {
@@ -51,9 +57,49 @@ const handleSubmit = async () => {
       secure: isSecure,
     })
 
+    toast.success('Login success!', {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+
+    console.log('Toast')
+
     router.push('/pets/view')
-  } catch (error) {
-    console.error('Error adding account', error)
+  } catch (error: unknown) {
+    let errorMessage: string = ''
+
+    if (axios.isAxiosError(error) && error.response) {
+      errorMessage = error.response.data.error
+    } else {
+      errorMessage = 'Unexpected error.'
+    }
+
+    toast.error(`Login failed. ${errorMessage}`, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+
+    console.error('Error logging in', error)
   }
 }
 </script>
