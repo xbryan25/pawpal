@@ -45,7 +45,7 @@ onBeforeUnmount(() => {
           <RouterLink class="font-semibold text-xl" to="/applications/view"
             >Applications</RouterLink
           >
-          <p class="font-semibold text-xl">Reports</p>
+          <RouterLink class="font-semibold text-xl" to="/reports/user/view">Reports</RouterLink>
         </div>
       </div>
 
