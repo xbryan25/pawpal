@@ -21,6 +21,7 @@
     "autoprefixer": "^10.4.21",
     "axios": "^1.10.0",
     "cally": "^0.8.0",
+    "chart.js": "^4.5.0",
     "choices.js": "^11.1.0",
     "cookie-universal": "^2.2.2",
     "daisyui": "^5.0.43",
@@ -31,6 +32,7 @@
     "universal-cookie": "^8.0.1",
     "vue": "^3.5.13",
     "vue-cal": "^5.0.1-rc.25",
+    "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.0",
     "vue-select": "^4.0.0-beta.6",
     "vue-toastification": "^2.0.0-rc.5"
