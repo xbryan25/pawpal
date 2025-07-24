@@ -106,29 +106,65 @@ const chartKey = ref(0)
 
 const updateChart = () => {
   if (selectedRange.value === 'yearly') {
-    lineData.labels = ['2021', '2022', '2023', '2024', '2025']
+    lineData.labels = getLast5Years()
 
     lineData.datasets[0].data = [5, 8, 12, 10, 6]
   } else {
-    lineData.labels = [
-      'January 2025',
-      'February 2025',
-      'March 2025',
-      'April 2025',
-      'May 2025',
-      'June 2025',
-      'July 2025',
-      'August 2025',
-      'September 2025',
-      'October 2025',
-      'November 2025',
-      'December 2025',
-    ]
+    lineData.labels = getLast12Months()
 
     lineData.datasets[0].data = [0, 2, 1, 2, 1, 0, 0, 1, 1, 0, 0, 1]
   }
 
   chartKey.value++
+}
+
+const getLast12Months = () => {
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+
+  let last12Months: string[] = []
+
+  const now: Date = new Date()
+  let currentMonth: number = now.getMonth()
+  let currentYear: number = now.getFullYear()
+
+  for (let i = 0; i < 12; i++) {
+    last12Months.push(`${monthNames[currentMonth]} ${currentYear}`)
+
+    currentMonth--
+
+    if (currentMonth == -1) {
+      currentMonth = 11
+      currentYear--
+    }
+  }
+
+  return last12Months.reverse()
+}
+
+const getLast5Years = () => {
+  let last5Years: string[] = []
+
+  const now: Date = new Date()
+  let currentYear: number = now.getFullYear()
+
+  for (let i = 0; i < 5; i++) {
+    last5Years.push(`${currentYear - i}`)
+  }
+
+  return last5Years.reverse()
 }
 </script>
 
@@ -169,7 +205,7 @@ const updateChart = () => {
           </div>
         </div>
 
-        <div class="flex-1 flex min-h-0 overflow-hidden">
+        <div class="flex-1 flex min-h-0 overflow-hidden pt-5">
           <div class="flex-1 min-h-0 overflow-hidden">
             <h1 class="font-bold text-xl">Application Status</h1>
             <div class="w-full h-full relative pb-10">
