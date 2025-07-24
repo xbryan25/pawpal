@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { reactive, ref } from 'vue'
 import { Line, Pie } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -12,6 +13,7 @@ import {
   ArcElement,
   type ChartOptions,
   type ChartData,
+  Filler,
 } from 'chart.js'
 
 ChartJS.register(
@@ -23,9 +25,10 @@ ChartJS.register(
   ArcElement,
   CategoryScale,
   LinearScale,
+  Filler,
 )
 
-const lineData: ChartData<'line'> = {
+const lineData = reactive<ChartData<'line'>>({
   labels: [
     'January 2025',
     'February 2025',
@@ -49,7 +52,7 @@ const lineData: ChartData<'line'> = {
       fill: true, // Area under the line
     },
   ],
-}
+})
 
 const lineOptions: ChartOptions<'line'> = {
   responsive: true,
@@ -97,6 +100,36 @@ const pieOptions: ChartOptions<'pie'> = {
     title: { display: true, text: 'Pie Chart' },
   },
 }
+
+const selectedRange = ref('monthly')
+const chartKey = ref(0)
+
+const updateChart = () => {
+  if (selectedRange.value === 'yearly') {
+    lineData.labels = ['2021', '2022', '2023', '2024', '2025']
+
+    lineData.datasets[0].data = [5, 8, 12, 10, 6]
+  } else {
+    lineData.labels = [
+      'January 2025',
+      'February 2025',
+      'March 2025',
+      'April 2025',
+      'May 2025',
+      'June 2025',
+      'July 2025',
+      'August 2025',
+      'September 2025',
+      'October 2025',
+      'November 2025',
+      'December 2025',
+    ]
+
+    lineData.datasets[0].data = [0, 2, 1, 2, 1, 0, 0, 1, 1, 0, 0, 1]
+  }
+
+  chartKey.value++
+}
 </script>
 
 <template>
@@ -114,9 +147,25 @@ const pieOptions: ChartOptions<'pie'> = {
         </div>
 
         <div class="flex-1 min-h-0 overflow-hidden">
-          <h1 class="font-bold text-xl">Adoption Timeline</h1>
+          <div class="flex flex-row">
+            <div class="flex-1">
+              <h1 class="font-bold text-xl">Adoption Timeline</h1>
+            </div>
+
+            <div class="flex-1">
+              <select
+                v-model="selectedRange"
+                @change="updateChart"
+                class="dui-select ml-auto block"
+              >
+                <option value="monthly">Past 12 months</option>
+                <option value="yearly">Past 5 years</option>
+              </select>
+            </div>
+          </div>
+
           <div class="w-full h-full relative pb-10">
-            <Line :data="lineData" :options="lineOptions" />
+            <Line :data="lineData" :options="lineOptions" :key="chartKey" />
           </div>
         </div>
 
