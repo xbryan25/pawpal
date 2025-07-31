@@ -20,17 +20,24 @@ class Pet(db.Model):
                        nullable=False)
     description = db.Column(db.String(255), nullable=False)
 
+    breed_id = db.Column(
+        BINARY(16),
+        db.ForeignKey("breeds.breed_id"),
+        nullable=True
+    )
+
+    species_id = db.Column(
+        BINARY(16),
+        db.ForeignKey("species.species_id"),
+        nullable=True
+    )
+
     shelter_id = db.Column(
         BINARY(16),
         db.ForeignKey("shelters.shelter_id"),
         nullable=True
     )
 
-    breed_id = db.Column(
-        BINARY(16),
-        db.ForeignKey("breeds.breed_id"),
-        nullable=True
-    )
 
     def __repr__(self):
         return f"<Pet {self.name}>"
