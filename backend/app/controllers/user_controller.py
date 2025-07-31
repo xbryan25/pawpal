@@ -23,8 +23,23 @@ def user_login_controller():
     uuid_str = str(uuid.UUID(bytes=user.user_id))
     access_token = create_access_token(identity=uuid_str)
 
-    return jsonify(access_token=access_token), 200
+    user_role = get_user_role(email)
 
+    return jsonify({
+        "access_token": access_token,
+        "user_role": user_role
+    }), 200
+
+
+# TODO: I think this should be in another file, also add error handling
+def get_user_role(email):
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        role = user.role
+        return role.value
+    else:
+        return None
 
 def user_signup_controller():
     data = request.json

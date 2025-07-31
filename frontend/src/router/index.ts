@@ -8,6 +8,7 @@ import PetProfileView from '@/views/PetProfileView.vue'
 import ApplicationsView from '@/views/ApplicationsView.vue'
 import SignupView from '@/views/SignupView.vue'
 import AdopterReportsView from '@/views/AdopterReportsView.vue'
+import AddEditPetView from '@/views/AddEditPetView.vue'
 
 
 const routes = [
@@ -52,6 +53,12 @@ const routes = [
       name: 'adopterReportsView',
       component: AdopterReportsView,
       meta: { title: 'Adopter Reports View' },
+    },
+    {
+      path: '/pets/add-pet',
+      name: 'addPetView',
+      component: AddEditPetView,
+      meta: { title: 'Add Pet' },
     },
   ]
 

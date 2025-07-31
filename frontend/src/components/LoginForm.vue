@@ -4,6 +4,7 @@ import { RouterLink, useRouter } from 'vue-router'
 import axios, { AxiosError } from 'axios'
 import Cookies from 'universal-cookie'
 import { useToast, POSITION } from 'vue-toastification'
+import { useAuthStore } from '@/stores/useAuthStore'
 
 import lightModeImage from '@/assets/images/light-mode.png'
 import darkModeImage from '@/assets/images/dark-mode.png'
@@ -36,6 +37,8 @@ const isSecure = import.meta.env.VITE_COOKIE_SECURE === 'true'
 
 const cookies = new Cookies()
 
+const auth = useAuthStore()
+
 const toast = useToast()
 
 const handleSubmit = async () => {
@@ -49,6 +52,7 @@ const handleSubmit = async () => {
     const response = await axios.post(`${apiUrl}/user/login`, userCredentials)
 
     const accessToken = response.data.access_token
+    const role = response.data.user_role
 
     cookies.set('access_token', accessToken, {
       path: '/',
@@ -72,7 +76,7 @@ const handleSubmit = async () => {
       rtl: false,
     })
 
-    console.log('Toast')
+    auth.setRole(role)
 
     router.push('/pets/view')
   } catch (error: unknown) {

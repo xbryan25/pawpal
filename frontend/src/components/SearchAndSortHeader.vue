@@ -1,8 +1,13 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores/useAuthStore'
+
+const auth = useAuthStore()
+</script>
 
 <template>
-  <section class="flex h-10 my-5 gap-[15vw]">
-    <div class="flex-1 grid grid-cols-[0.3fr_0.7fr_0.7fr] gap-4 min-w-0 flex-row pr-[5%]">
+  <section class="flex h-10 my-5 gap-[3vw]">
+    <div class="flex-[2] grid grid-cols-[0.3fr_0.7fr_0.7fr] gap-4 min-w-0 flex-row pr-[5%]">
       <div class="flex items-center min-w-0">
         <p class="font-semibold text-xl">Sort By</p>
       </div>
@@ -16,7 +21,14 @@
         <option value="Title">Descending</option>
       </select>
     </div>
-    <div class="flex-1 grid grid-cols-[0.3fr_0.7fr_0.7fr] gap-4 min-w-0 flex-row pl-[5%]">
+
+    <div class="flex-1 min-w-0 flex-row px-[5%]" v-if="auth.isShelterStaff">
+      <RouterLink class="dui-btn w-full h-full font-semibold text-xl" to="/pets/add-pet"
+        >Add Pet</RouterLink
+      >
+    </div>
+
+    <div class="flex-[2] grid grid-cols-[0.3fr_0.7fr_0.7fr] gap-4 min-w-0 flex-row pl-[5%]">
       <div class="flex items-center min-w-0">
         <p class="font-semibold text-xl">Search</p>
       </div>
