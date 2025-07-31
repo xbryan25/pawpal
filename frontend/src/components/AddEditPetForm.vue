@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { reactive } from 'vue'
+import { useToast, POSITION } from 'vue-toastification'
 
 interface NewPet {
   name: string
@@ -27,6 +28,7 @@ const newPetForm = reactive<NewPet>({
 })
 
 const apiUrl = import.meta.env.VITE_API_URL
+const toast = useToast()
 
 const handleSubmit = async () => {
   const petFormData = new FormData()
@@ -53,9 +55,35 @@ const handleSubmit = async () => {
 
 function handlePhotoChange(event: Event, index: number) {
   const input = event.target as HTMLInputElement
-  if (input.files && input.files[0]) {
-    newPetForm.petPhotos[index] = input.files[0]
+
+  const file = input.files?.[0]
+
+  if (!file) return
+
+  const MAX_SIZE_MB = 10
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+
+  if (file.size > MAX_SIZE_BYTES) {
+    toast.error('Images should not exceed 10 MB. Choose another pic.', {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+
+    input.value = ''
+    return
   }
+
+  newPetForm.petPhotos[index] = file
 }
 </script>
 
