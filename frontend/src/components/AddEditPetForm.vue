@@ -1,4 +1,63 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import axios from 'axios'
+import { reactive } from 'vue'
+
+interface NewPet {
+  name: string
+  birthDate: string
+  sex: string
+  status: string
+  description: string
+  breed: string
+  species: string
+  shelter: string
+  petPhotos: File[]
+}
+
+const newPetForm = reactive<NewPet>({
+  name: '',
+  birthDate: '',
+  sex: '',
+  status: 'available',
+  description: '',
+  breed: '',
+  species: '',
+  shelter: '',
+  petPhotos: [],
+})
+
+const apiUrl = import.meta.env.VITE_API_URL
+
+const handleSubmit = async () => {
+  const petFormData = new FormData()
+
+  petFormData.append('name', newPetForm.name)
+  petFormData.append('birthDate', newPetForm.birthDate)
+  petFormData.append('sex', newPetForm.sex)
+  petFormData.append('status', newPetForm.status)
+  petFormData.append('description', newPetForm.description)
+  petFormData.append('breed', newPetForm.breed)
+  petFormData.append('species', newPetForm.species)
+  petFormData.append('shelter', newPetForm.shelter)
+
+  newPetForm.petPhotos.forEach((file, index) => {
+    petFormData.append('petPhotos', file)
+  })
+
+  try {
+    const response = await axios.post(`${apiUrl}/pets/register-pet`, petFormData)
+  } catch (error) {
+    console.error('Error adding pet', error)
+  }
+}
+
+function handlePhotoChange(event: Event, index: number) {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files[0]) {
+    newPetForm.petPhotos[index] = input.files[0]
+  }
+}
+</script>
 
 <template>
   <section class="h-[90vh] w-[87vw]">
@@ -7,119 +66,166 @@
         <h1 class="text-6xl font-semibold">Add Pet</h1>
       </div>
 
-      <div class="flex flex-1 pt-15 px-15 gap-20">
-        <div class="flex flex-col gap-4 flex-1">
-          <div>
-            <h3 class="text-lg font-semibold">Pet Name</h3>
-            <label class="dui-input w-full">
-              <input maxlength="127" type="text" placeholder="e.g. John" required />
-            </label>
-          </div>
-
-          <div class="flex gap-4">
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold">Species</h3>
+      <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
+        <div class="flex flex-1 pt-15 px-15 gap-20">
+          <div class="flex flex-col gap-4 flex-1">
+            <div>
+              <h3 class="text-lg font-semibold">Pet Name</h3>
               <label class="dui-input w-full">
-                <input maxlength="127" type="text" placeholder="e.g. John" required />
+                <input
+                  v-model="newPetForm.name"
+                  maxlength="127"
+                  type="text"
+                  placeholder="e.g. John"
+                  required
+                />
               </label>
             </div>
 
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold">Breed</h3>
+            <div class="flex gap-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold">Species</h3>
+                <label class="dui-input w-full">
+                  <input
+                    v-model="newPetForm.species"
+                    maxlength="127"
+                    type="text"
+                    placeholder="e.g. John"
+                    required
+                  />
+                </label>
+              </div>
+
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold">Breed</h3>
+                <label class="dui-input w-full">
+                  <input
+                    v-model="newPetForm.breed"
+                    maxlength="127"
+                    type="text"
+                    placeholder="e.g. John"
+                    required
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div class="flex gap-4">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold">Sex</h3>
+                <label class="dui-input w-full">
+                  <input
+                    v-model="newPetForm.sex"
+                    maxlength="127"
+                    type="text"
+                    placeholder="e.g. John"
+                    required
+                  />
+                </label>
+              </div>
+
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold">Birth Date</h3>
+                <input
+                  v-model="newPetForm.birthDate"
+                  type="date"
+                  class="dui-input w-full px-3 py-2"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold">Shelter</h3>
               <label class="dui-input w-full">
-                <input maxlength="127" type="text" placeholder="e.g. John" required />
+                <input
+                  v-model="newPetForm.shelter"
+                  maxlength="127"
+                  type="text"
+                  placeholder="e.g. John"
+                  required
+                />
               </label>
             </div>
-          </div>
 
-          <div class="flex gap-4">
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold">Sex</h3>
-              <label class="dui-input w-full">
-                <input maxlength="127" type="text" placeholder="e.g. John" required />
-              </label>
-            </div>
-
-            <div class="flex-1">
-              <h3 class="text-lg font-semibold">Birth Date</h3>
-              <input type="date" class="dui-input w-full px-3 py-2" required />
+            <div>
+              <h3 class="text-lg font-semibold">Description</h3>
+              <textarea
+                v-model="newPetForm.description"
+                class="dui-textarea resize-none w-full"
+                placeholder="Bio"
+              ></textarea>
             </div>
           </div>
 
-          <div>
-            <h3 class="text-lg font-semibold">Shelter</h3>
-            <label class="dui-input w-full">
-              <input maxlength="127" type="text" placeholder="e.g. John" required />
-            </label>
-          </div>
+          <div class="flex flex-col gap-4 flex-1">
+            <div>
+              <h3 class="text-lg font-semibold">First Photo</h3>
+              <div>
+                <input
+                  type="file"
+                  class="dui-file-input w-full"
+                  accept="image/*"
+                  required
+                  @change="(e) => handlePhotoChange(e, 0)"
+                />
+              </div>
+            </div>
 
-          <div>
-            <h3 class="text-lg font-semibold">Description</h3>
-            <textarea class="dui-textarea resize-none w-full" placeholder="Bio"></textarea>
+            <div>
+              <h3 class="text-lg font-semibold">Second Photo</h3>
+              <div>
+                <input
+                  type="file"
+                  class="dui-file-input w-full"
+                  accept="image/*"
+                  @change="(e) => handlePhotoChange(e, 1)"
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold">Third Photo</h3>
+              <div>
+                <input
+                  type="file"
+                  class="dui-file-input w-full"
+                  accept="image/*"
+                  @change="(e) => handlePhotoChange(e, 2)"
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold">Fourth Photo</h3>
+              <div>
+                <<input
+                  type="file"
+                  class="dui-file-input w-full"
+                  accept="image/*"
+                  @change="(e) => handlePhotoChange(e, 3)"
+                />
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-semibold">Fifth Photo</h3>
+              <div>
+                <input
+                  type="file"
+                  class="dui-file-input w-full"
+                  accept="image/*"
+                  @change="(e) => handlePhotoChange(e, 4)"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="flex flex-col gap-4 flex-1">
-          <div>
-            <h3 class="text-lg font-semibold">First Photo</h3>
-            <div>
-              <input
-                type="file"
-                class="dui-file-input w-full"
-                accept="image/png, image/jpeg, image/webp, image/jpg"
-              />
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-semibold">Second Photo</h3>
-            <div>
-              <input
-                type="file"
-                class="dui-file-input w-full"
-                accept="image/png, image/jpeg, image/webp, image/jpg"
-              />
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-semibold">Third Photo</h3>
-            <div>
-              <input
-                type="file"
-                class="dui-file-input w-full"
-                accept="image/png, image/jpeg, image/webp, image/jpg"
-              />
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-semibold">Fourth Photo</h3>
-            <div>
-              <input
-                type="file"
-                class="dui-file-input w-full"
-                accept="image/png, image/jpeg, image/webp, image/jpg"
-              />
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-semibold">Fifth Photo</h3>
-            <div>
-              <input
-                type="file"
-                class="dui-file-input w-full"
-                accept="image/png, image/jpeg, image/webp, image/jpg"
-              />
-            </div>
-          </div>
+        <div class="pt-15 flex justify-center">
+          <button class="dui-btn dui-btn-primary w-[15%] text-xl" type="submit">Create Pet</button>
         </div>
-      </div>
-
-      <div class="pt-15 flex justify-center">
-        <button class="dui-btn dui-btn-primary w-[15%] text-xl">Create Pet</button>
-      </div>
+      </form>
     </div>
   </section>
 </template>
