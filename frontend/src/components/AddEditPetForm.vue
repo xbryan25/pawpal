@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { reactive, onMounted, ref, type Ref } from 'vue'
+import { reactive, onMounted, ref, watch, type Ref } from 'vue'
 import { useToast, POSITION } from 'vue-toastification'
 
 import SearchableCombobox from './SearchableCombobox.vue'
@@ -31,6 +31,10 @@ const newPetForm = reactive<NewPet>({
 
 const apiUrl = import.meta.env.VITE_API_URL
 const toast = useToast()
+
+const selectedBreed = ref<string>('')
+let breeds: { breed_id: string; breed_name: string }[] = []
+const breed_names: Ref<string[]> = ref<string[]>([])
 
 const selectedSpecies = ref<string>('')
 let species: { species_id: string; species_name: string }[] = []
@@ -96,6 +100,19 @@ function handlePhotoChange(event: Event, index: number) {
   newPetForm.petPhotos[index] = file
 }
 
+watch(selectedSpecies, async (newVal) => {
+  const breed_response = await axios.get(`${apiUrl}/breed/list`, {
+    params: {
+      species_name: selectedSpecies.value,
+    },
+  })
+
+  breeds = breed_response.data
+  breed_names.value = breeds.map((breed) => breed.breed_name)
+
+  if (!newVal) selectedBreed.value = ''
+})
+
 onMounted(async () => {
   try {
     // const breed_response = await axios.get(`${apiUrl}/breed/list`)
@@ -148,15 +165,11 @@ onMounted(async () => {
 
               <div class="flex-1">
                 <h3 class="text-lg font-semibold">Breed</h3>
-                <label class="dui-input w-full">
-                  <input
-                    v-model="newPetForm.breed"
-                    maxlength="127"
-                    type="text"
-                    placeholder="e.g. John"
-                    required
-                  />
-                </label>
+                <SearchableCombobox
+                  v-model="selectedBreed"
+                  :options="breed_names"
+                  placeholder="Select a breed"
+                />
               </div>
             </div>
 
