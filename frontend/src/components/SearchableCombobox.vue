@@ -14,6 +14,7 @@ const emit = defineEmits<{
 
 // Internal state
 const query = ref(props.modelValue || '')
+const selected = ref(props.modelValue || '') // Shadow ref
 const isOpen = ref(false)
 const comboRef = ref<HTMLElement | null>(null)
 
@@ -24,14 +25,25 @@ const filteredOptions = computed(() => {
 
 function selectOption(option: string) {
   query.value = option
+  selected.value = option
   emit('update:modelValue', option)
   isOpen.value = false
+}
+
+function handleTyping() {
+  isOpen.value = true
+  selected.value = ''
+  emit('update:modelValue', selected.value)
 }
 
 // Close on outside click
 function handleClickOutside(event: MouseEvent) {
   if (comboRef.value && !comboRef.value.contains(event.target as Node)) {
     isOpen.value = false
+  }
+
+  if (selected.value === '') {
+    query.value = ''
   }
 }
 
@@ -51,7 +63,7 @@ onBeforeUnmount(() => {
         type="text"
         v-model="query"
         @focus="isOpen = true"
-        @input="isOpen = true"
+        @input="handleTyping"
         @keydown.escape="isOpen = false"
         :placeholder="props.placeholder || 'Select an option'"
         class="dui-input dui-input-bordered w-full"
