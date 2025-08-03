@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { reactive } from 'vue'
+import { reactive, onMounted, ref, type Ref } from 'vue'
 import { useToast, POSITION } from 'vue-toastification'
+
+import SearchableCombobox from './SearchableCombobox.vue'
 
 interface NewPet {
   name: string
@@ -29,6 +31,14 @@ const newPetForm = reactive<NewPet>({
 
 const apiUrl = import.meta.env.VITE_API_URL
 const toast = useToast()
+
+const selectedSpecies = ref<string>('')
+let species: { species_id: string; species_name: string }[] = []
+const species_names: Ref<string[]> = ref<string[]>([])
+
+const selectedShelter = ref<string>('')
+let shelters: { shelter_id: string; name: string }[] = []
+const shelter_names: Ref<string[]> = ref<string[]>([])
 
 const handleSubmit = async () => {
   const petFormData = new FormData()
@@ -85,6 +95,22 @@ function handlePhotoChange(event: Event, index: number) {
 
   newPetForm.petPhotos[index] = file
 }
+
+onMounted(async () => {
+  try {
+    // const breed_response = await axios.get(`${apiUrl}/breed/list`)
+    const species_response = await axios.get(`${apiUrl}/species/list`)
+    const shelter_response = await axios.get(`${apiUrl}/shelter/list`)
+
+    species = species_response.data
+    species_names.value = species.map((species_singular) => species_singular.species_name)
+
+    shelters = shelter_response.data
+    shelter_names.value = shelters.map((shelter) => shelter.name)
+  } catch (error) {
+    console.error('Error retrieving data from backend', error)
+  }
+})
 </script>
 
 <template>
@@ -113,15 +139,11 @@ function handlePhotoChange(event: Event, index: number) {
             <div class="flex gap-4">
               <div class="flex-1">
                 <h3 class="text-lg font-semibold">Species</h3>
-                <label class="dui-input w-full">
-                  <input
-                    v-model="newPetForm.species"
-                    maxlength="127"
-                    type="text"
-                    placeholder="e.g. John"
-                    required
-                  />
-                </label>
+                <SearchableCombobox
+                  v-model="selectedSpecies"
+                  :options="species_names"
+                  placeholder="Select a species"
+                />
               </div>
 
               <div class="flex-1">
@@ -165,15 +187,11 @@ function handlePhotoChange(event: Event, index: number) {
 
             <div>
               <h3 class="text-lg font-semibold">Shelter</h3>
-              <label class="dui-input w-full">
-                <input
-                  v-model="newPetForm.shelter"
-                  maxlength="127"
-                  type="text"
-                  placeholder="e.g. John"
-                  required
-                />
-              </label>
+              <SearchableCombobox
+                v-model="selectedShelter"
+                :options="shelter_names"
+                placeholder="Select a shelter"
+              />
             </div>
 
             <div>
@@ -227,7 +245,7 @@ function handlePhotoChange(event: Event, index: number) {
             <div>
               <h3 class="text-lg font-semibold">Fourth Photo</h3>
               <div>
-                <<input
+                <input
                   type="file"
                   class="dui-file-input w-full"
                   accept="image/*"
