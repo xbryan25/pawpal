@@ -31,6 +31,7 @@ const newPetForm = reactive<NewPet>({
 
 const apiUrl = import.meta.env.VITE_API_URL
 const toast = useToast()
+const isLoading: Ref<boolean> = ref(false)
 
 const selectedBreed = ref<string>('')
 let breeds: { breed_id: string; breed_name: string }[] = []
@@ -45,6 +46,8 @@ let shelters: { shelter_id: string; name: string }[] = []
 const shelter_names: Ref<string[]> = ref<string[]>([])
 
 const handleSubmit = async () => {
+  isLoading.value = true
+
   const petFormData = new FormData()
 
   petFormData.append('name', newPetForm.name)
@@ -72,8 +75,48 @@ const handleSubmit = async () => {
 
   try {
     const response = await axios.post(`${apiUrl}/pets/register-pet`, petFormData)
+
+    const responseMessage: string = response.data.message
+
+    toast.success(responseMessage, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
   } catch (error) {
-    console.error('Error adding pet', error)
+    let errorMessage: string = ''
+
+    if (axios.isAxiosError(error) && error.response) {
+      errorMessage = error.response.data.error
+    } else {
+      errorMessage = 'Unexpected error.'
+    }
+
+    toast.error(`Failed to add pet. ${errorMessage}`, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -141,7 +184,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="h-[90vh] w-[87vw]">
+  <section class="relative h-[90vh] w-[87vw]">
     <div class="flex flex-col">
       <div class="p-5 h-full">
         <h1 class="text-6xl font-semibold">Add Pet</h1>
@@ -159,6 +202,7 @@ onMounted(async () => {
                   type="text"
                   placeholder="e.g. John"
                   required
+                  :disabled="isLoading"
                 />
               </label>
             </div>
@@ -170,6 +214,7 @@ onMounted(async () => {
                   v-model="selectedSpecies"
                   :options="species_names"
                   placeholder="Select a species"
+                  :isDisabled="isLoading"
                 />
               </div>
 
@@ -179,6 +224,7 @@ onMounted(async () => {
                   v-model="selectedBreed"
                   :options="breed_names"
                   placeholder="Select a breed"
+                  :isDisabled="isLoading"
                 />
               </div>
             </div>
@@ -193,6 +239,7 @@ onMounted(async () => {
                     type="text"
                     placeholder="e.g. John"
                     required
+                    :disabled="isLoading"
                   />
                 </label>
               </div>
@@ -204,6 +251,7 @@ onMounted(async () => {
                   type="date"
                   class="dui-input w-full px-3 py-2"
                   required
+                  :disabled="isLoading"
                 />
               </div>
             </div>
@@ -214,6 +262,7 @@ onMounted(async () => {
                 v-model="selectedShelter"
                 :options="shelter_names"
                 placeholder="Select a shelter"
+                :isDisabled="isLoading"
               />
             </div>
 
@@ -223,6 +272,7 @@ onMounted(async () => {
                 v-model="newPetForm.description"
                 class="dui-textarea resize-none w-full"
                 placeholder="Bio"
+                :disabled="isLoading"
               ></textarea>
             </div>
           </div>
@@ -237,6 +287,7 @@ onMounted(async () => {
                   accept="image/*"
                   required
                   @change="(e) => handlePhotoChange(e, 0)"
+                  :disabled="isLoading"
                 />
               </div>
             </div>
@@ -249,6 +300,7 @@ onMounted(async () => {
                   class="dui-file-input w-full"
                   accept="image/*"
                   @change="(e) => handlePhotoChange(e, 1)"
+                  :disabled="isLoading"
                 />
               </div>
             </div>
@@ -261,6 +313,7 @@ onMounted(async () => {
                   class="dui-file-input w-full"
                   accept="image/*"
                   @change="(e) => handlePhotoChange(e, 2)"
+                  :disabled="isLoading"
                 />
               </div>
             </div>
@@ -273,6 +326,7 @@ onMounted(async () => {
                   class="dui-file-input w-full"
                   accept="image/*"
                   @change="(e) => handlePhotoChange(e, 3)"
+                  :disabled="isLoading"
                 />
               </div>
             </div>
@@ -285,6 +339,7 @@ onMounted(async () => {
                   class="dui-file-input w-full"
                   accept="image/*"
                   @change="(e) => handlePhotoChange(e, 4)"
+                  :disabled="isLoading"
                 />
               </div>
             </div>
@@ -292,9 +347,22 @@ onMounted(async () => {
         </div>
 
         <div class="pt-15 flex justify-center">
-          <button class="dui-btn dui-btn-primary w-[15%] text-xl" type="submit">Create Pet</button>
+          <button
+            class="dui-btn dui-btn-primary w-[15%] text-xl"
+            type="submit"
+            :disabled="isLoading"
+          >
+            Create Pet
+          </button>
         </div>
       </form>
+    </div>
+
+    <div
+      v-if="isLoading"
+      class="absolute inset-0 bg-white/50 flex items-center justify-center z-50 rounded-lg"
+    >
+      <span class="dui-loading dui-loading-spinner w-16 h-16 text-primary"></span>
     </div>
   </section>
 </template>

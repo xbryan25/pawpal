@@ -5,6 +5,7 @@ const props = defineProps<{
   modelValue: string | null
   options: string[]
   placeholder?: string
+  isDisabled?: boolean
 }>()
 
 // Emits
@@ -67,6 +68,7 @@ onBeforeUnmount(() => {
         @keydown.escape="isOpen = false"
         :placeholder="props.placeholder || 'Select an option'"
         class="dui-input dui-input-bordered w-full"
+        :disabled="props.isDisabled"
       />
 
       <svg
@@ -75,7 +77,8 @@ onBeforeUnmount(() => {
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
-        @mousedown.stop="isOpen = !isOpen"
+        @mousedown.stop="!props.isDisabled && (isOpen = !isOpen)"
+        :disabled="props.isDisabled"
       >
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>

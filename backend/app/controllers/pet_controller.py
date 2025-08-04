@@ -49,7 +49,7 @@ def pet_registration_controller():
 
         db.session.commit()
 
-        return jsonify({"message": "Pet registered successfully"}), 201
+        return jsonify({"message": "Pet registered successfully."}), 201
 
     except Exception as e:
         print(e)
