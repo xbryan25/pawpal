@@ -52,9 +52,19 @@ const handleSubmit = async () => {
   petFormData.append('sex', newPetForm.sex)
   petFormData.append('status', newPetForm.status)
   petFormData.append('description', newPetForm.description)
-  petFormData.append('breed', newPetForm.breed)
-  petFormData.append('species', newPetForm.species)
-  petFormData.append('shelter', newPetForm.shelter)
+  petFormData.append(
+    'breedId',
+    breeds.find((breed) => breed.breed_name === selectedBreed.value)?.breed_id || '',
+  )
+  petFormData.append(
+    'speciesId',
+    species.find((species_singular) => species_singular.species_name === selectedSpecies.value)
+      ?.species_id || '',
+  )
+  petFormData.append(
+    'shelterId',
+    shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || '',
+  )
 
   newPetForm.petPhotos.forEach((file, index) => {
     petFormData.append('petPhotos', file)

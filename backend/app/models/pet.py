@@ -10,7 +10,7 @@ from app.models.enums import SexEnum, PetStatusEnum
 class Pet(db.Model):
     __tablename__ = 'pets'
 
-    pet_id = db.Column(BINARY(16), primary_key=True, default=lambda: uuid.uuid4().bytes)
+    pet_id = db.Column(BINARY(16), primary_key=True)
 
     name = db.Column(db.String(255), nullable=False)
     birth_date = db.Column(Date, nullable=False)
