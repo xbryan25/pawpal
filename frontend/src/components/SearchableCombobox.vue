@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, defineProps, defineEmits } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, defineProps, defineEmits, watch } from 'vue'
 
 const props = defineProps<{
   modelValue: string | null
   options: string[]
   placeholder?: string
+  isDisabled?: boolean
 }>()
 
 // Emits
@@ -14,6 +15,7 @@ const emit = defineEmits<{
 
 // Internal state
 const query = ref(props.modelValue || '')
+const selected = ref(props.modelValue || '') // Shadow ref
 const isOpen = ref(false)
 const comboRef = ref<HTMLElement | null>(null)
 
@@ -24,14 +26,25 @@ const filteredOptions = computed(() => {
 
 function selectOption(option: string) {
   query.value = option
+  selected.value = option
   emit('update:modelValue', option)
   isOpen.value = false
+}
+
+function handleTyping() {
+  isOpen.value = true
+  selected.value = ''
+  emit('update:modelValue', selected.value)
 }
 
 // Close on outside click
 function handleClickOutside(event: MouseEvent) {
   if (comboRef.value && !comboRef.value.contains(event.target as Node)) {
     isOpen.value = false
+  }
+
+  if (selected.value === '') {
+    query.value = ''
   }
 }
 
@@ -51,10 +64,11 @@ onBeforeUnmount(() => {
         type="text"
         v-model="query"
         @focus="isOpen = true"
-        @input="isOpen = true"
+        @input="handleTyping"
         @keydown.escape="isOpen = false"
         :placeholder="props.placeholder || 'Select an option'"
         class="dui-input dui-input-bordered w-full"
+        :disabled="props.isDisabled"
       />
 
       <svg
@@ -63,7 +77,8 @@ onBeforeUnmount(() => {
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
-        @mousedown.stop="isOpen = !isOpen"
+        @mousedown.stop="!props.isDisabled && (isOpen = !isOpen)"
+        :disabled="props.isDisabled"
       >
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>

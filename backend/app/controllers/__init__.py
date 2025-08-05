@@ -1,2 +1,5 @@
 from .shelter_controller import get_shelter_list_controller
 from .user_controller import user_login_controller, user_signup_controller
+from .pet_controller import pet_registration_controller
+from .breed_controller import get_breed_list_controller
+from .species_controller import get_species_list_controller

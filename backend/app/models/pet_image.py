@@ -6,7 +6,7 @@ import uuid
 
 
 class PetImage(db.Model):
-    __tablename__ = 'pet_image'
+    __tablename__ = 'pet_images'
 
     pet_image_id = db.Column(BINARY(16), primary_key=True, default=lambda: uuid.uuid4().bytes)
 

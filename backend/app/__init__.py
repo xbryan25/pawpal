@@ -25,9 +25,12 @@ def create_app():
 
     # from app.models import User, Shelter
 
-    from .routes import user_bp, shelter_bp
+    from .routes import user_bp, shelter_bp, pet_bp, species_bp, breed_bp
 
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(shelter_bp, url_prefix='/shelter')
+    app.register_blueprint(pet_bp, url_prefix='/pets')
+    app.register_blueprint(species_bp, url_prefix='/species')
+    app.register_blueprint(breed_bp, url_prefix='/breed')
 
     return app
