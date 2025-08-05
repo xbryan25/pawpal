@@ -236,16 +236,15 @@ onMounted(async () => {
             <div class="flex gap-4">
               <div class="flex-1">
                 <h3 class="text-lg font-semibold">Sex</h3>
-                <label class="dui-input w-full">
-                  <input
-                    v-model="newPetForm.sex"
-                    maxlength="127"
-                    type="text"
-                    placeholder="e.g. John"
-                    required
-                    :disabled="isLoading"
-                  />
-                </label>
+                <select
+                  v-model="newPetForm.sex"
+                  class="dui-select w-full"
+                  required
+                  :disabled="isLoading"
+                >
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
               </div>
 
               <div class="flex-1">
