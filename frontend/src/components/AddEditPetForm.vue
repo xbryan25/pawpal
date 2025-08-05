@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { reactive, onMounted, ref, watch, type Ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useToast, POSITION } from 'vue-toastification'
 
 import SearchableCombobox from './SearchableCombobox.vue'
@@ -32,6 +33,7 @@ const newPetForm = reactive<NewPet>({
 const apiUrl = import.meta.env.VITE_API_URL
 const toast = useToast()
 const isLoading: Ref<boolean> = ref(false)
+const router = useRouter()
 
 const selectedBreed = ref<string>('')
 let breeds: { breed_id: string; breed_name: string }[] = []
@@ -92,6 +94,8 @@ const handleSubmit = async () => {
       icon: true,
       rtl: false,
     })
+
+    router.push('/pets/view')
   } catch (error) {
     let errorMessage: string = ''
 

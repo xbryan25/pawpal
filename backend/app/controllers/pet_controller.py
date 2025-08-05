@@ -5,7 +5,6 @@ from datetime import datetime
 import uuid
 import cloudinary.uploader
 
-
 def pet_registration_controller():
     pet_data = request.form
     pet_images = request.files
