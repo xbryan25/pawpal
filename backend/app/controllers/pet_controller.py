@@ -1,9 +1,37 @@
 from flask import request, jsonify
-from app.models import Pet, PetImage
+from app.models import Pet, PetImage, Shelter
 from app import db
 from datetime import datetime
 import uuid
 import cloudinary.uploader
+
+def get_pet_list_controller():
+    try:
+        pets = db.session.query(Pet.pet_id, Pet.name, Pet.status, Pet.shelter_id).all()
+
+        print(pets)
+
+        pets_list = [{'petId': str(uuid.UUID(bytes=pet_id)), 
+                      'name': name, 
+                      'status': status.value,
+                      'shelterId': str(uuid.UUID(bytes=shelter_id))} 
+                      for pet_id, name, status, shelter_id in pets]
+        
+        for pet in pets_list:
+            pet_first_image_url = db.session.query(PetImage.image_url).filter(uuid.UUID(pet['petId']).bytes == PetImage.pet_id).first()
+            pet_shelter = db.session.query(Shelter.name).filter(uuid.UUID(pet['shelterId']).bytes == Shelter.shelter_id).first()
+
+            pet.update({'petFirstImageUrl': pet_first_image_url[0]})
+            pet.update({'petShelter': pet_shelter[0]})
+
+            del pet["shelterId"]
+
+        return jsonify(pets_list), 200
+
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 def pet_registration_controller():
     pet_data = request.form
