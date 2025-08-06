@@ -1,6 +1,27 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import axios from 'axios'
+
 import PetCard from './PetCard.vue'
 import SearchAndSortHeader from './SearchAndSortHeader.vue'
+
+const apiUrl = import.meta.env.VITE_API_URL
+
+let petList: { name: string; petFirstImageUrl: string; petId: string; shelterId: string }[] = []
+
+// Make get request to get pets, also get 1st petPhoto url
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/pets/list`)
+
+    petList = response.data
+
+    console.log(petList)
+  } catch (error) {
+    console.error('Error retrieving pet list', error)
+  }
+})
 </script>
 
 <template>

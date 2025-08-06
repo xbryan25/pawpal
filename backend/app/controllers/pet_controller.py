@@ -5,6 +5,27 @@ from datetime import datetime
 import uuid
 import cloudinary.uploader
 
+def get_pet_list_controller():
+    try:
+        pets = db.session.query(Pet.pet_id, Pet.name, Pet.shelter_id).all()
+
+        pets_list = [{'petId': str(uuid.UUID(bytes=pet_id)), 
+                      'name': name, 
+                      'shelterId': str(uuid.UUID(bytes=shelter_id))} 
+                      for pet_id, name, shelter_id in pets]
+        
+        for pet in pets_list:
+            pet_first_image_url = db.session.query(PetImage.image_url).filter(uuid.UUID(pet['petId']).bytes == PetImage.pet_id).first()
+
+            pet.update({'petFirstImageUrl': pet_first_image_url[0]})
+
+        return jsonify(pets_list), 200
+
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
 def pet_registration_controller():
     pet_data = request.form
     pet_images = request.files
