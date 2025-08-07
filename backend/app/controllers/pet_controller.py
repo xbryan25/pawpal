@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from app.models import Pet, PetImage, Shelter
+from app.models import Pet, PetImage, Shelter, Breed, Species
 from app import db
 from datetime import datetime
 import uuid
@@ -8,8 +8,6 @@ import cloudinary.uploader
 def get_pet_list_controller():
     try:
         pets = db.session.query(Pet.pet_id, Pet.name, Pet.status, Pet.shelter_id).all()
-
-        print(pets)
 
         pets_list = [{'petId': str(uuid.UUID(bytes=pet_id)), 
                       'name': name, 
@@ -32,6 +30,34 @@ def get_pet_list_controller():
         print(e)
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+def get_pet_details_controller():
+    pet_id_str = request.args.get('petId')
+
+    selected_pet = db.session.query(Pet).filter(Pet.pet_id == uuid.UUID(pet_id_str).bytes).first()
+
+    selected_pet_breed = db.session.query(Breed.breed_name).filter(selected_pet.breed_id == Breed.breed_id).first()[0]
+    selected_pet_species = db.session.query(Species.species_name).filter(selected_pet.species_id == Species.species_id).first()[0]
+    selected_pet_shelter = db.session.query(Shelter.name).filter(selected_pet.shelter_id == Shelter.shelter_id).first()[0]
+
+    selected_pet_image_urls_tuples = db.session.query(PetImage.image_url, PetImage.sort_order).filter(uuid.UUID(pet_id_str).bytes == PetImage.pet_id).all()
+
+    selected_pet_image_urls = [{'image_url': image_url, 
+                                'sort_order': sort_order} 
+                                for image_url, sort_order in selected_pet_image_urls_tuples]
+
+    selected_pet_dict = {'name': selected_pet.name, 
+                         'birthDate': selected_pet.birth_date.strftime("%B %d, %Y"), 
+                         'sex': selected_pet.sex.value, 
+                         'status': selected_pet.status.value,
+                         'description': selected_pet.description,
+                         'breed': selected_pet_breed,
+                         'species': selected_pet_species,
+                         'shelter': selected_pet_shelter,
+                         'petImages': selected_pet_image_urls}
+
+    return jsonify(selected_pet_dict), 201
+
 
 def pet_registration_controller():
     pet_data = request.form

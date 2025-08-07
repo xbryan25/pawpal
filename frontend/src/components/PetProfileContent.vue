@@ -1,9 +1,33 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import axios from 'axios'
+
 import samplePet1 from '@/assets/images/sample-pet-1.jpg'
 import samplePet2 from '@/assets/images/sample-pet-2.jpg'
 import samplePet3 from '@/assets/images/sample-pet-3.jpg'
 import samplePet4 from '@/assets/images/sample-pet-4.jpg'
 import samplePet5 from '@/assets/images/sample-pet-5.webp'
+
+const route = useRoute()
+
+const petId: string = route.params.id as string
+
+const apiUrl: string = import.meta.env.VITE_API_URL
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/pets/get-details`, {
+      params: {
+        petId: petId,
+      },
+    })
+
+    console.log(response.data)
+  } catch (error) {
+    console.error('Error retrieving pet details', error)
+  }
+})
 </script>
 
 <template>
