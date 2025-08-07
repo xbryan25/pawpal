@@ -3,11 +3,9 @@ import { onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
+import PetProfileImageCard from './PetProfileImageCard.vue'
+
 import samplePet1 from '@/assets/images/sample-pet-1.jpg'
-import samplePet2 from '@/assets/images/sample-pet-2.jpg'
-import samplePet3 from '@/assets/images/sample-pet-3.jpg'
-import samplePet4 from '@/assets/images/sample-pet-4.jpg'
-import samplePet5 from '@/assets/images/sample-pet-5.webp'
 
 interface PetImage {
   image_url: string
@@ -70,34 +68,19 @@ onMounted(async () => {
       <div class="flex flex-row gap-4 mt-6 h-[80%] w-full">
         <div class="flex-1 flex flex-row gap-2">
           <div class="flex flex-col gap-2">
-            <div
-              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
-            >
-              <img :src="samplePet1" class="w-full h-full object-cover rounded-lg" />
-            </div>
-            <div
-              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
-            >
-              <img :src="samplePet2" class="w-full h-full object-cover rounded-lg" />
-            </div>
-            <div
-              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
-            >
-              <img :src="samplePet3" class="w-full h-full object-cover rounded-lg" />
-            </div>
-            <div
-              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
-            >
-              <img :src="samplePet4" class="w-full h-full object-cover rounded-lg" />
-            </div>
-            <div
-              class="h-[5vw] w-[5vw] transition-transform duration-300 hover:scale-105 cursor-pointer"
-            >
-              <img :src="samplePet5" class="w-full h-full object-cover rounded-lg" />
-            </div>
+            <PetProfileImageCard
+              v-for="petImageUrl in selectedPet.petImages"
+              :key="petImageUrl.image_url"
+              :petImageUrl="petImageUrl.image_url"
+              :sortOrder="petImageUrl.sort_order"
+            />
           </div>
+
           <div class="flex-1 rounded-lg">
-            <img :src="samplePet1" class="w-full h-full object-cover rounded-lg" />
+            <img
+              :src="selectedPet.petImages[0].image_url"
+              class="w-full h-full object-cover rounded-lg"
+            />
           </div>
         </div>
 
