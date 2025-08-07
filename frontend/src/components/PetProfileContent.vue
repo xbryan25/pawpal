@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
@@ -9,11 +9,40 @@ import samplePet3 from '@/assets/images/sample-pet-3.jpg'
 import samplePet4 from '@/assets/images/sample-pet-4.jpg'
 import samplePet5 from '@/assets/images/sample-pet-5.webp'
 
+interface PetImage {
+  image_url: string
+  sort_order: number
+}
+
+interface Pet {
+  name: string
+  birthDate: string
+  description: string
+  sex: string
+  status: string
+  breed: string
+  species: string
+  shelter: string
+  petImages: PetImage[]
+}
+
 const route = useRoute()
 
 const petId: string = route.params.id as string
 
 const apiUrl: string = import.meta.env.VITE_API_URL
+
+const selectedPet = reactive<Pet>({
+  name: '',
+  birthDate: '',
+  sex: '',
+  status: '',
+  description: '',
+  breed: '',
+  species: '',
+  shelter: '',
+  petImages: [],
+})
 
 onMounted(async () => {
   try {
@@ -23,7 +52,10 @@ onMounted(async () => {
       },
     })
 
-    console.log(response.data)
+    // while response.data gives what Pet interface wants, this approach is careless, will improve this soon
+    Object.assign(selectedPet, response.data)
+
+    console.log(selectedPet)
   } catch (error) {
     console.error('Error retrieving pet details', error)
   }
@@ -70,44 +102,44 @@ onMounted(async () => {
         </div>
 
         <div class="flex flex-col w-[40%] pt-5">
-          <p class="font-bold text-6xl">Tabby</p>
+          <p class="font-bold text-6xl">{{ selectedPet.name }}</p>
 
           <div class="flex flex-col mt-5 mb-10 gap-3">
             <div class="flex-1">
               <p class="font-bold text-xl">Shelter</p>
-              <p class="pl-5 font-semibold">Corva Shelter</p>
+              <p class="pl-5 font-semibold">{{ selectedPet.shelter }}</p>
             </div>
 
             <div class="flex-1 flex flex-row">
               <div class="flex-1">
                 <p class="font-bold text-xl">Sex</p>
-                <p class="pl-5 font-semibold">Male</p>
+                <p class="pl-5 font-semibold">
+                  {{ selectedPet.sex.charAt(0).toUpperCase() + selectedPet.sex.slice(1) }}
+                </p>
               </div>
 
               <div class="flex-1">
                 <p class="font-bold text-xl">Adoption Applications</p>
-                <p class="pl-5 font-semibold">1</p>
+                <p class="pl-5 font-semibold">??? (Not yet implemented)</p>
               </div>
             </div>
 
             <div class="flex-1 flex flex-row">
               <div class="flex-1">
                 <p class="font-bold text-xl">Species</p>
-                <p class="pl-5 font-semibold">Cat</p>
+                <p class="pl-5 font-semibold">{{ selectedPet.species }}</p>
               </div>
 
               <div class="flex-1">
                 <p class="font-bold text-xl">Breed</p>
-                <p class="pl-5 font-semibold">Puspin</p>
+                <p class="pl-5 font-semibold">{{ selectedPet.breed }}</p>
               </div>
             </div>
 
             <div class="flex-1">
               <p class="font-bold text-xl">Description</p>
               <p class="pl-5 font-semibold">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                {{ selectedPet.description }}
               </p>
             </div>
           </div>
