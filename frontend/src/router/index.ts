@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw} from 'vue-router'
 import { getToken } from '@/utils/getToken'
 import { isTokenValid } from '@/utils/isTokenValid'
 import AdopterLoginView from '@/views/AdopterLoginView.vue'
@@ -11,7 +11,7 @@ import AdopterReportsView from '@/views/AdopterReportsView.vue'
 import AddEditPetView from '@/views/AddEditPetView.vue'
 
 
-const routes = [
+const routes: RouteRecordRaw[] = [
     {
       path: '/user/login',
       name: 'adopterLoginView',
@@ -31,8 +31,14 @@ const routes = [
       meta: { title: 'Pets View', requiresAuth: true },
     },
     {
-      path: '/pets/view/sample-id',
+      path: '/pets/view/:id',
       name: 'adopterPetProfileView',
+      component: PetProfileView,
+      meta: { title: 'Pet Profile' },
+    },
+    {
+      path: '/pets/view/shelter-staff/:id',
+      name: 'shelterStaffPetProfileView',
       component: PetProfileView,
       meta: { title: 'Pet Profile' },
     },
@@ -57,6 +63,12 @@ const routes = [
     {
       path: '/pets/add-pet',
       name: 'addPetView',
+      component: AddEditPetView,
+      meta: { title: 'Add Pet' },
+    },
+    {
+      path: '/pets/edit-pet/:id',
+      name: 'editPetView',
       component: AddEditPetView,
       meta: { title: 'Add Pet' },
     },

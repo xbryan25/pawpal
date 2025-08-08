@@ -47,7 +47,7 @@ console.log(props.petFirstImageUrl)
       <div class="dui-card-actions justify-center">
         <RouterLink
           class="btn btn-primary font-bold cursor-pointer hover:underline"
-          to="/pets/view/sample-id"
+          :to="`/pets/view/${props.petId}`"
         >
           View Details
         </RouterLink>
