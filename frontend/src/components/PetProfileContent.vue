@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
 
@@ -27,6 +27,7 @@ interface Pet {
 const route = useRoute()
 
 const petId: string = route.params.id as string
+const selectedPetImageUrl = ref('')
 
 const apiUrl: string = import.meta.env.VITE_API_URL
 
@@ -42,6 +43,10 @@ const selectedPet = reactive<Pet>({
   petImages: [],
 })
 
+function handleSelectPhoto(petImageUrl: string) {
+  selectedPetImageUrl.value = petImageUrl
+}
+
 onMounted(async () => {
   try {
     const response = await axios.get(`${apiUrl}/pets/get-details`, {
@@ -52,6 +57,8 @@ onMounted(async () => {
 
     // while response.data gives what Pet interface wants, this approach is careless, will improve this soon
     Object.assign(selectedPet, response.data)
+
+    selectedPetImageUrl.value = selectedPet.petImages[0].image_url
 
     console.log(selectedPet)
   } catch (error) {
@@ -73,14 +80,12 @@ onMounted(async () => {
               :key="petImageUrl.image_url"
               :petImageUrl="petImageUrl.image_url"
               :sortOrder="petImageUrl.sort_order"
+              @selectPhoto="handleSelectPhoto"
             />
           </div>
 
-          <div class="flex-1 rounded-lg">
-            <img
-              :src="selectedPet.petImages[0].image_url"
-              class="w-full h-full object-cover rounded-lg"
-            />
+          <div class="flex-1 rounded-lg" v-if="selectedPet?.petImages?.length">
+            <img :src="selectedPetImageUrl" class="w-full h-full object-cover rounded-lg" />
           </div>
         </div>
 
