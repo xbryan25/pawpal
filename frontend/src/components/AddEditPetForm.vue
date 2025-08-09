@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { reactive, onMounted, ref, watch, type Ref } from 'vue'
+import { reactive, onMounted, ref, watch, type Ref, defineProps, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast, POSITION } from 'vue-toastification'
 
@@ -17,6 +17,30 @@ interface NewPet {
   shelter: string
   petPhotos: File[]
 }
+
+interface PetImage {
+  imageUrl: string
+  sortOrder: number
+}
+
+interface ExistingPet {
+  name: string
+  birthDate: string
+  sex: string
+  status: string
+  description: string
+  breed: string
+  species: string
+  shelter: string
+  petPhotos: PetImage[]
+}
+
+interface Props {
+  mode: string
+  petId?: string
+}
+
+const props = defineProps<Props>()
 
 const newPetForm = reactive<NewPet>({
   name: '',
@@ -35,6 +59,8 @@ const toast = useToast()
 const isLoading: Ref<boolean> = ref(false)
 const router = useRouter()
 
+const existingPetImages = ref<PetImage[]>([])
+
 const selectedBreed = ref<string>('')
 let breeds: { breed_id: string; breed_name: string }[] = []
 const breed_names: Ref<string[]> = ref<string[]>([])
@@ -46,6 +72,34 @@ const species_names: Ref<string[]> = ref<string[]>([])
 const selectedShelter = ref<string>('')
 let shelters: { shelter_id: string; name: string }[] = []
 const shelter_names: Ref<string[]> = ref<string[]>([])
+
+const ready = ref(false)
+
+function loadPetForEdit(existing: ExistingPet) {
+  newPetForm.name = existing.name
+  newPetForm.birthDate = formatDateForInput(existing.birthDate)
+  newPetForm.sex = existing.sex
+  newPetForm.status = existing.status
+  newPetForm.description = existing.description
+
+  newPetForm.species = existing.species
+  selectedSpecies.value = newPetForm.species
+
+  newPetForm.breed = existing.breed
+  selectedBreed.value = newPetForm.breed
+
+  newPetForm.shelter = existing.shelter
+  selectedShelter.value = newPetForm.shelter
+
+  existingPetImages.value = existing.petPhotos
+}
+
+function formatDateForInput(dateString: string): string {
+  // Returns YYYY-MM-DD
+
+  const date = new Date(dateString)
+  return date.toISOString().split('T')[0]
+}
 
 const handleSubmit = async () => {
   isLoading.value = true
@@ -172,15 +226,26 @@ watch(selectedSpecies, async (newVal) => {
 
 onMounted(async () => {
   try {
-    // const breed_response = await axios.get(`${apiUrl}/breed/list`)
-    const species_response = await axios.get(`${apiUrl}/species/list`)
-    const shelter_response = await axios.get(`${apiUrl}/shelter/list`)
+    const speciesResponse = await axios.get(`${apiUrl}/species/list`)
+    const shelterResponse = await axios.get(`${apiUrl}/shelter/list`)
 
-    species = species_response.data
+    species = speciesResponse.data
     species_names.value = species.map((species_singular) => species_singular.species_name)
 
-    shelters = shelter_response.data
+    shelters = shelterResponse.data
     shelter_names.value = shelters.map((shelter) => shelter.name)
+
+    if (props.mode === 'edit-pet') {
+      const petDetailsResponse = await axios.get(`${apiUrl}/pets/get-details`, {
+        params: {
+          petId: props.petId,
+        },
+      })
+
+      loadPetForEdit(petDetailsResponse.data)
+    }
+
+    ready.value = true
   } catch (error) {
     console.error('Error retrieving data from backend', error)
   }
@@ -191,7 +256,8 @@ onMounted(async () => {
   <section class="relative h-[90vh] w-[87vw]">
     <div class="flex flex-col">
       <div class="p-5 h-full">
-        <h1 class="text-6xl font-semibold">Add Pet</h1>
+        <h1 class="text-6xl font-semibold" v-if="props.mode === 'add-pet'">Add Pet</h1>
+        <h1 class="text-6xl font-semibold" v-else>Edit Pet</h1>
       </div>
 
       <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
@@ -215,6 +281,7 @@ onMounted(async () => {
               <div class="flex-1">
                 <h3 class="text-lg font-semibold">Species</h3>
                 <SearchableCombobox
+                  v-if="ready"
                   v-model="selectedSpecies"
                   :options="species_names"
                   placeholder="Select a species"
@@ -225,6 +292,7 @@ onMounted(async () => {
               <div class="flex-1">
                 <h3 class="text-lg font-semibold">Breed</h3>
                 <SearchableCombobox
+                  v-if="ready"
                   v-model="selectedBreed"
                   :options="breed_names"
                   placeholder="Select a breed"
@@ -262,6 +330,7 @@ onMounted(async () => {
             <div>
               <h3 class="text-lg font-semibold">Shelter</h3>
               <SearchableCombobox
+                v-if="ready"
                 v-model="selectedShelter"
                 :options="shelter_names"
                 placeholder="Select a shelter"

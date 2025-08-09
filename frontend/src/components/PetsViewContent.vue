@@ -29,8 +29,6 @@ onMounted(async () => {
     petList.value = response.data
 
     dummyFramesToLoad.value = 10 - petList.value.length
-
-    console.log(petList.value)
   } catch (error) {
     console.error('Error retrieving pet list', error)
   }

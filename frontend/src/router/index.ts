@@ -65,12 +65,17 @@ const routes: RouteRecordRaw[] = [
       name: 'addPetView',
       component: AddEditPetView,
       meta: { title: 'Add Pet' },
+      props: { mode: 'add-pet' }
     },
     {
-      path: '/pets/edit-pet/:id',
+      path: '/pets/edit-pet',
       name: 'editPetView',
       component: AddEditPetView,
       meta: { title: 'Add Pet' },
+      props: route => ({
+        mode: 'edit-pet',
+        petId: route.query.petId
+      })
     },
   ]
 
