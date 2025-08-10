@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { useToast, POSITION } from 'vue-toastification'
 
 import SearchableCombobox from './SearchableCombobox.vue'
+import ImageInput from './ImageInput.vue'
 
 interface NewPet {
   name: string
@@ -415,6 +416,8 @@ onMounted(async () => {
                 />
               </div>
             </div>
+
+            <ImageInput :mode="'add'" />
           </div>
         </div>
 
