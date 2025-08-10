@@ -2,17 +2,37 @@
 import { defineEmits, defineProps, ref } from 'vue'
 
 interface Props {
-  mode: string
+  mode?: string
+  index?: number
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'selectImage', petImageUrl: string): void
+  (e: 'deleteImage'): void
 }>()
 
 const selectedImage = ref()
 const selectedImageFileName = ref('')
+
+const numberToOrdinal = (index: number | undefined) => {
+  if (!index) {
+    return 'Error'
+  }
+
+  if (index == 1) {
+    return 'First'
+  } else if (index == 2) {
+    return 'Second'
+  } else if (index == 3) {
+    return 'Third'
+  } else if (index == 4) {
+    return 'Fourth'
+  } else if (index == 5) {
+    return 'Fifth'
+  }
+}
 
 function openFilePicker(accept: string[] = [], multiple = false) {
   return new Promise<FileList | null>((resolve) => {
@@ -41,15 +61,18 @@ async function handleSelectFile() {
   if (file) {
     selectedImage.value = file[0]
     selectedImageFileName.value = file[0].name
-    console.log(selectedImage.value)
     emit('selectImage', selectedImage.value)
   }
+}
+
+const deleteImage = () => {
+  emit('deleteImage')
 }
 </script>
 
 <template>
   <div>
-    <h3 class="text-lg font-semibold">Sixth Photo</h3>
+    <h3 class="text-lg font-semibold">{{ numberToOrdinal(props.index) }} Photo</h3>
     <div class="flex gap-4 h-10 border-1 border-gray-300 rounded-sm">
       <div class="flex rounded-xs w-[6.65rem]">
         <div class="flex-1 flex justify-center items-center border-r-1 border-gray-300">
@@ -60,6 +83,7 @@ async function handleSelectFile() {
             width="24px"
             fill="#000000"
             class="cursor-pointer"
+            @click="deleteImage"
           >
             <path
               d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
@@ -69,7 +93,7 @@ async function handleSelectFile() {
 
         <div
           class="flex-1 flex justify-center items-center border-r-1 border-gray-300"
-          v-if="props.mode === 'add'"
+          v-if="props.mode === 'edit'"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

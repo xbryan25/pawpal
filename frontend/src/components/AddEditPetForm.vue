@@ -16,7 +16,7 @@ interface NewPet {
   breed: string
   species: string
   shelter: string
-  petPhotos: File[]
+  petImages: File[]
 }
 
 interface PetImage {
@@ -33,7 +33,7 @@ interface ExistingPet {
   breed: string
   species: string
   shelter: string
-  petPhotos: PetImage[]
+  petImages: PetImage[]
 }
 
 interface Props {
@@ -52,7 +52,7 @@ const newPetForm = reactive<NewPet>({
   breed: '',
   species: '',
   shelter: '',
-  petPhotos: [],
+  petImages: [],
 })
 
 const apiUrl = import.meta.env.VITE_API_URL
@@ -76,6 +76,10 @@ const shelter_names: Ref<string[]> = ref<string[]>([])
 
 const ready = ref(false)
 
+const counter = ref(1)
+const counterLowerLimit = ref(1)
+const showAddImageInput = ref(false)
+
 function loadPetForEdit(existing: ExistingPet) {
   newPetForm.name = existing.name
   newPetForm.birthDate = formatDateForInput(existing.birthDate)
@@ -92,7 +96,8 @@ function loadPetForEdit(existing: ExistingPet) {
   newPetForm.shelter = existing.shelter
   selectedShelter.value = newPetForm.shelter
 
-  existingPetImages.value = existing.petPhotos
+  existingPetImages.value = existing.petImages
+  counterLowerLimit.value = existingPetImages.value.length
 }
 
 function formatDateForInput(dateString: string): string {
@@ -126,7 +131,7 @@ const handleSubmit = async () => {
     shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || '',
   )
 
-  newPetForm.petPhotos.forEach((file, index) => {
+  newPetForm.petImages.forEach((file, index) => {
     petFormData.append('petPhotos', file)
   })
 
@@ -179,6 +184,37 @@ const handleSubmit = async () => {
   }
 }
 
+function test(imageFile: File) {
+  console.log(imageFile)
+}
+
+const setShowAddImageInput = (state: boolean) => {
+  showAddImageInput.value = state
+}
+
+const changeCounter = (operation: string) => {
+  console.log(`counter.value ${counter.value}`)
+  console.log(`counterLowerLimit.value ${counterLowerLimit.value}`)
+
+  if (operation == 'add' && !showAddImageInput.value) {
+    setShowAddImageInput(true)
+    return
+  } else if (
+    operation == 'subtract' &&
+    showAddImageInput.value &&
+    counter.value == counterLowerLimit.value
+  ) {
+    setShowAddImageInput(false)
+    return
+  }
+
+  if (operation == 'add' && counter.value < 5) {
+    counter.value++
+  } else if (operation == 'subtract' && counter.value > counterLowerLimit.value) {
+    counter.value--
+  }
+}
+
 function handlePhotoChange(event: Event, index: number) {
   const input = event.target as HTMLInputElement
 
@@ -209,7 +245,7 @@ function handlePhotoChange(event: Event, index: number) {
     return
   }
 
-  newPetForm.petPhotos[index] = file
+  newPetForm.petImages[index] = file
 }
 
 watch(selectedSpecies, async (newVal) => {
@@ -343,7 +379,7 @@ onMounted(async () => {
               <h3 class="text-lg font-semibold">Description</h3>
               <textarea
                 v-model="newPetForm.description"
-                class="dui-textarea resize-none w-full"
+                class="dui-textarea resize-none w-full h-24"
                 placeholder="Bio"
                 :disabled="isLoading"
               ></textarea>
@@ -351,73 +387,25 @@ onMounted(async () => {
           </div>
 
           <div class="flex flex-col gap-4 flex-1">
-            <div>
-              <h3 class="text-lg font-semibold">First Photo</h3>
-              <div>
-                <input
-                  type="file"
-                  class="dui-file-input w-full"
-                  accept="image/*"
-                  required
-                  @change="(e) => handlePhotoChange(e, 0)"
-                  :disabled="isLoading"
-                />
-              </div>
-            </div>
-
-            <div>
-              <h3 class="text-lg font-semibold">Second Photo</h3>
-              <div>
-                <input
-                  type="file"
-                  class="dui-file-input w-full"
-                  accept="image/*"
-                  @change="(e) => handlePhotoChange(e, 1)"
-                  :disabled="isLoading"
-                />
-              </div>
-            </div>
-
-            <div>
-              <h3 class="text-lg font-semibold">Third Photo</h3>
-              <div>
-                <input
-                  type="file"
-                  class="dui-file-input w-full"
-                  accept="image/*"
-                  @change="(e) => handlePhotoChange(e, 2)"
-                  :disabled="isLoading"
-                />
-              </div>
-            </div>
-
-            <div>
-              <h3 class="text-lg font-semibold">Fourth Photo</h3>
-              <div>
-                <input
-                  type="file"
-                  class="dui-file-input w-full"
-                  accept="image/*"
-                  @change="(e) => handlePhotoChange(e, 3)"
-                  :disabled="isLoading"
-                />
-              </div>
-            </div>
-
-            <div>
-              <h3 class="text-lg font-semibold">Fifth Photo</h3>
-              <div>
-                <input
-                  type="file"
-                  class="dui-file-input w-full"
-                  accept="image/*"
-                  @change="(e) => handlePhotoChange(e, 4)"
-                  :disabled="isLoading"
-                />
-              </div>
-            </div>
-
-            <ImageInput :mode="'add'" />
+            <ImageInput
+              v-if="existingPetImages.length > 0"
+              v-for="n in existingPetImages.length"
+              :key="n"
+              :mode="'edit'"
+              :index="n"
+              @selectImage="(file) => console.log(file)"
+              @deleteImage="() => changeCounter('subtract')"
+            />
+            <ImageInput
+              v-if="showAddImageInput"
+              v-for="n in counter"
+              :key="n"
+              :mode="'add'"
+              :index="n + existingPetImages.length"
+              @selectImage="(file) => console.log(file)"
+              @deleteImage="() => changeCounter('subtract')"
+            />
+            <button class="dui-btn" type="button" @click="changeCounter('add')">+</button>
           </div>
         </div>
 
