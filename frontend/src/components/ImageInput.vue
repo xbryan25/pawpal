@@ -3,6 +3,7 @@ import { defineEmits, defineProps, ref } from 'vue'
 
 interface Props {
   mode?: string
+  imageUrl?: any
   index?: number
 }
 
@@ -14,7 +15,9 @@ const emit = defineEmits<{
 }>()
 
 const selectedImage = ref()
-const selectedImageFileName = ref('')
+const selectedImageFileName = ref(props.imageUrl)
+
+console.log(props.imageUrl)
 
 const numberToOrdinal = (index: number | undefined) => {
   if (!index) {
@@ -71,9 +74,9 @@ const deleteImage = () => {
 </script>
 
 <template>
-  <div>
+  <div class="">
     <h3 class="text-lg font-semibold">{{ numberToOrdinal(props.index) }} Photo</h3>
-    <div class="flex gap-4 h-10 border-1 border-gray-300 rounded-sm">
+    <div class="flex gap-4 h-10 border-1 border-gray-300 rounded-sm pr-4">
       <div class="flex rounded-xs w-[6.65rem]">
         <div class="flex-1 flex justify-center items-center border-r-1 border-gray-300">
           <svg
@@ -126,7 +129,9 @@ const deleteImage = () => {
         </div>
       </div>
 
-      <div class="flex-1 flex items-center text-sm">
+      <div
+        class="flex-1 flex items-center text-sm truncate whitespace-nowrap overflow-x-scroll overflow-y-hidden scrollbar-hide"
+      >
         {{ selectedImageFileName || 'No file chosen' }}
       </div>
     </div>

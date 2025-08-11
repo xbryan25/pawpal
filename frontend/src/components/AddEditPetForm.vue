@@ -96,7 +96,15 @@ function loadPetForEdit(existing: ExistingPet) {
   newPetForm.shelter = existing.shelter
   selectedShelter.value = newPetForm.shelter
 
-  existingPetImages.value = existing.petImages
+  // Map each field to convert from snakecase to camelcase
+  existingPetImages.value = existing.petImages.map((img: any) => ({
+    imageUrl: img.image_url,
+    sortOrder: img.sort_order,
+  }))
+
+  console.log('bacon')
+  console.log(existingPetImages.value)
+
   counterLowerLimit.value = existingPetImages.value.length
 }
 
@@ -298,7 +306,7 @@ onMounted(async () => {
       </div>
 
       <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
-        <div class="flex flex-1 pt-15 px-15 gap-20">
+        <div class="flex flex-1 pt-15 px-15 gap-20 w-full">
           <div class="flex flex-col gap-4 flex-1">
             <div>
               <h3 class="text-lg font-semibold">Pet Name</h3>
@@ -386,12 +394,13 @@ onMounted(async () => {
             </div>
           </div>
 
-          <div class="flex flex-col gap-4 flex-1">
+          <div class="flex flex-col min-w-0 gap-4 flex-1">
             <ImageInput
               v-if="existingPetImages.length > 0"
               v-for="n in existingPetImages.length"
               :key="n"
               :mode="'edit'"
+              :imageUrl="existingPetImages[n - 1]?.imageUrl"
               :index="n"
               @selectImage="(file) => console.log(file)"
               @deleteImage="() => changeCounter('subtract')"
