@@ -69,8 +69,7 @@ const toast = useToast()
 const isLoading: Ref<boolean> = ref(false)
 const router = useRouter()
 
-const existingPetImages = ref<PetImage[]>([])
-
+let originalImageSlots: ImageSlot[] = []
 const imageSlots = ref<ImageSlot[]>([])
 
 const selectedBreed = ref<string>('')
@@ -87,9 +86,8 @@ const shelter_names: Ref<string[]> = ref<string[]>([])
 
 const ready = ref(false)
 
-const counter = ref(1)
-const counterLowerLimit = ref(1)
-const showAddImageInput = ref(false)
+const isAddImageInputDisabled = ref(false)
+const hasNoImageChanges = ref(true)
 
 function loadPetForEdit(existing: ExistingPet) {
   newPetForm.name = existing.name
@@ -115,11 +113,16 @@ function loadPetForEdit(existing: ExistingPet) {
     sortOrder: img.sort_order,
   }))
 
-  while (imageSlots.value.length < 5) {
-    imageSlots.value.push({ id: uuid.v4(), mode: 'add' })
-  }
+  originalImageSlots = existing.petImages.map((img: any) => ({
+    id: uuid.v4(),
+    mode: 'edit',
+    imageUrl: img.image_url,
+    sortOrder: img.sort_order,
+  }))
 
-  counterLowerLimit.value = existingPetImages.value.length
+  // while (imageSlots.value.length < 5) {
+  //   imageSlots.value.push({ id: uuid.v4(), mode: 'add' })
+  // }
 }
 
 function formatDateForInput(dateString: string): string {
@@ -206,37 +209,6 @@ const handleSubmit = async () => {
   }
 }
 
-function test(imageFile: File) {
-  console.log(imageFile)
-}
-
-const setShowAddImageInput = (state: boolean) => {
-  showAddImageInput.value = state
-}
-
-const changeCounter = (operation: string, index?: number | undefined) => {
-  console.log(`counter.value ${counter.value}`)
-  console.log(`counterLowerLimit.value ${counterLowerLimit.value}`)
-
-  if (operation == 'add' && !showAddImageInput.value) {
-    setShowAddImageInput(true)
-    return
-  } else if (
-    operation == 'subtract' &&
-    showAddImageInput.value &&
-    counter.value == counterLowerLimit.value
-  ) {
-    setShowAddImageInput(false)
-    return
-  }
-
-  if (operation == 'add' && counter.value < 5) {
-    counter.value++
-  } else if (operation == 'subtract' && counter.value > counterLowerLimit.value) {
-    counter.value--
-  }
-}
-
 function handlePhotoChange(event: Event, index: number) {
   const input = event.target as HTMLInputElement
 
@@ -271,7 +243,8 @@ function handlePhotoChange(event: Event, index: number) {
 }
 
 function selectImage(index: number, file: File) {
-  console.log(imageSlots.value)
+  compareCurrentImageSlotsToOriginal()
+
   const newSlots = [...imageSlots.value]
   newSlots[index] = {
     id: uuid.v4(),
@@ -286,6 +259,10 @@ function selectImage(index: number, file: File) {
 
 // User deletes image at slot #1 (index 0)
 function deleteImage(index: number) {
+  compareCurrentImageSlotsToOriginal()
+
+  isAddImageInputDisabled.value = false
+
   const newSlots = [...imageSlots.value]
 
   if (newSlots.length > 1) {
@@ -298,6 +275,8 @@ function deleteImage(index: number) {
 }
 
 function addImageInput() {
+  compareCurrentImageSlotsToOriginal()
+
   const newSlots = [...imageSlots.value]
 
   if (newSlots.length < 5) {
@@ -307,9 +286,27 @@ function addImageInput() {
     })
   }
 
+  if (newSlots.length == 5) {
+    isAddImageInputDisabled.value = true
+  }
+
   imageSlots.value = newSlots
 
   console.log(imageSlots.value)
+}
+
+function resetImageInput() {
+  const newSlots = [...originalImageSlots]
+
+  imageSlots.value = newSlots
+
+  hasNoImageChanges.value = true
+}
+
+const compareCurrentImageSlotsToOriginal = () => {
+  hasNoImageChanges.value =
+    imageSlots.value.length === originalImageSlots.length &&
+    imageSlots.value.every((val, index) => val === originalImageSlots[index])
 }
 
 watch(selectedSpecies, async (newVal) => {
@@ -461,7 +458,45 @@ onMounted(async () => {
               @selectImage="(file) => selectImage(index, file)"
               @deleteImage="() => deleteImage(index)"
             />
-            <button class="dui-btn" type="button" @click="addImageInput">+</button>
+
+            <div class="flex px-[40%] gap-[5%]">
+              <button
+                :disabled="isAddImageInputDisabled"
+                class="flex-1 dui-btn dui-tooltip disabled:opacity-50"
+                data-tip="Add image input"
+                type="button"
+                @click="addImageInput"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#000000"
+                >
+                  <path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z" />
+                </svg>
+              </button>
+              <button
+                :disabled="hasNoImageChanges"
+                class="flex-1 dui-btn dui-tooltip disabled:opacity-50"
+                data-tip="Reset changes"
+                type="button"
+                @click="resetImageInput"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="24px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#000000"
+                >
+                  <path
+                    d="m656-120-56-56 84-84-84-84 56-56 84 84 84-84 56 56-83 84 83 84-56 56-84-83-84 83Zm-176 0q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q11 0 20.5-.5T520-203v81q-10 1-19.5 1.5t-20.5.5ZM120-560v-240h80v94q51-64 124.5-99T480-840q150 0 255 105t105 255h-80q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120Zm414 190-94-94v-216h80v184l56 56-42 70Z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
