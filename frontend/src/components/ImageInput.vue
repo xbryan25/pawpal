@@ -4,20 +4,21 @@ import { defineEmits, defineProps, ref } from 'vue'
 interface Props {
   mode?: string
   imageUrl?: any
+  fileName?: string
   index?: number
 }
 
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  (e: 'selectImage', petImageUrl: string): void
-  (e: 'deleteImage'): void
+  (e: 'selectImage', imageLocation: File): void
+  (e: 'deleteImage', index: number | undefined): void
 }>()
 
 const selectedImage = ref()
-const selectedImageFileName = ref(props.imageUrl)
+const selectedImageFileName = ref(props.imageUrl || props.fileName)
 
-console.log(props.imageUrl)
+console.log('props.mode ' + props.mode)
 
 const numberToOrdinal = (index: number | undefined) => {
   if (!index) {
@@ -64,12 +65,13 @@ async function handleSelectFile() {
   if (file) {
     selectedImage.value = file[0]
     selectedImageFileName.value = file[0].name
-    emit('selectImage', selectedImage.value)
+
+    emit('selectImage', file[0])
   }
 }
 
 const deleteImage = () => {
-  emit('deleteImage')
+  emit('deleteImage', props.index)
 }
 
 const viewImage = () => {

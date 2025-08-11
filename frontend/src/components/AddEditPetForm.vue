@@ -3,6 +3,7 @@ import axios from 'axios'
 import { reactive, onMounted, ref, watch, type Ref, defineProps, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast, POSITION } from 'vue-toastification'
+import * as uuid from 'uuid'
 
 import SearchableCombobox from './SearchableCombobox.vue'
 import ImageInput from './ImageInput.vue'
@@ -41,6 +42,14 @@ interface Props {
   petId?: string
 }
 
+interface ImageSlot {
+  id: string
+  mode: 'edit' | 'add'
+  imageUrl?: string
+  file?: File
+  sortOrder?: number
+}
+
 const props = defineProps<Props>()
 
 const newPetForm = reactive<NewPet>({
@@ -61,6 +70,8 @@ const isLoading: Ref<boolean> = ref(false)
 const router = useRouter()
 
 const existingPetImages = ref<PetImage[]>([])
+
+const imageSlots = ref<ImageSlot[]>([])
 
 const selectedBreed = ref<string>('')
 let breeds: { breed_id: string; breed_name: string }[] = []
@@ -97,13 +108,16 @@ function loadPetForEdit(existing: ExistingPet) {
   selectedShelter.value = newPetForm.shelter
 
   // Map each field to convert from snakecase to camelcase
-  existingPetImages.value = existing.petImages.map((img: any) => ({
+  imageSlots.value = existing.petImages.map((img: any) => ({
+    id: uuid.v4(),
+    mode: 'edit',
     imageUrl: img.image_url,
     sortOrder: img.sort_order,
   }))
 
-  console.log('bacon')
-  console.log(existingPetImages.value)
+  while (imageSlots.value.length < 5) {
+    imageSlots.value.push({ id: uuid.v4(), mode: 'add' })
+  }
 
   counterLowerLimit.value = existingPetImages.value.length
 }
@@ -200,7 +214,7 @@ const setShowAddImageInput = (state: boolean) => {
   showAddImageInput.value = state
 }
 
-const changeCounter = (operation: string) => {
+const changeCounter = (operation: string, index?: number | undefined) => {
   console.log(`counter.value ${counter.value}`)
   console.log(`counterLowerLimit.value ${counterLowerLimit.value}`)
 
@@ -254,6 +268,48 @@ function handlePhotoChange(event: Event, index: number) {
   }
 
   newPetForm.petImages[index] = file
+}
+
+function selectImage(index: number, file: File) {
+  console.log(imageSlots.value)
+  const newSlots = [...imageSlots.value]
+  newSlots[index] = {
+    id: uuid.v4(),
+    mode: 'add',
+    file,
+  }
+
+  imageSlots.value = newSlots
+
+  console.log(imageSlots.value)
+}
+
+// User deletes image at slot #1 (index 0)
+function deleteImage(index: number) {
+  const newSlots = [...imageSlots.value]
+
+  if (newSlots.length > 1) {
+    newSlots.splice(index, 1)
+
+    imageSlots.value = newSlots
+  }
+
+  console.log(imageSlots.value)
+}
+
+function addImageInput() {
+  const newSlots = [...imageSlots.value]
+
+  if (newSlots.length < 5) {
+    newSlots.push({
+      id: uuid.v4(),
+      mode: 'add',
+    })
+  }
+
+  imageSlots.value = newSlots
+
+  console.log(imageSlots.value)
 }
 
 watch(selectedSpecies, async (newVal) => {
@@ -396,25 +452,16 @@ onMounted(async () => {
 
           <div class="flex flex-col min-w-0 gap-4 flex-1">
             <ImageInput
-              v-if="existingPetImages.length > 0"
-              v-for="n in existingPetImages.length"
-              :key="n"
-              :mode="'edit'"
-              :imageUrl="existingPetImages[n - 1]?.imageUrl"
-              :index="n"
-              @selectImage="(file) => console.log(file)"
-              @deleteImage="() => changeCounter('subtract')"
+              v-for="(image, index) in imageSlots"
+              :key="image.id"
+              :mode="image.mode"
+              :imageUrl="image.imageUrl"
+              :fileName="image?.file?.name"
+              :index="index + 1"
+              @selectImage="(file) => selectImage(index, file)"
+              @deleteImage="() => deleteImage(index)"
             />
-            <ImageInput
-              v-if="showAddImageInput"
-              v-for="n in counter"
-              :key="n"
-              :mode="'add'"
-              :index="n + existingPetImages.length"
-              @selectImage="(file) => console.log(file)"
-              @deleteImage="() => changeCounter('subtract')"
-            />
-            <button class="dui-btn" type="button" @click="changeCounter('add')">+</button>
+            <button class="dui-btn" type="button" @click="addImageInput">+</button>
           </div>
         </div>
 
