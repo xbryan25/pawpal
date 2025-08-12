@@ -48,6 +48,7 @@ interface ImageSlot {
   imageUrl?: string
   file?: File
   sortOrder?: number
+  resetCounter: number
 }
 
 const props = defineProps<Props>()
@@ -111,6 +112,7 @@ function loadPetForEdit(existing: ExistingPet) {
     mode: 'edit',
     imageUrl: img.image_url,
     sortOrder: img.sort_order,
+    resetCounter: 0,
   }))
 
   originalImageSlots = existing.petImages.map((img: any) => ({
@@ -118,11 +120,8 @@ function loadPetForEdit(existing: ExistingPet) {
     mode: 'edit',
     imageUrl: img.image_url,
     sortOrder: img.sort_order,
+    resetCounter: 0,
   }))
-
-  // while (imageSlots.value.length < 5) {
-  //   imageSlots.value.push({ id: uuid.v4(), mode: 'add' })
-  // }
 }
 
 function formatDateForInput(dateString: string): string {
@@ -209,15 +208,12 @@ const handleSubmit = async () => {
   }
 }
 
-function handlePhotoChange(event: Event, index: number) {
-  const input = event.target as HTMLInputElement
-
-  const file = input.files?.[0]
-
-  if (!file) return
-
+function selectImage(index: number, file: File) {
   const MAX_SIZE_MB = 10
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+
+  console.log('file size')
+  console.log(file.size)
 
   if (file.size > MAX_SIZE_BYTES) {
     toast.error('Images should not exceed 10 MB. Choose another pic.', {
@@ -235,14 +231,15 @@ function handlePhotoChange(event: Event, index: number) {
       rtl: false,
     })
 
-    input.value = ''
+    // Update reset counter so that ImageInput watch() will activate
+
+    imageSlots.value[index].resetCounter = (imageSlots.value[index].resetCounter ?? 0) + 1
+
     return
   }
 
-  newPetForm.petImages[index] = file
-}
+  // newPetForm.petImages[index] = file
 
-function selectImage(index: number, file: File) {
   compareCurrentImageSlotsToOriginal()
 
   const newSlots = [...imageSlots.value]
@@ -250,6 +247,7 @@ function selectImage(index: number, file: File) {
     id: uuid.v4(),
     mode: 'add',
     file,
+    resetCounter: 0,
   }
 
   imageSlots.value = newSlots
@@ -257,7 +255,6 @@ function selectImage(index: number, file: File) {
   console.log(imageSlots.value)
 }
 
-// User deletes image at slot #1 (index 0)
 function deleteImage(index: number) {
   compareCurrentImageSlotsToOriginal()
 
@@ -270,8 +267,6 @@ function deleteImage(index: number) {
 
     imageSlots.value = newSlots
   }
-
-  console.log(imageSlots.value)
 }
 
 function addImageInput() {
@@ -283,6 +278,7 @@ function addImageInput() {
     newSlots.push({
       id: uuid.v4(),
       mode: 'add',
+      resetCounter: 0,
     })
   }
 
@@ -480,6 +476,7 @@ onMounted(async () => {
               :imageUrl="image.imageUrl"
               :fileName="image?.file?.name"
               :index="index + 1"
+              :resetCounter="image.resetCounter"
               @selectImage="(file) => selectImage(index, file)"
               @deleteImage="() => deleteImage(index)"
               @moveImage="(index) => moveImageInput(index)"
@@ -532,7 +529,7 @@ onMounted(async () => {
             type="submit"
             :disabled="isLoading"
           >
-            Create Pet
+            {{ props.mode === 'edit' ? 'Create Pet' : 'Edit Pet' }}
           </button>
         </div>
       </form>

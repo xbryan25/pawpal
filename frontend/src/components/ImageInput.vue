@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { defineEmits, defineProps, ref } from 'vue'
+import { defineEmits, defineProps, ref, watch } from 'vue'
 
 interface Props {
   mode?: string
   imageUrl?: any
   fileName?: string
   index?: number
+  resetCounter: number
 }
 
 const props = defineProps<Props>()
@@ -82,6 +83,15 @@ const viewImage = () => {
 const moveImageUp = () => {
   emit('moveImage', props.index)
 }
+
+watch(
+  () => props.resetCounter,
+  () => {
+    // reset internal state
+    selectedImage.value = null
+    selectedImageFileName.value = ''
+  },
+)
 </script>
 
 <template>
