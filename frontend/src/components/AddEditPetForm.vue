@@ -295,6 +295,31 @@ function addImageInput() {
   console.log(imageSlots.value)
 }
 
+function moveImageInput(index: number | undefined) {
+  const newSlots = [...imageSlots.value]
+
+  console.log(index)
+  console.log('before')
+  console.log(newSlots)
+
+  if (!index) {
+    return
+  } else {
+    index--
+  }
+
+  if (index == 0) {
+    return
+  } else {
+    ;[newSlots[index], newSlots[index - 1]] = [newSlots[index - 1], newSlots[index]]
+  }
+
+  console.log('after')
+  console.log(newSlots)
+
+  imageSlots.value = newSlots
+}
+
 function resetImageInput() {
   const newSlots = [...originalImageSlots]
 
@@ -457,6 +482,7 @@ onMounted(async () => {
               :index="index + 1"
               @selectImage="(file) => selectImage(index, file)"
               @deleteImage="() => deleteImage(index)"
+              @moveImage="(index) => moveImageInput(index)"
             />
 
             <div class="flex px-[40%] gap-[5%]">

@@ -13,6 +13,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'selectImage', imageLocation: File): void
   (e: 'deleteImage', index: number | undefined): void
+  (e: 'moveImage', index: number | undefined): void
 }>()
 
 const selectedImage = ref()
@@ -77,13 +78,17 @@ const deleteImage = () => {
 const viewImage = () => {
   window.open(props.imageUrl, '_blank')
 }
+
+const moveImageUp = () => {
+  emit('moveImage', props.index)
+}
 </script>
 
 <template>
   <div class="">
     <h3 class="text-lg font-semibold">{{ numberToOrdinal(props.index) }} Photo</h3>
     <div class="flex gap-4 h-10 border-1 border-gray-300 rounded-sm pr-4">
-      <div class="flex rounded-xs w-[6.65rem]">
+      <div class="flex rounded-xs w-[9rem]">
         <div class="flex-1 flex justify-center items-center border-r-1 border-gray-300">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -132,6 +137,20 @@ const viewImage = () => {
             <path
               d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"
             />
+          </svg>
+        </div>
+
+        <div class="flex-1 flex justify-center items-center border-r-1 border-gray-300">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="24px"
+            viewBox="0 -960 960 960"
+            width="24px"
+            fill="#000000"
+            class="cursor-pointer"
+            @click="moveImageUp"
+          >
+            <path d="m280-400 200-200 200 200H280Z" />
           </svg>
         </div>
       </div>
