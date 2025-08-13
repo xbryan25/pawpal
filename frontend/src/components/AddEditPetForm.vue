@@ -155,31 +155,53 @@ const handleSubmit = async () => {
     shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || '',
   )
 
-  newPetForm.petImages.forEach((file, index) => {
-    petFormData.append('petPhotos', file)
+  // counter is put outside so that it won't increment if blank image file and image.mode == 'add'
+  let counter: number = 0
+
+  imageSlots.value.forEach((image) => {
+    if (!image.file && image.mode == 'add') {
+      return
+    }
+
+    petFormData.append(
+      `petPhotosMeta-${counter}`,
+      JSON.stringify({
+        mode: image.mode,
+        imageUrl: image.imageUrl,
+        sortOrder: image.sortOrder,
+      }),
+    )
+
+    if (image.file) {
+      petFormData.append(`petPhotosFile-${counter}`, image.file)
+    }
+
+    counter++
   })
 
   try {
-    const response = await axios.post(`${apiUrl}/pets/register-pet`, petFormData)
+    // const response = await axios.post(`${apiUrl}/pets/register-pet`, petFormData)
 
-    const responseMessage: string = response.data.message
+    // const responseMessage: string = response.data.message
 
-    toast.success(responseMessage, {
-      position: POSITION.TOP_RIGHT,
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: true,
-      hideProgressBar: false,
-      closeButton: 'button',
-      icon: true,
-      rtl: false,
-    })
+    // toast.success(responseMessage, {
+    //   position: POSITION.TOP_RIGHT,
+    //   timeout: 5000,
+    //   closeOnClick: true,
+    //   pauseOnFocusLoss: true,
+    //   pauseOnHover: true,
+    //   draggable: true,
+    //   draggablePercent: 0.6,
+    //   showCloseButtonOnHover: true,
+    //   hideProgressBar: false,
+    //   closeButton: 'button',
+    //   icon: true,
+    //   rtl: false,
+    // })
 
-    router.push('/pets/view')
+    // router.push('/pets/view')
+
+    console.log([...petFormData.entries()])
   } catch (error) {
     let errorMessage: string = ''
 
@@ -211,9 +233,6 @@ const handleSubmit = async () => {
 function selectImage(index: number, file: File) {
   const MAX_SIZE_MB = 10
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
-
-  console.log('file size')
-  console.log(file.size)
 
   if (file.size > MAX_SIZE_BYTES) {
     toast.error('Images should not exceed 10 MB. Choose another pic.', {
