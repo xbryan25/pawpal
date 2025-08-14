@@ -4,6 +4,7 @@ from app import db
 from datetime import datetime
 import uuid
 import cloudinary.uploader
+import json
 
 def get_pet_list_controller():
     try:
@@ -46,7 +47,8 @@ def get_pet_details_controller():
                                 'sort_order': sort_order} 
                                 for image_url, sort_order in selected_pet_image_urls_tuples]
 
-    selected_pet_dict = {'name': selected_pet.name, 
+    selected_pet_dict = {'petId': pet_id_str, 
+                         'name': selected_pet.name, 
                          'birthDate': selected_pet.birth_date.strftime("%B %d, %Y"), 
                          'sex': selected_pet.sex.value, 
                          'status': selected_pet.status.value,
@@ -57,7 +59,6 @@ def get_pet_details_controller():
                          'petImages': selected_pet_image_urls}
 
     return jsonify(selected_pet_dict), 201
-
 
 def pet_registration_controller():
     pet_data = request.form
@@ -110,6 +111,95 @@ def pet_registration_controller():
             db.session.add(pet_image)
 
         db.session.commit()
+
+        return jsonify({"message": "Pet registered successfully."}), 201
+
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+def pet_edit_controller():
+    pet_data = request.form
+    pet_images = request.files
+
+    try:
+        pet_id_str = pet_data["petId"]
+
+        current_pet = Pet.query.filter_by(pet_id=uuid.UUID(pet_id_str).bytes).first()
+
+        # First part, edit text data
+        current_pet.name = pet_data["name"]
+        current_pet.birth_date = datetime.strptime(pet_data["birthDate"], "%Y-%m-%d").date()
+        current_pet.sex = pet_data["sex"].lower()
+        current_pet.status = pet_data["status"]
+        current_pet.description = pet_data["description"]
+        current_pet.breed_id = uuid.UUID(pet_data["breedId"]).bytes
+        current_pet.species_id = uuid.UUID(pet_data["speciesId"]).bytes
+        current_pet.shelter_id = uuid.UUID(pet_data["shelterId"]).bytes
+
+        # print(current_pet)
+        # print(current_pet.sex)
+        # print(pet_images)
+
+        # Second part, edit images
+        existing_pet_images = PetImage.query.filter_by(pet_id=uuid.UUID(pet_id_str).bytes).all()
+
+        request_image_urls_meta = {}
+        request_image_urls = []
+
+        for i in range(1, 6):
+            image_meta_str = request.form.get(f"petImagesMeta-{i}")
+
+            if image_meta_str:
+                image_meta = json.loads(image_meta_str)
+
+                image_meta.pop("mode")
+                
+                request_image_urls_meta.update({f"petImagesMeta-{i}": image_meta})
+                request_image_urls.append(image_meta["imageUrl"])
+
+        print(request_image_urls_meta)
+        print(request_image_urls)
+        print(existing_pet_images)
+
+        for existing_pet_image in existing_pet_images:
+            if existing_pet_image.image_url not in request_image_urls:
+                print(f"image with sort order {existing_pet_image.sort_order} not in request_image_urls")
+
+                # Then delete image using cloudinary sdk
+
+        # Then, if there are any request_image_urls, reconfigure with their new sort order
+
+        # Then, upload each new file to cloudinary and create petImage entries
+
+
+        # print(pet_data)
+        # print(existing_pet_images)
+        # files = []
+
+        # for value in pet_images.values():
+        #     files.append(value)
+
+
+        # for index, file in enumerate(files):
+        #     # Create a new uuid just for the image link
+
+        #     result = cloudinary.uploader.upload(
+        #         file,
+        #         public_id=f"{str(uuid.uuid4())}"
+        #     )   
+
+        #     pet_image = PetImage(
+        #         image_url=result['secure_url'],
+        #         uploaded_at=datetime.now(),
+        #         sort_order=index+1,
+        #         pet_id=pet_id
+        #     )
+
+        #     db.session.add(pet_image)
+
+        # db.session.commit()
 
         return jsonify({"message": "Pet registered successfully."}), 201
 

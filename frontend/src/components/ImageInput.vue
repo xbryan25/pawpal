@@ -20,8 +20,6 @@ const emit = defineEmits<{
 const selectedImage = ref()
 const selectedImageFileName = ref(props.imageUrl || props.fileName)
 
-console.log('props.mode ' + props.mode)
-
 const numberToOrdinal = (index: number | undefined) => {
   if (!index) {
     return 'Error'

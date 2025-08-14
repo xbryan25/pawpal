@@ -26,6 +26,7 @@ interface PetImage {
 }
 
 interface ExistingPet {
+  petId: string
   name: string
   birthDate: string
   sex: string
@@ -55,7 +56,8 @@ const props = defineProps<Props>()
 
 console.log('props.mode addeditform ' + props.mode)
 
-const newPetForm = reactive<NewPet>({
+const petForm = reactive<ExistingPet>({
+  petId: '',
   name: '',
   birthDate: '',
   sex: '',
@@ -93,20 +95,21 @@ const isAddImageInputDisabled = ref(false)
 const hasNoImageChanges = ref(true)
 
 function loadPetForEdit(existing: ExistingPet) {
-  newPetForm.name = existing.name
-  newPetForm.birthDate = formatDateForInput(existing.birthDate)
-  newPetForm.sex = existing.sex
-  newPetForm.status = existing.status
-  newPetForm.description = existing.description
+  petForm.petId = existing.petId
+  petForm.name = existing.name
+  petForm.birthDate = formatDateForInput(existing.birthDate)
+  petForm.sex = existing.sex
+  petForm.status = existing.status
+  petForm.description = existing.description
 
-  newPetForm.species = existing.species
-  selectedSpecies.value = newPetForm.species
+  petForm.species = existing.species
+  selectedSpecies.value = petForm.species
 
-  newPetForm.breed = existing.breed
-  selectedBreed.value = newPetForm.breed
+  petForm.breed = existing.breed
+  selectedBreed.value = petForm.breed
 
-  newPetForm.shelter = existing.shelter
-  selectedShelter.value = newPetForm.shelter
+  petForm.shelter = existing.shelter
+  selectedShelter.value = petForm.shelter
 
   // Map each field to convert from snakecase to camelcase
   imageSlots.value = existing.petImages.map((img: any) => ({
@@ -138,11 +141,11 @@ const handleSubmit = async () => {
 
   const petFormData = new FormData()
 
-  petFormData.append('name', newPetForm.name)
-  petFormData.append('birthDate', newPetForm.birthDate)
-  petFormData.append('sex', newPetForm.sex)
-  petFormData.append('status', newPetForm.status)
-  petFormData.append('description', newPetForm.description)
+  petFormData.append('name', petForm.name)
+  petFormData.append('birthDate', petForm.birthDate)
+  petFormData.append('sex', petForm.sex)
+  petFormData.append('status', petForm.status)
+  petFormData.append('description', petForm.description)
   petFormData.append(
     'breedId',
     breeds.find((breed) => breed.breed_name === selectedBreed.value)?.breed_id || '',
@@ -166,7 +169,7 @@ const handleSubmit = async () => {
     }
 
     petFormData.append(
-      `petPhotosMeta-${counter + 1}`,
+      `petImagesMeta-${counter + 1}`,
       JSON.stringify({
         mode: image.mode,
         imageUrl: image.imageUrl,
@@ -175,7 +178,7 @@ const handleSubmit = async () => {
     )
 
     if (image.file) {
-      petFormData.append(`petPhotosFile-${counter + 1}`, image.file)
+      petFormData.append(`petImagesFile-${counter + 1}`, image.file)
     }
 
     counter++
@@ -188,26 +191,40 @@ const handleSubmit = async () => {
   }
 
   try {
-    const response = await axios.post(`${apiUrl}/pets/register-pet`, petFormData)
+    let responseMessage: string = 'Unexpected error.'
 
-    const responseMessage: string = response.data.message
+    if (props.mode == 'add-pet') {
+      const addPetResponse = await axios.post(`${apiUrl}/pets/register-pet`, petFormData)
 
-    toast.success(responseMessage, {
-      position: POSITION.TOP_RIGHT,
-      timeout: 5000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      draggablePercent: 0.6,
-      showCloseButtonOnHover: true,
-      hideProgressBar: false,
-      closeButton: 'button',
-      icon: true,
-      rtl: false,
-    })
+      responseMessage = addPetResponse.data.message
+    } else {
+      petFormData.append('petId', petForm.petId)
 
-    router.push('/pets/view')
+      const editPetResponse = await axios.post(`${apiUrl}/pets/edit-pet`, petFormData)
+
+      responseMessage = editPetResponse.data.message
+
+      console.log(responseMessage)
+    }
+
+    console.log('yo')
+
+    // toast.success(responseMessage, {
+    //   position: POSITION.TOP_RIGHT,
+    //   timeout: 5000,
+    //   closeOnClick: true,
+    //   pauseOnFocusLoss: true,
+    //   pauseOnHover: true,
+    //   draggable: true,
+    //   draggablePercent: 0.6,
+    //   showCloseButtonOnHover: true,
+    //   hideProgressBar: false,
+    //   closeButton: 'button',
+    //   icon: true,
+    //   rtl: false,
+    // })
+
+    // router.push('/pets/view')
   } catch (error) {
     let errorMessage: string = ''
 
@@ -411,7 +428,7 @@ onMounted(async () => {
               <h3 class="text-lg font-semibold">Pet Name</h3>
               <label class="dui-input w-full">
                 <input
-                  v-model="newPetForm.name"
+                  v-model="petForm.name"
                   maxlength="127"
                   type="text"
                   placeholder="e.g. John"
@@ -449,7 +466,7 @@ onMounted(async () => {
               <div class="flex-1">
                 <h3 class="text-lg font-semibold">Sex</h3>
                 <select
-                  v-model="newPetForm.sex"
+                  v-model="petForm.sex"
                   class="dui-select w-full"
                   required
                   :disabled="isLoading"
@@ -462,7 +479,7 @@ onMounted(async () => {
               <div class="flex-1">
                 <h3 class="text-lg font-semibold">Birth Date</h3>
                 <input
-                  v-model="newPetForm.birthDate"
+                  v-model="petForm.birthDate"
                   type="date"
                   class="dui-input w-full px-3 py-2"
                   required
@@ -485,7 +502,7 @@ onMounted(async () => {
             <div>
               <h3 class="text-lg font-semibold">Description</h3>
               <textarea
-                v-model="newPetForm.description"
+                v-model="petForm.description"
                 class="dui-textarea resize-none w-full h-24"
                 placeholder="Bio"
                 :disabled="isLoading"
