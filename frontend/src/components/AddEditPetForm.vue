@@ -53,6 +53,8 @@ interface ImageSlot {
 
 const props = defineProps<Props>()
 
+console.log('props.mode addeditform ' + props.mode)
+
 const newPetForm = reactive<NewPet>({
   name: '',
   birthDate: '',
@@ -164,7 +166,7 @@ const handleSubmit = async () => {
     }
 
     petFormData.append(
-      `petPhotosMeta-${counter}`,
+      `petPhotosMeta-${counter + 1}`,
       JSON.stringify({
         mode: image.mode,
         imageUrl: image.imageUrl,
@@ -173,35 +175,39 @@ const handleSubmit = async () => {
     )
 
     if (image.file) {
-      petFormData.append(`petPhotosFile-${counter}`, image.file)
+      petFormData.append(`petPhotosFile-${counter + 1}`, image.file)
     }
 
     counter++
   })
 
+  // If imageSlots is blank
+  if (counter == 0) {
+    isLoading.value = false
+    return
+  }
+
   try {
-    // const response = await axios.post(`${apiUrl}/pets/register-pet`, petFormData)
+    const response = await axios.post(`${apiUrl}/pets/register-pet`, petFormData)
 
-    // const responseMessage: string = response.data.message
+    const responseMessage: string = response.data.message
 
-    // toast.success(responseMessage, {
-    //   position: POSITION.TOP_RIGHT,
-    //   timeout: 5000,
-    //   closeOnClick: true,
-    //   pauseOnFocusLoss: true,
-    //   pauseOnHover: true,
-    //   draggable: true,
-    //   draggablePercent: 0.6,
-    //   showCloseButtonOnHover: true,
-    //   hideProgressBar: false,
-    //   closeButton: 'button',
-    //   icon: true,
-    //   rtl: false,
-    // })
+    toast.success(responseMessage, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
 
-    // router.push('/pets/view')
-
-    console.log([...petFormData.entries()])
+    router.push('/pets/view')
   } catch (error) {
     let errorMessage: string = ''
 
@@ -548,7 +554,7 @@ onMounted(async () => {
             type="submit"
             :disabled="isLoading"
           >
-            {{ props.mode === 'edit' ? 'Create Pet' : 'Edit Pet' }}
+            {{ props.mode === 'add-pet' ? 'Create Pet' : 'Edit Pet' }}
           </button>
         </div>
       </form>

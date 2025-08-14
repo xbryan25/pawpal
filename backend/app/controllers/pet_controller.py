@@ -64,6 +64,15 @@ def pet_registration_controller():
     pet_images = request.files
 
     try:
+
+        print(pet_data)
+        print(pet_images)
+
+        files = []
+
+        for value in pet_images.values():
+            files.append(value)
+
         pet_id = uuid.uuid4().bytes
 
         new_pet = Pet(
@@ -83,12 +92,12 @@ def pet_registration_controller():
         # This generates the pet_id and inserts it into the DB without committing
         db.session.flush()
 
-        files = pet_images.getlist('petPhotos')  # Get all uploaded files
-
         for index, file in enumerate(files):
+            # Create a new uuid just for the image link
+
             result = cloudinary.uploader.upload(
                 file,
-                public_id=f"{str(uuid.UUID(bytes=pet_id))}-[{index + 1}]"
+                public_id=f"{str(uuid.uuid4())}"
             )   
 
             pet_image = PetImage(
