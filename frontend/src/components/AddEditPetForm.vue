@@ -280,8 +280,6 @@ function selectImage(index: number, file: File) {
     return
   }
 
-  // newPetForm.petImages[index] = file
-
   compareCurrentImageSlotsToOriginal()
 
   const newSlots = [...imageSlots.value]
@@ -336,10 +334,6 @@ function addImageInput() {
 function moveImageInput(index: number | undefined) {
   const newSlots = [...imageSlots.value]
 
-  console.log(index)
-  console.log('before')
-  console.log(newSlots)
-
   if (!index) {
     return
   } else {
@@ -350,10 +344,10 @@ function moveImageInput(index: number | undefined) {
     return
   } else {
     ;[newSlots[index], newSlots[index - 1]] = [newSlots[index - 1], newSlots[index]]
-  }
 
-  console.log('after')
-  console.log(newSlots)
+    newSlots[index].sortOrder = index + 1
+    newSlots[index - 1].sortOrder = index
+  }
 
   imageSlots.value = newSlots
 }
