@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { reactive, onMounted, ref, watch, type Ref, defineProps, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
+import { reactive, onMounted, ref, watch, type Ref, defineProps } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
 import { useToast, POSITION } from 'vue-toastification'
 import * as uuid from 'uuid'
 
@@ -563,9 +563,16 @@ onMounted(async () => {
           </div>
         </div>
 
-        <div class="pt-15 flex justify-center">
+        <div class="pt-15 flex gap-3 justify-center">
+          <RouterLink
+            class="dui-btn dui-btn-soft w-[12%] text-xl"
+            :to="`/pets/view/${props.petId}`"
+          >
+            Cancel
+          </RouterLink>
+
           <button
-            class="dui-btn dui-btn-primary w-[15%] text-xl"
+            class="dui-btn dui-btn-primary w-[12%] text-xl"
             type="submit"
             :disabled="isLoading"
           >
