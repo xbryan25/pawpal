@@ -76,6 +76,8 @@ const handleSubmit = async () => {
       rtl: false,
     })
 
+    console.log(`roleee: ${role}`)
+
     auth.setRole(role)
 
     router.push('/pets/view')

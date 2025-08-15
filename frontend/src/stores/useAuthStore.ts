@@ -5,7 +5,7 @@ export const useAuthStore = defineStore('auth', () => {
   const role = ref<string | null>(null)
 
   const isAdmin = computed(() => role.value === 'admin')
-  const isUser = computed(() => role.value === 'user')
+  const isUser = computed(() => role.value === 'adopter')
   const isShelterStaff = computed(() => role.value === 'shelter_staff')
 
   const setRole = (newRole: string) => {
@@ -24,4 +24,6 @@ export const useAuthStore = defineStore('auth', () => {
     setRole,
     logout
   }
+}, {
+  persist: true
 })
