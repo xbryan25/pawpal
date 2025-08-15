@@ -115,7 +115,7 @@ onMounted(async () => {
               <p class="font-semibold text-white">&nbsp;Available</p>
             </div>
 
-            <div class="flex flex-1 gap-2 justify-end">
+            <div class="flex flex-1 gap-2 justify-end" v-if="auth.isShelterStaff">
               <!-- edit-icon.svg -->
               <RouterLink :to="{ path: '/pets/edit-pet', query: { petId } }">
                 <svg
