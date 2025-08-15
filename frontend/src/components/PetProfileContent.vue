@@ -28,6 +28,9 @@ interface Pet {
 const route = useRoute()
 const auth = useAuthStore()
 
+console.log(`role: ${auth.role}`)
+console.log(`isUser: ${auth.isUser}`)
+
 const petId: string = route.params.id as string
 const selectedPetImageUrl = ref('')
 
