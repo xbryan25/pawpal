@@ -5,6 +5,8 @@ from datetime import datetime
 import uuid
 import cloudinary.uploader
 import json
+from urllib.parse import urlparse
+import os
 
 def get_pet_list_controller():
     try:
@@ -41,7 +43,7 @@ def get_pet_details_controller():
     selected_pet_species = db.session.query(Species.species_name).filter(selected_pet.species_id == Species.species_id).first()[0]
     selected_pet_shelter = db.session.query(Shelter.name).filter(selected_pet.shelter_id == Shelter.shelter_id).first()[0]
 
-    selected_pet_image_urls_tuples = db.session.query(PetImage.image_url, PetImage.sort_order).filter(uuid.UUID(pet_id_str).bytes == PetImage.pet_id).all()
+    selected_pet_image_urls_tuples = db.session.query(PetImage.image_url, PetImage.sort_order).filter(uuid.UUID(pet_id_str).bytes == PetImage.pet_id).order_by(PetImage.sort_order).all()
 
     selected_pet_image_urls = [{'image_url': image_url, 
                                 'sort_order': sort_order} 
@@ -138,13 +140,10 @@ def pet_edit_controller():
         current_pet.species_id = uuid.UUID(pet_data["speciesId"]).bytes
         current_pet.shelter_id = uuid.UUID(pet_data["shelterId"]).bytes
 
-        # print(current_pet)
-        # print(current_pet.sex)
-        # print(pet_images)
-
         # Second part, edit images
         existing_pet_images = PetImage.query.filter_by(pet_id=uuid.UUID(pet_id_str).bytes).all()
 
+        request_image_meta = {}
         request_image_urls_meta = {}
         request_image_urls = []
 
@@ -154,54 +153,67 @@ def pet_edit_controller():
             if image_meta_str:
                 image_meta = json.loads(image_meta_str)
 
-                image_meta.pop("mode")
+                request_image_meta.update({f"petImagesMeta-{i}": image_meta})
+
+                if image_meta["mode"] == 'edit':
+
+                    image_meta.pop("mode")
+                    
+                    request_image_urls_meta.update({f"petImagesMeta-{i}": image_meta})
+                    request_image_urls.append(image_meta["imageUrl"])
                 
-                request_image_urls_meta.update({f"petImagesMeta-{i}": image_meta})
-                request_image_urls.append(image_meta["imageUrl"])
-
-        print(request_image_urls_meta)
-        print(request_image_urls)
-        print(existing_pet_images)
-
+                
         for existing_pet_image in existing_pet_images:
             if existing_pet_image.image_url not in request_image_urls:
                 print(f"image with sort order {existing_pet_image.sort_order} not in request_image_urls")
 
-                # Then delete image using cloudinary sdk
+                try:
+                    path = urlparse(existing_pet_image.image_url).path
+                    public_id_with_version = path.split("/upload/")[1]
+                    public_id_with_extension = os.path.splitext(public_id_with_version)[0]
+                    public_id = "/".join(public_id_with_extension.split("/")[1:])
+                except (IndexError, ValueError) as e:
+                    print(f"Error parsing public_id: {e}")
+                    continue  # Skip deletion if URL is invalid
 
-        # Then, if there are any request_image_urls, reconfigure with their new sort order
+                # Delete from Cloudinary first
+                try:
+                    cloudinary.uploader.destroy(public_id)
+                except Exception as e:
+                    print(f"Cloudinary deletion failed for {public_id}: {e}")
+                    continue  # Skip DB deletion if Cloudinary failed
 
-        # Then, upload each new file to cloudinary and create petImage entries
+                # Delete from DB
+                db.session.delete(existing_pet_image)
 
+        
+        for request_image_url_meta in request_image_urls_meta.values():
+            if "imageUrl" in request_image_url_meta:
+                for existing_pet_image in existing_pet_images:
+                    if request_image_url_meta["imageUrl"] == existing_pet_image.image_url:
 
-        # print(pet_data)
-        # print(existing_pet_images)
-        # files = []
+                        existing_pet_image.sort_order = request_image_url_meta["sortOrder"]
 
-        # for value in pet_images.values():
-        #     files.append(value)
+        for file_number_str, file in pet_images.items():
+            file_number = int(file_number_str.replace('petImagesFile-', ''))
 
+            result = cloudinary.uploader.upload(
+                file,
+                public_id=f"{str(uuid.uuid4())}"
+            )   
 
-        # for index, file in enumerate(files):
-        #     # Create a new uuid just for the image link
+            pet_image = PetImage(
+                image_url=result['secure_url'],
+                uploaded_at=datetime.now(),
+                sort_order=file_number,
+                pet_id=uuid.UUID(pet_id_str).bytes
+            )
 
-        #     result = cloudinary.uploader.upload(
-        #         file,
-        #         public_id=f"{str(uuid.uuid4())}"
-        #     )   
+            db.session.add(pet_image)
 
-        #     pet_image = PetImage(
-        #         image_url=result['secure_url'],
-        #         uploaded_at=datetime.now(),
-        #         sort_order=index+1,
-        #         pet_id=pet_id
-        #     )
+        db.session.commit()
 
-        #     db.session.add(pet_image)
-
-        # db.session.commit()
-
-        return jsonify({"message": "Pet registered successfully."}), 201
+        return jsonify({"message": "Pet edited successfully."}), 201
 
     except Exception as e:
         print(e)

@@ -48,7 +48,7 @@ interface ImageSlot {
   mode: 'edit' | 'add'
   imageUrl?: string
   file?: File
-  sortOrder?: number
+  sortOrder: number
   resetCounter: number
 }
 
@@ -207,24 +207,26 @@ const handleSubmit = async () => {
       console.log(responseMessage)
     }
 
-    console.log('yo')
+    toast.success(responseMessage, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
 
-    // toast.success(responseMessage, {
-    //   position: POSITION.TOP_RIGHT,
-    //   timeout: 5000,
-    //   closeOnClick: true,
-    //   pauseOnFocusLoss: true,
-    //   pauseOnHover: true,
-    //   draggable: true,
-    //   draggablePercent: 0.6,
-    //   showCloseButtonOnHover: true,
-    //   hideProgressBar: false,
-    //   closeButton: 'button',
-    //   icon: true,
-    //   rtl: false,
-    // })
-
-    // router.push('/pets/view')
+    if (props.mode == 'add-pet') {
+      router.push('/pets/view')
+    } else {
+      router.push(`/pets/view/${props.petId}`)
+    }
   } catch (error) {
     let errorMessage: string = ''
 
@@ -287,6 +289,7 @@ function selectImage(index: number, file: File) {
     id: uuid.v4(),
     mode: 'add',
     file,
+    sortOrder: index + 1,
     resetCounter: 0,
   }
 
@@ -318,6 +321,7 @@ function addImageInput() {
     newSlots.push({
       id: uuid.v4(),
       mode: 'add',
+      sortOrder: newSlots.length,
       resetCounter: 0,
     })
   }

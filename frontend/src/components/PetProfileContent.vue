@@ -60,6 +60,8 @@ onMounted(async () => {
     // while response.data gives what Pet interface wants, this approach is careless, will improve this soon
     Object.assign(selectedPet, response.data)
 
+    console.log(selectedPet.petImages)
+
     selectedPetImageUrl.value = selectedPet.petImages[0].image_url
   } catch (error) {
     console.error('Error retrieving pet details', error)
