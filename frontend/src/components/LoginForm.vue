@@ -53,10 +53,11 @@ const handleSubmit = async () => {
 
     const accessToken = response.data.access_token
     const role = response.data.user_role
+    const userId = response.data.user_id
 
     cookies.set('access_token', accessToken, {
       path: '/',
-      maxAge: 60 * 15, // Per minute
+      maxAge: 60 * 15, // Per minute * 15, so 15 mins
       sameSite: 'strict',
       secure: isSecure,
     })
@@ -78,7 +79,7 @@ const handleSubmit = async () => {
 
     console.log(`roleee: ${role}`)
 
-    auth.setRole(role)
+    auth.setAuth(role, userId)
 
     router.push('/pets/view')
   } catch (error: unknown) {

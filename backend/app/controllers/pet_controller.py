@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.models import Pet, PetImage, Shelter, Breed, Species
-from app import db
+from app.extensions import db
 from datetime import datetime
 import uuid
 import cloudinary.uploader
@@ -219,3 +219,11 @@ def pet_edit_controller():
         print(e)
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+    
+def pet_adoption_controller():
+    data = request.json
+
+
+    print(data)
+
+    return jsonify({"message": "Pet edited successfully."}), 201

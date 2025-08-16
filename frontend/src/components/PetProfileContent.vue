@@ -52,6 +52,18 @@ function handleSelectPhoto(petImageUrl: string) {
   selectedPetImageUrl.value = petImageUrl
 }
 
+const adoptPet = async () => {
+  console.log(`petId: ${petId}`)
+  console.log(`userId: ${auth.userId}`)
+
+  const adoptionApplicationDetails = {
+    petId: petId,
+    userId: auth.userId,
+  }
+
+  const response = await axios.post(`${apiUrl}/pets/adopt-pet`, adoptionApplicationDetails)
+}
+
 onMounted(async () => {
   try {
     const response = await axios.get(`${apiUrl}/pets/get-details`, {
@@ -194,7 +206,11 @@ onMounted(async () => {
           <!-- This blank div is for spacing purposes -->
           <div class="flex-1"></div>
 
-          <button class="h-[10%] bg-gray-200 font-bold text-3xl dui-btn" v-if="auth.isUser">
+          <button
+            class="h-[10%] bg-gray-200 font-bold text-3xl dui-btn"
+            v-if="auth.isUser"
+            @click="adoptPet"
+          >
             Adopt
           </button>
         </div>
