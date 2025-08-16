@@ -8,7 +8,7 @@ import json
 from urllib.parse import urlparse
 import os
 
-from app.services import adopt_pet, check_if_pet_has_been_adopter_by_user
+from app.services import adopt_pet, check_if_pet_has_been_adopter_by_user, cancel_pet_adoption
 
 def get_pet_list_controller():
     try:
@@ -225,10 +225,62 @@ def pet_edit_controller():
 def pet_adoption_controller():
     data = request.json
 
-    user_id = uuid.UUID(data["userId"]).bytes
-    pet_id = uuid.UUID(data["petId"]).bytes
+    try: 
 
-    if not check_if_pet_has_been_adopter_by_user(user_id, pet_id):
-        adopt_pet(user_id=user_id, pet_id=pet_id)
+        user_id = uuid.UUID(data["userId"]).bytes
+        pet_id = uuid.UUID(data["petId"]).bytes
 
-    return jsonify({"message": "Adoption application was successfully made."}), 201 
+        if not check_if_pet_has_been_adopter_by_user(user_id, pet_id):
+            adopt_pet(user_id=user_id, pet_id=pet_id)
+
+            return jsonify({"message": "Adoption application was successfully made."}), 201 
+
+        else:
+            return jsonify({"error": "Pet has already been adopted."}), 500 
+    
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+    
+def cancel_pet_adoption_controller():
+    data = request.json
+
+    try: 
+
+        user_id = uuid.UUID(data["userId"]).bytes
+        pet_id = uuid.UUID(data["petId"]).bytes
+
+        adoption_application = check_if_pet_has_been_adopter_by_user(user_id, pet_id)
+
+        if adoption_application:
+            cancel_pet_adoption(adoption_application)
+
+            return jsonify({"message": "Adoption application was successfully cancelled."}), 201 
+        
+        else: 
+            return jsonify({"error": "Adoption application has already been cancelled."}), 500
+    
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+def get_adoption_status_controller():
+
+    pet_id_str = request.args.get('petId')
+    user_id_str = request.args.get('userId')
+    
+    try: 
+        user_id = uuid.UUID(user_id_str).bytes
+        pet_id = uuid.UUID(pet_id_str).bytes
+
+        if check_if_pet_has_been_adopter_by_user(user_id, pet_id):
+            return jsonify({"adoptionStatus": "adopted"}), 201 
+        else:
+            return jsonify({"adoptionStatus": "notAdopted"}), 201 
+
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

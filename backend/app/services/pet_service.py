@@ -16,16 +16,20 @@ def adopt_pet(user_id, pet_id):
     db.session.add(new_adoption_application)
     db.session.commit()
 
+def cancel_pet_adoption(adoption_application):
+    adoption_application.status = 'cancelled'
+    db.session.commit()
+
 
 def check_if_pet_has_been_adopter_by_user(user_id, pet_id):
 
-    current_pet = AdoptionApplication.query.filter(
+    adoption_application = AdoptionApplication.query.filter(
         AdoptionApplication.user_id == user_id,
         AdoptionApplication.pet_id == pet_id,
         AdoptionApplication.status != "cancelled"
     ).first()
 
-    if current_pet:
-        return True
+    if adoption_application:
+        return adoption_application
     else:
         return False
