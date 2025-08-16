@@ -24,6 +24,7 @@ class PetStatusEnum(enum.Enum):
     pending = "pending"
     adopted = "adopted"
     unavailable = "unavailable"
+    cancelled = "cancelled"
 
 
 class ApplicationStatusEnum(enum.Enum):

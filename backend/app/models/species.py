@@ -1,5 +1,5 @@
 from sqlalchemy.dialects.mysql import BINARY, ENUM
-from app import db
+from app.extensions import db
 
 import uuid
 

@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token
 from app.services.user_service import authenticate_user
 from app.models.user import User
 from app.models.shelter import Shelter
-from app import db
+from app.extensions import db
 from datetime import datetime
 import uuid
 
@@ -27,7 +27,8 @@ def user_login_controller():
 
     return jsonify({
         "access_token": access_token,
-        "user_role": user_role
+        "user_role": user_role,
+        "user_id": uuid_str
     }), 200
 
 

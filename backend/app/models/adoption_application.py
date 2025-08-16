@@ -1,4 +1,4 @@
-from app import db
+from app.extensions import db
 from sqlalchemy.dialects.mysql import BINARY, ENUM
 from sqlalchemy import DateTime
 
@@ -17,7 +17,7 @@ class AdoptionApplication(db.Model):
                        nullable=False)
 
     application_date = db.Column(DateTime, nullable=False)
-    decision_date = db.Column(DateTime, nullable=False)
+    decision_date = db.Column(DateTime, nullable=True)
 
     user_id = db.Column(
         BINARY(16),

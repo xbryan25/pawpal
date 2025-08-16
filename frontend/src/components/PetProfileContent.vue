@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
 import PetProfileImageCard from './PetProfileImageCard.vue'
@@ -27,14 +28,19 @@ interface Pet {
 
 const route = useRoute()
 const auth = useAuthStore()
-
-console.log(`role: ${auth.role}`)
-console.log(`isUser: ${auth.isUser}`)
+const toast = useToast()
 
 const petId: string = route.params.id as string
 const selectedPetImageUrl = ref('')
 
 const apiUrl: string = import.meta.env.VITE_API_URL
+
+const adoptionStatus = ref('')
+
+const adoptionApplicationDetails = {
+  petId: petId,
+  userId: auth.userId,
+}
 
 const selectedPet = reactive<Pet>({
   name: '',
@@ -52,20 +58,128 @@ function handleSelectPhoto(petImageUrl: string) {
   selectedPetImageUrl.value = petImageUrl
 }
 
+const adoptPet = async () => {
+  try {
+    const response = await axios.post(`${apiUrl}/pets/adopt-pet`, adoptionApplicationDetails)
+
+    const responseMessage = response.data.message
+
+    toast.success(responseMessage, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+
+    adoptionStatus.value = 'adopted'
+  } catch (error) {
+    let errorMessage: string = ''
+
+    if (axios.isAxiosError(error) && error.response) {
+      errorMessage = error.response.data.error
+    } else {
+      errorMessage = 'Unexpected error.'
+    }
+
+    toast.error(`Failed to create an adoption application. ${errorMessage}`, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+  }
+}
+
+const cancelPetAdoption = async () => {
+  try {
+    const response = await axios.post(
+      `${apiUrl}/pets/cancel-pet-adoption`,
+      adoptionApplicationDetails,
+    )
+
+    const responseMessage = response.data.message
+
+    toast.success(responseMessage, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+
+    adoptionStatus.value = 'notAdopted'
+  } catch (error) {
+    let errorMessage: string = ''
+
+    if (axios.isAxiosError(error) && error.response) {
+      errorMessage = error.response.data.error
+    } else {
+      errorMessage = 'Unexpected error.'
+    }
+
+    toast.error(`Failed to cancel the adoption application. ${errorMessage}`, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+  }
+}
+
 onMounted(async () => {
   try {
-    const response = await axios.get(`${apiUrl}/pets/get-details`, {
+    const petDetailsResponse = await axios.get(`${apiUrl}/pets/get-details`, {
       params: {
         petId: petId,
       },
     })
 
-    // while response.data gives what Pet interface wants, this approach is careless, will improve this soon
-    Object.assign(selectedPet, response.data)
+    const adoptionStatusResponse = await axios.get(`${apiUrl}/pets/get-adoption-status`, {
+      params: {
+        petId: petId,
+        userId: auth.userId,
+      },
+    })
 
-    console.log(selectedPet.petImages)
+    // while response.data gives what Pet interface wants, this approach is careless, will improve this soon
+    Object.assign(selectedPet, petDetailsResponse.data)
 
     selectedPetImageUrl.value = selectedPet.petImages[0].image_url
+
+    adoptionStatus.value = adoptionStatusResponse.data.adoptionStatus
+
+    console.log(`adoption status: ${adoptionStatus.value}`)
   } catch (error) {
     console.error('Error retrieving pet details', error)
   }
@@ -115,7 +229,7 @@ onMounted(async () => {
               <p class="font-semibold text-white">&nbsp;Available</p>
             </div>
 
-            <div class="flex flex-1 gap-2 justify-end">
+            <div class="flex flex-1 gap-2 justify-end" v-if="auth.isShelterStaff">
               <!-- edit-icon.svg -->
               <RouterLink :to="{ path: '/pets/edit-pet', query: { petId } }">
                 <svg
@@ -194,8 +308,20 @@ onMounted(async () => {
           <!-- This blank div is for spacing purposes -->
           <div class="flex-1"></div>
 
-          <button class="h-[10%] bg-gray-200 font-bold text-3xl dui-btn" v-if="auth.isUser">
+          <button
+            class="h-[10%] bg-gray-200 font-bold text-3xl dui-btn"
+            v-if="auth.isUser && adoptionStatus == 'notAdopted'"
+            @click="adoptPet"
+          >
             Adopt
+          </button>
+
+          <button
+            class="h-[10%] bg-gray-200 font-bold text-3xl dui-btn"
+            v-if="auth.isUser && adoptionStatus == 'adopted'"
+            @click="cancelPetAdoption"
+          >
+            Cancel adoption
           </button>
         </div>
       </div>
