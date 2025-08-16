@@ -1,3 +1,4 @@
 from .pet_service import adopt_pet, check_if_pet_has_been_adopter_by_user, cancel_pet_adoption
 from .cloudinary_service import configure_cloudinary
 from .user_service import authenticate_user
+from .adoption_application_service import get_num_of_adoption_applications

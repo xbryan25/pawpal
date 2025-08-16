@@ -36,10 +36,24 @@ const selectedPetImageUrl = ref('')
 const apiUrl: string = import.meta.env.VITE_API_URL
 
 const adoptionStatus = ref('')
+const numOfAdoptionApplications = ref(0)
 
 const adoptionApplicationDetails = {
   petId: petId,
   userId: auth.userId,
+}
+
+const fetchNumOfApplications = async () => {
+  const numOfApplicationsResponse = await axios.get(
+    `${apiUrl}/adoption-applications/get-pet-adoption-applications_num`,
+    {
+      params: {
+        petId: petId,
+      },
+    },
+  )
+
+  numOfAdoptionApplications.value = numOfApplicationsResponse.data.count
 }
 
 const selectedPet = reactive<Pet>({
@@ -80,6 +94,8 @@ const adoptPet = async () => {
     })
 
     adoptionStatus.value = 'adopted'
+
+    await fetchNumOfApplications()
   } catch (error) {
     let errorMessage: string = ''
 
@@ -131,6 +147,8 @@ const cancelPetAdoption = async () => {
     })
 
     adoptionStatus.value = 'notAdopted'
+
+    await fetchNumOfApplications()
   } catch (error) {
     let errorMessage: string = ''
 
@@ -172,14 +190,14 @@ onMounted(async () => {
       },
     })
 
+    await fetchNumOfApplications()
+
     // while response.data gives what Pet interface wants, this approach is careless, will improve this soon
     Object.assign(selectedPet, petDetailsResponse.data)
 
     selectedPetImageUrl.value = selectedPet.petImages[0].image_url
 
     adoptionStatus.value = adoptionStatusResponse.data.adoptionStatus
-
-    console.log(`adoption status: ${adoptionStatus.value}`)
   } catch (error) {
     console.error('Error retrieving pet details', error)
   }
@@ -281,7 +299,7 @@ onMounted(async () => {
 
               <div class="flex-1">
                 <p class="font-bold text-xl">Adoption Applications</p>
-                <p class="pl-5 font-semibold">??? (Not yet implemented)</p>
+                <p class="pl-5 font-semibold">{{ numOfAdoptionApplications }}</p>
               </div>
             </div>
 
