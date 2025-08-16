@@ -1,7 +1,7 @@
 from flask import request, jsonify
 
 from app.models.shelter import Shelter
-from app import db
+from app.extensions import db
 import uuid
 
 

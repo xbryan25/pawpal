@@ -3,11 +3,12 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
 
+from .extensions import db
+
 from .config import Config
 
-from .services.cloudinary_service import configure_cloudinary
+from .services import configure_cloudinary
 
-db = SQLAlchemy()
 jwt = JWTManager()
 
 
