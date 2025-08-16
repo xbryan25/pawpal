@@ -4,10 +4,7 @@ from app.extensions import db
 import uuid
 from datetime import datetime
 
-def adopt_pet(user_id_str, pet_id_str):
-
-    user_id = uuid.UUID(user_id_str).bytes
-    pet_id = uuid.UUID(pet_id_str).bytes
+def adopt_pet(user_id, pet_id):
 
     new_adoption_application = AdoptionApplication(
         status="pending",

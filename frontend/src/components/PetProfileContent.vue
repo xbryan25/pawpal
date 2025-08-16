@@ -2,6 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
 import PetProfileImageCard from './PetProfileImageCard.vue'
@@ -27,9 +28,7 @@ interface Pet {
 
 const route = useRoute()
 const auth = useAuthStore()
-
-console.log(`role: ${auth.role}`)
-console.log(`isUser: ${auth.isUser}`)
+const toast = useToast()
 
 const petId: string = route.params.id as string
 const selectedPetImageUrl = ref('')
@@ -62,6 +61,23 @@ const adoptPet = async () => {
   }
 
   const response = await axios.post(`${apiUrl}/pets/adopt-pet`, adoptionApplicationDetails)
+
+  const responseMessage = response.data.message
+
+  toast.success(responseMessage, {
+    position: POSITION.TOP_RIGHT,
+    timeout: 5000,
+    closeOnClick: true,
+    pauseOnFocusLoss: true,
+    pauseOnHover: true,
+    draggable: true,
+    draggablePercent: 0.6,
+    showCloseButtonOnHover: true,
+    hideProgressBar: false,
+    closeButton: 'button',
+    icon: true,
+    rtl: false,
+  })
 }
 
 onMounted(async () => {

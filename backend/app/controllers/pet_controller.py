@@ -8,6 +8,8 @@ import json
 from urllib.parse import urlparse
 import os
 
+from app.services import adopt_pet, check_if_pet_has_been_adopter_by_user
+
 def get_pet_list_controller():
     try:
         pets = db.session.query(Pet.pet_id, Pet.name, Pet.status, Pet.shelter_id).all()
@@ -223,7 +225,10 @@ def pet_edit_controller():
 def pet_adoption_controller():
     data = request.json
 
+    user_id = uuid.UUID(data["userId"]).bytes
+    pet_id = uuid.UUID(data["petId"]).bytes
 
-    print(data)
+    if not check_if_pet_has_been_adopter_by_user(user_id, pet_id):
+        adopt_pet(user_id=user_id, pet_id=pet_id)
 
-    return jsonify({"message": "Pet edited successfully."}), 201
+    return jsonify({"message": "Adoption application was successfully made."}), 201 
