@@ -1,12 +1,48 @@
 <script setup lang="ts">
+import { onMounted, ref, type Ref } from 'vue'
+import axios from 'axios'
+
+import { useAuthStore } from '@/stores/useAuthStore'
+
 import SearchAndSortHeader from './SearchAndSortHeader.vue'
 import TableRow from './TableRow.vue'
 
-import samplePet1 from '@/assets/images/sample-pet-1.jpg'
-import samplePet2 from '@/assets/images/sample-pet-2.jpg'
-import samplePet3 from '@/assets/images/sample-pet-3.jpg'
-import samplePet4 from '@/assets/images/sample-pet-4.jpg'
-import samplePet5 from '@/assets/images/sample-pet-5.webp'
+interface AdoptionApplicationDetails {
+  applicationDate: string
+  petFirstImageUrl: string
+  petName: string
+  shelterName: string
+  status: string
+}
+
+const apiUrl = import.meta.env.VITE_API_URL
+
+const auth = useAuthStore()
+
+const adoptionApplications: Ref<AdoptionApplicationDetails[]> = ref([])
+
+onMounted(async () => {
+  try {
+    const adoptionApplicationsResponse = await axios.get(
+      `${apiUrl}/adoption-applications/get-adopter-applications`,
+      {
+        params: {
+          userId: auth.userId,
+        },
+      },
+    )
+
+    adoptionApplicationsResponse.data.adopterApplications.forEach(
+      (adoptionApplication: AdoptionApplicationDetails) => {
+        adoptionApplications.value.push(adoptionApplication)
+      },
+    )
+
+    console.log(adoptionApplications.value)
+  } catch (error) {
+    console.error('Error retrieving data from backend', error)
+  }
+})
 </script>
 
 <template>
@@ -18,7 +54,6 @@ import samplePet5 from '@/assets/images/sample-pet-5.webp'
 
       <div class="overflow-x-auto">
         <table class="dui-table">
-          <!-- head -->
           <thead>
             <tr>
               <th class="text-center text-2xl w-1/2">Pet</th>
@@ -27,11 +62,15 @@ import samplePet5 from '@/assets/images/sample-pet-5.webp'
             </tr>
           </thead>
           <tbody>
-            <TableRow />
-            <TableRow />
-            <TableRow />
-            <TableRow />
-            <TableRow />
+            <TableRow
+              v-for="(adoptionApplication, index) in adoptionApplications"
+              :key="index"
+              :applicationDate="adoptionApplication.applicationDate"
+              v-bind:petFirstImageUrl="adoptionApplication.petFirstImageUrl"
+              :petName="adoptionApplication.petName"
+              :shelterName="adoptionApplication.shelterName"
+              :status="adoptionApplication.status"
+            />
           </tbody>
         </table>
       </div>
