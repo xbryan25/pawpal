@@ -25,8 +25,6 @@ def get_adopter_applications_controller():
 
         adopterApplications = getAdopterApplications(userId)
 
-        print(adopterApplications)
-
         return jsonify({"adopterApplications": adopterApplications}), 200
 
     except Exception as e:

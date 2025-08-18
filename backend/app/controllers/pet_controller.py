@@ -70,9 +70,6 @@ def pet_registration_controller():
 
     try:
 
-        print(pet_data)
-        print(pet_images)
-
         files = []
 
         for value in pet_images.values():

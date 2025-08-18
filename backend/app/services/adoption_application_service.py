@@ -28,6 +28,7 @@ def getAdopterApplications(user_id):
         first_pet_image = PetImage.query.filter(PetImage.pet_id == pet_id, PetImage.sort_order == 1).first()
 
         adoption_application_dict = {
+            "petId": str(uuid.UUID(bytes=pet_id)),
             "petFirstImageUrl": first_pet_image.image_url,
             "petName": pet_details.name,
             "shelterName": shelter_details.name,

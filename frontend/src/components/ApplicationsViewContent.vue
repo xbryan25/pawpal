@@ -8,6 +8,7 @@ import SearchAndSortHeader from './SearchAndSortHeader.vue'
 import TableRow from './TableRow.vue'
 
 interface AdoptionApplicationDetails {
+  petId: string
   applicationDate: string
   petFirstImageUrl: string
   petName: string
@@ -65,6 +66,7 @@ onMounted(async () => {
             <TableRow
               v-for="(adoptionApplication, index) in adoptionApplications"
               :key="index"
+              :petId="adoptionApplication.petId"
               :applicationDate="adoptionApplication.applicationDate"
               v-bind:petFirstImageUrl="adoptionApplication.petFirstImageUrl"
               :petName="adoptionApplication.petName"
