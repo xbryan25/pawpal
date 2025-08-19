@@ -1,4 +1,6 @@
-from .pet_service import adopt_pet, check_if_user_has_adoption_application, cancel_pet_adoption
+from .pet_service import PetService
+from .user_service import UserService
+from .adoption_application_service import AdoptionApplicationService
+from .breed_service import BreedService
+
 from .cloudinary_service import configure_cloudinary
-from .user_service import authenticate_user
-from .adoption_application_service import get_num_of_adoption_applications, getAdopterApplications

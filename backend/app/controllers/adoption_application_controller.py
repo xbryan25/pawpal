@@ -1,32 +1,45 @@
 from flask import request, jsonify
 import uuid
 
-from app.services import get_num_of_adoption_applications, getAdopterApplications
+from app.services import AdoptionApplicationService
 
 
-def get_num_of_pet_adoption_applications_controller():
-    try:
+class AdoptionApplicationController:
 
-        pet_id = uuid.UUID(request.args.get("petId")).bytes
+    @staticmethod
+    def get_num_of_pet_adoption_applications_controller():
+        
+        pet_id_str = request.args.get("petId")
 
-        num_of_adoption_applications = get_num_of_adoption_applications(pet_id)
+        if not pet_id_str:
+            return jsonify({"error": "petId is required"}), 400
 
-        return jsonify({"count": num_of_adoption_applications}), 200
+        try:
+            pet_id = uuid.UUID(pet_id_str).bytes
 
-    except Exception as e:
-        print(e)
-        return jsonify({"error": str(e)}), 500
+            num_of_adoption_applications = AdoptionApplicationService.get_num_of_adoption_applications(pet_id)
 
+            return jsonify({"count": num_of_adoption_applications}), 200
 
-def get_adopter_applications_controller():
-    try:
+        except Exception as e:
+            print(e)
+            return jsonify({"error": str(e)}), 500
 
-        userId = uuid.UUID(request.args.get("userId")).bytes
+    @staticmethod
+    def get_adopter_applications_controller():
 
-        adopterApplications = getAdopterApplications(userId)
+        user_id_str = request.args.get("petId")
 
-        return jsonify({"adopterApplications": adopterApplications}), 200
+        if not user_id_str:
+            return jsonify({"error": "petId is required"}), 400
 
-    except Exception as e:
-        print(e)
-        return jsonify({"error": str(e)}), 500
+        try:
+            userId = uuid.UUID(user_id_str).bytes
+
+            adopterApplications = AdoptionApplicationService.getAdopterApplications(userId)
+
+            return jsonify({"adopterApplications": adopterApplications}), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({"error": str(e)}), 500

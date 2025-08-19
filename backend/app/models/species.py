@@ -1,4 +1,4 @@
-from sqlalchemy.dialects.mysql import BINARY, ENUM
+from sqlalchemy.dialects.mysql import BINARY
 from app.extensions import db
 
 import uuid

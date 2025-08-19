@@ -1,20 +1,19 @@
-from flask import request, jsonify
+from flask import jsonify
 
-from app.models.shelter import Shelter
 from app.extensions import db
-import uuid
 
 
-def get_shelter_list_controller():
-    try:
-        shelters = db.session.query(Shelter.shelter_id, Shelter.name).all()
+class ShelterController:
+    
+    @staticmethod
+    def get_shelter_list_controller():
+        try:
+            shelters_list = True
 
-        shelters_list = [{'shelter_id': str(uuid.UUID(bytes=shelter_id)), 'name': name} for shelter_id, name in shelters]
+            return jsonify(shelters_list), 200
 
-        return jsonify(shelters_list), 200
-
-    except Exception as e:
-        print(e)
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+            return jsonify({"error": str(e)}), 500
 

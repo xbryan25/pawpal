@@ -1,13 +1,13 @@
-from flask import Blueprint, jsonify, request
-from app.controllers import get_num_of_pet_adoption_applications_controller, get_adopter_applications_controller
+from flask import Blueprint
+from app.controllers import AdoptionApplicationController 
 
 adoption_application_bp = Blueprint("adoption_application_bp", __name__)
 
 
 @adoption_application_bp.route("/get-pet-adoption-applications_num", methods=["GET"])
 def get_num_of_pet_adoption_applications():
-    return get_num_of_pet_adoption_applications_controller()
+    return AdoptionApplicationController.get_num_of_pet_adoption_applications_controller()
 
 @adoption_application_bp.route("/get-adopter-applications", methods=["GET"])
 def get_adopter_applications():
-    return get_adopter_applications_controller()
+    return AdoptionApplicationController.get_adopter_applications_controller()
