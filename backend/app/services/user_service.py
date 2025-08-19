@@ -1,5 +1,11 @@
+from flask import jsonify
+
 from app.models.user import User
-from werkzeug.security import check_password_hash
+from app.extensions import db
+
+from datetime import datetime
+import uuid
+
 
 class UserService:
 
@@ -9,3 +15,36 @@ class UserService:
         if user and user.check_password(password):
             return user
         return None
+
+    @staticmethod
+    def get_user_role(email):
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            role = user.role
+            return role.value
+        else:
+            return None
+        
+    @staticmethod
+    def user_signup(new_user_data):
+        if User.query.filter_by(email=new_user_data["email"]).first():
+            return jsonify({"error": "Email already exists"}), 409
+
+        new_user = User(
+            name=f"{new_user_data['firstName']} {new_user_data['lastName']}",
+            gender=new_user_data["gender"],
+            address=new_user_data["address"],
+            phone_number=new_user_data["phoneNumber"],
+            birth_date=datetime.strptime(new_user_data["birthDate"], "%Y-%m-%d").date(),
+            email=new_user_data["email"],
+            role=new_user_data["role"],
+            profile_url="https://placehold.co/128x128",
+            shelter_id=None if new_user_data["role"] == "adopter" else uuid.UUID(new_user_data.get("shelterId")).bytes
+        )
+
+        # password.setter gets triggered
+        new_user.password = new_user_data["password"]
+
+        db.session.add(new_user)
+        db.session.commit()

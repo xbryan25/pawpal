@@ -1,7 +1,7 @@
-import uuid
-from datetime import datetime
 
 from app.models import AdoptionApplication, Pet, Shelter, PetImage
+
+import uuid
 
 class AdoptionApplicationService:
 

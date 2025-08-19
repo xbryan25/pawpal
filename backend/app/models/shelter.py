@@ -1,5 +1,5 @@
 from app.extensions import db
-from sqlalchemy.dialects.mysql import BINARY, ENUM
+from sqlalchemy.dialects.mysql import BINARY
 from sqlalchemy import DateTime
 
 import uuid
