@@ -36,9 +36,29 @@ class AdoptionApplicationController:
         try:
             userId = uuid.UUID(user_id_str).bytes
 
-            adopterApplications = AdoptionApplicationService.getAdopterApplications(userId)
+            adopterApplications = AdoptionApplicationService.get_adopter_applications(userId)
 
             return jsonify({"adopterApplications": adopterApplications}), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({"error": str(e)}), 500
+
+    @staticmethod
+    def get_shelter_applications_controller():
+
+        shelter_id_str = request.args.get("shelterId")
+
+        if not shelter_id_str:
+            return jsonify({"error": "shelterId is required"}), 400
+
+        try:
+
+            shelter_id = uuid.UUID(shelter_id_str).bytes
+
+            shelterApplications = AdoptionApplicationService.get_shelter_applications(shelter_id)
+
+            return jsonify({"shelterApplications": shelterApplications}), 200
 
         except Exception as e:
             print(e)

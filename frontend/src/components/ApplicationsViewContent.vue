@@ -8,6 +8,9 @@ import SearchAndSortHeader from './SearchAndSortHeader.vue'
 import TableRow from './TableRow.vue'
 
 interface AdoptionApplicationDetails {
+  userId?: string
+  userName?: string
+  userProfileUrl?: string
   petId: string
   applicationDate: string
   petFirstImageUrl: string
@@ -21,37 +24,41 @@ const apiUrl = import.meta.env.VITE_API_URL
 const auth = useAuthStore()
 
 const adoptionApplications: Ref<AdoptionApplicationDetails[]> = ref([])
-const shelterApplications = ref([])
 
 onMounted(async () => {
   try {
-    if (auth.isUser) {
-      const adoptionApplicationsResponse = await axios.get(
-        `${apiUrl}/adoption-applications/get-adopter-applications`,
-        {
-          params: {
-            userId: auth.userId,
-          },
-        },
-      )
+    let apiUrlExtension: string = ''
+    let params = {}
 
+    if (auth.isUser) {
+      apiUrlExtension = '/adoption-applications/get-adopter-applications'
+
+      params = { userId: auth.userId }
+    } else {
+      apiUrlExtension = '/adoption-applications/get-shelter-applications'
+
+      params = { shelterId: auth.shelterId }
+    }
+
+    const adoptionApplicationsResponse = await axios.get(`${apiUrl}${apiUrlExtension}`, {
+      params: params,
+    })
+
+    if (auth.isUser) {
       adoptionApplicationsResponse.data.adopterApplications.forEach(
         (adoptionApplication: AdoptionApplicationDetails) => {
           adoptionApplications.value.push(adoptionApplication)
         },
       )
-    } else if (auth.isShelterStaff) {
-      const adoptionApplicationsResponse = await axios.get(
-        `${apiUrl}/adoption-applications/get-shelter-applications`,
-        {
-          params: {
-            shelterId: auth.shelterId,
-          },
+    } else {
+      adoptionApplicationsResponse.data.shelterApplications.forEach(
+        (adoptionApplication: AdoptionApplicationDetails) => {
+          adoptionApplications.value.push(adoptionApplication)
         },
       )
-
-      console.log(adoptionApplicationsResponse.data)
     }
+
+    console.log(adoptionApplicationsResponse.data)
 
     // console.log(adoptionApplications.value)
   } catch (error) {
