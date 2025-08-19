@@ -17,12 +17,22 @@ class UserService:
         return None
 
     @staticmethod
-    def get_user_role(email):
-        user = User.query.filter_by(email=email).first()
+    def get_user_role(user_id):
+        user = User.query.filter(User.user_id == user_id).first()
 
         if user:
             role = user.role
             return role.value
+        else:
+            return None
+        
+    @staticmethod
+    def get_shelter_id_from_shelter_staff(user_id):
+        user = User.query.filter(User.user_id == user_id).first()
+
+        if user:
+            shelter_id = user.shelter_id
+            return shelter_id
         else:
             return None
         

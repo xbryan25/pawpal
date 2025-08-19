@@ -21,25 +21,39 @@ const apiUrl = import.meta.env.VITE_API_URL
 const auth = useAuthStore()
 
 const adoptionApplications: Ref<AdoptionApplicationDetails[]> = ref([])
+const shelterApplications = ref([])
 
 onMounted(async () => {
   try {
-    const adoptionApplicationsResponse = await axios.get(
-      `${apiUrl}/adoption-applications/get-adopter-applications`,
-      {
-        params: {
-          userId: auth.userId,
+    if (auth.isUser) {
+      const adoptionApplicationsResponse = await axios.get(
+        `${apiUrl}/adoption-applications/get-adopter-applications`,
+        {
+          params: {
+            userId: auth.userId,
+          },
         },
-      },
-    )
+      )
 
-    adoptionApplicationsResponse.data.adopterApplications.forEach(
-      (adoptionApplication: AdoptionApplicationDetails) => {
-        adoptionApplications.value.push(adoptionApplication)
-      },
-    )
+      adoptionApplicationsResponse.data.adopterApplications.forEach(
+        (adoptionApplication: AdoptionApplicationDetails) => {
+          adoptionApplications.value.push(adoptionApplication)
+        },
+      )
+    } else if (auth.isShelterStaff) {
+      const adoptionApplicationsResponse = await axios.get(
+        `${apiUrl}/adoption-applications/get-shelter-applications`,
+        {
+          params: {
+            shelterId: auth.shelterId,
+          },
+        },
+      )
 
-    console.log(adoptionApplications.value)
+      console.log(adoptionApplicationsResponse.data)
+    }
+
+    // console.log(adoptionApplications.value)
   } catch (error) {
     console.error('Error retrieving data from backend', error)
   }

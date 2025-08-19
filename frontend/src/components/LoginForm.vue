@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { withDefaults, defineProps, reactive } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import axios, { AxiosError } from 'axios'
+import axios from 'axios'
 import Cookies from 'universal-cookie'
 import { useToast, POSITION } from 'vue-toastification'
 import { useAuthStore } from '@/stores/useAuthStore'
@@ -51,9 +51,10 @@ const handleSubmit = async () => {
   try {
     const response = await axios.post(`${apiUrl}/user/login`, userCredentials)
 
-    const accessToken = response.data.access_token
-    const role = response.data.user_role
-    const userId = response.data.user_id
+    const accessToken = response.data.accessToken
+    const role = response.data.userRole
+    const userId = response.data.userid
+    const shelterId = response.data.shelterId
 
     cookies.set('access_token', accessToken, {
       path: '/',
@@ -79,7 +80,7 @@ const handleSubmit = async () => {
 
     console.log(`roleee: ${role}`)
 
-    auth.setAuth(role, userId)
+    auth.setAuth(role, userId, shelterId)
 
     router.push('/pets/view')
   } catch (error: unknown) {
@@ -204,7 +205,7 @@ const handleSubmit = async () => {
         >
       </p>
 
-      <p v-else="">
+      <p v-else>
         Are you an adopter?<RouterLink to="/user/login" class="ml-1 font-bold text-violet-500"
           >Sign In Here</RouterLink
         >

@@ -18,21 +18,25 @@ class UserController:
 
         try:
             user = UserService.authenticate_user(email, password)
+            
 
             if not user:
                 return jsonify({"error": "Invalid credentials."}), 401
             elif user.role.value != login_type:
                 return jsonify({"error": "Invalid login type."}), 401
-
-            user_id_str = str(uuid.UUID(bytes=user.user_id))
+            
+            user_id = user.user_id
+            user_id_str = str(uuid.UUID(bytes=user_id))
             access_token = create_access_token(identity=user_id_str)
 
-            user_role = UserService.get_user_role(email)
+            user_role = UserService.get_user_role(user_id)
+            shelter_id = UserService.get_shelter_id_from_shelter_staff(user_id)
 
             return jsonify({
-                "access_token": access_token,
-                "user_role": user_role,
-                "user_id": user_id_str
+                "accessToken": access_token,
+                "userRole": user_role,
+                "userId": user_id_str,
+                "shelterId": str(uuid.UUID(bytes=shelter_id)) if shelter_id else None
             }), 200
         
         except Exception as e:
