@@ -78,15 +78,18 @@ onMounted(async () => {
         <table class="dui-table">
           <thead>
             <tr>
-              <th class="text-center text-2xl w-1/2">Pet</th>
-              <th class="text-center text-2xl">Application Date</th>
-              <th class="text-center text-2xl">Application Status</th>
+              <th class="text-center text-2xl w-1/4" v-if="auth.isShelterStaff">Adopter</th>
+              <th class="text-center text-2xl w-1/4">Pet</th>
+              <th class="text-center text-2xl w-1/4">Application Date</th>
+              <th class="text-center text-2xl w-1/4">Application Status</th>
             </tr>
           </thead>
           <tbody>
             <TableRow
               v-for="(adoptionApplication, index) in adoptionApplications"
               :key="index"
+              :userName="adoptionApplication.userName"
+              :userProfileUrl="adoptionApplication.userProfileUrl"
               :petId="adoptionApplication.petId"
               :applicationDate="adoptionApplication.applicationDate"
               v-bind:petFirstImageUrl="adoptionApplication.petFirstImageUrl"
