@@ -28,10 +28,10 @@ class AdoptionApplicationController:
     @staticmethod
     def get_adopter_applications_controller():
 
-        user_id_str = request.args.get("petId")
+        user_id_str = request.args.get("userId")
 
         if not user_id_str:
-            return jsonify({"error": "petId is required"}), 400
+            return jsonify({"error": "userId is required"}), 400
 
         try:
             userId = uuid.UUID(user_id_str).bytes
