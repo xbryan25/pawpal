@@ -54,7 +54,7 @@ onMounted(async () => {
           :isNotDummy="true"
         />
 
-        <PetCard v-for="n in dummyFramesToLoad" :isNotDummy="false" />
+        <PetCard v-for="_ in dummyFramesToLoad" :key="_" :isNotDummy="false" />
       </div>
     </div>
   </section>

@@ -6,3 +6,4 @@ from .shelter import Shelter
 from .shelter_image import ShelterImage
 from .species import Species
 from .user import User
+from .enums import ApplicationStatusEnum
