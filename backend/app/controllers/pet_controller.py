@@ -246,7 +246,7 @@ def cancel_pet_adoption_controller():
         user_id = uuid.UUID(data["userId"]).bytes
         pet_id = uuid.UUID(data["petId"]).bytes
 
-        check_if_user_has_adoption_application(user_id, pet_id)
+        cancel_pet_adoption(user_id, pet_id)
 
         return jsonify({"message": "Adoption application was successfully cancelled."}), 201 
     
