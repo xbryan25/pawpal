@@ -4,48 +4,52 @@ from app.extensions import db
 import uuid
 from datetime import datetime
 
-def adopt_pet(user_id, pet_id):
+class PetService:
 
-    adoption_application = check_if_user_has_adoption_application(user_id, pet_id)
+    @staticmethod
+    def adopt_pet(user_id, pet_id):
 
-    if adoption_application and adoption_application.status.value in ['cancelled', 'rejected']:
-        adoption_application.status = ApplicationStatusEnum.pending
-        adoption_application.application_date = datetime.now()
-    elif adoption_application and adoption_application.status.value == 'approved':
-        raise ValueError("This application has already been approved.")
-    else:
+        adoption_application = PetService.check_if_user_has_adoption_application(user_id, pet_id)
 
-        new_adoption_application = AdoptionApplication(
-            status="pending",
-            application_date=datetime.now(),
-            user_id=user_id,
-            pet_id=pet_id,
-        )
+        if adoption_application and adoption_application.status.value in ['cancelled', 'rejected']:
+            adoption_application.status = ApplicationStatusEnum.pending
+            adoption_application.application_date = datetime.now()
+        elif adoption_application and adoption_application.status.value == 'approved':
+            raise ValueError("This application has already been approved.")
+        else:
 
-        db.session.add(new_adoption_application)
+            new_adoption_application = AdoptionApplication(
+                status="pending",
+                application_date=datetime.now(),
+                user_id=user_id,
+                pet_id=pet_id,
+            )
 
-    db.session.commit()
+            db.session.add(new_adoption_application)
 
-def cancel_pet_adoption(user_id, pet_id):
+        db.session.commit()
 
-    adoption_application = check_if_user_has_adoption_application(user_id, pet_id)
+    @staticmethod
+    def cancel_pet_adoption(user_id, pet_id):
 
-    if adoption_application and adoption_application.status == 'cancelled':
-        raise ValueError("This application has already been cancelled.")
-    else:
-        adoption_application.status = 'cancelled'
+        adoption_application = PetService.check_if_user_has_adoption_application(user_id, pet_id)
 
-    db.session.commit()
+        if adoption_application and adoption_application.status == 'cancelled':
+            raise ValueError("This application has already been cancelled.")
+        else:
+            adoption_application.status = 'cancelled'
 
+        db.session.commit()
 
-def check_if_user_has_adoption_application(user_id, pet_id):
+    @staticmethod
+    def check_if_user_has_adoption_application(user_id, pet_id):
 
-    adoption_application = AdoptionApplication.query.filter(
-        AdoptionApplication.user_id == user_id,
-        AdoptionApplication.pet_id == pet_id,
-    ).first()
+        adoption_application = AdoptionApplication.query.filter(
+            AdoptionApplication.user_id == user_id,
+            AdoptionApplication.pet_id == pet_id,
+        ).first()
 
-    if adoption_application:
-        return adoption_application
-    else:
-        return False
+        if adoption_application:
+            return adoption_application
+        else:
+            return False

@@ -1,9 +1,11 @@
 from flask import request, jsonify
 from flask_jwt_extended import create_access_token
-from app.services.user_service import authenticate_user
+
+from app.services import UserService
 from app.models.user import User
 from app.models.shelter import Shelter
 from app.extensions import db
+
 from datetime import datetime
 import uuid
 
@@ -14,7 +16,7 @@ def user_login_controller():
     password = data.get("password")
     login_type = data.get("loginType")
 
-    user = authenticate_user(email, password)
+    user = UserService.authenticate_user(email, password)
     if not user:
         return jsonify({"error": "Invalid credentials."}), 401
     elif user.role.value != login_type:

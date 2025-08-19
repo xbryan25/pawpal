@@ -1,14 +1,15 @@
 from flask import request, jsonify
+
 from app.models import Pet, PetImage, Shelter, Breed, Species
 from app.extensions import db
+from app.services import PetService, AdoptionApplicationService
+
 from datetime import datetime
 import uuid
 import cloudinary.uploader
 import json
 from urllib.parse import urlparse
 import os
-
-from app.services import adopt_pet, cancel_pet_adoption, check_if_user_has_adoption_application
 
 def get_pet_list_controller():
     try:
@@ -226,7 +227,7 @@ def pet_adoption_controller():
         user_id = uuid.UUID(data["userId"]).bytes
         pet_id = uuid.UUID(data["petId"]).bytes
 
-        adopt_pet(user_id=user_id, pet_id=pet_id)
+        PetService.adopt_pet(user_id=user_id, pet_id=pet_id)
 
         return jsonify({"message": "Adoption application was successfully made."}), 201 
     
@@ -246,7 +247,7 @@ def cancel_pet_adoption_controller():
         user_id = uuid.UUID(data["userId"]).bytes
         pet_id = uuid.UUID(data["petId"]).bytes
 
-        cancel_pet_adoption(user_id, pet_id)
+        PetService.cancel_pet_adoption(user_id, pet_id)
 
         return jsonify({"message": "Adoption application was successfully cancelled."}), 201 
     
@@ -267,7 +268,7 @@ def get_adoption_status_controller():
         user_id = uuid.UUID(user_id_str).bytes
         pet_id = uuid.UUID(pet_id_str).bytes
 
-        if check_if_user_has_adoption_application(user_id, pet_id):
+        if AdoptionApplicationService.check_if_user_has_adoption_application(user_id, pet_id):
             return jsonify({"adoptionStatus": "adopted"}), 201 
         else:
             return jsonify({"adoptionStatus": "notAdopted"}), 201 

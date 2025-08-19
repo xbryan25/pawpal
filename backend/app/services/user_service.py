@@ -1,9 +1,11 @@
 from app.models.user import User
 from werkzeug.security import check_password_hash
 
+class UserService:
 
-def authenticate_user(email, password):
-    user = User.query.filter_by(email=email).first()
-    if user and user.check_password(password):
-        return user
-    return None
+    @staticmethod
+    def authenticate_user(email, password):
+        user = User.query.filter_by(email=email).first()
+        if user and user.check_password(password):
+            return user
+        return None
