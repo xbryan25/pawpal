@@ -7,8 +7,6 @@ import axios from 'axios'
 
 import PetProfileImageCard from './PetProfileImageCard.vue'
 
-import statusIcon from '@/assets/images/status-icon.svg'
-
 interface PetImage {
   image_url: string
   sort_order: number

@@ -36,7 +36,7 @@ class AdoptionApplicationController:
         try:
             userId = uuid.UUID(user_id_str).bytes
 
-            adopterApplications = AdoptionApplicationService.getAdopterApplications(userId)
+            adopterApplications = AdoptionApplicationService.get_adopter_applications(userId)
 
             return jsonify({"adopterApplications": adopterApplications}), 200
 

@@ -13,7 +13,7 @@ class AdoptionApplicationService:
         return num_of_adoption_applications
 
     @staticmethod
-    def getAdopterApplications(user_id):
+    def get_adopter_applications(user_id):
 
         adoption_applications = AdoptionApplication.query.filter(AdoptionApplication.user_id == user_id).all()
 
@@ -42,3 +42,17 @@ class AdoptionApplicationService:
             adoption_applications_result_list.append(adoption_application_dict)
 
         return adoption_applications_result_list
+    
+    @staticmethod
+    def check_if_user_has_adoption_application(user_id, pet_id):
+
+        adoption_application = AdoptionApplication.query.filter(
+            AdoptionApplication.user_id == user_id,
+            AdoptionApplication.pet_id == pet_id,
+        ).first()
+
+        if adoption_application:
+            return adoption_application
+        else:
+            return False
+        
