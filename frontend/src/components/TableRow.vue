@@ -21,8 +21,8 @@ const auth = useAuthStore()
 
 <template>
   <tr class="hover:bg-base-300 text-center">
-    <td>
-      <div class="flex items-center justify-center gap-3" v-if="auth.isShelterStaff">
+    <td v-if="auth.isShelterStaff">
+      <div class="flex items-center justify-center gap-3">
         <div class="avatar">
           <div class="mask mask-squircle h-12 w-12">
             <img
