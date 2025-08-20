@@ -4,6 +4,7 @@ import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore'
 
 interface Props {
+  applicationId: string | undefined
   userName: string | undefined
   userProfileUrl: string | undefined
   petId: string
@@ -76,7 +77,7 @@ const time = dateObject.toLocaleTimeString('en-US', { hour: '2-digit', minute: '
     <td class="px-0" v-if="auth.isShelterStaff">
       <RouterLink
         class="flex items-center justify-center gap-3 cursor-pointer"
-        :to="`/applications/application-details/${props.petId}`"
+        :to="`/applications/application-details/${props.applicationId}`"
         ><svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 -960 960 960"

@@ -1,4 +1,74 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { onMounted, reactive } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+import axios from 'axios'
+
+interface AdopterDetails {
+  adopterName: string
+  adopterGender: string
+  adopterPhoneNumber: string
+  adopterBirthDate: string
+  adopterEmail: string
+  adopterTotalApplications: number
+  adopterAcceptedApplications: number
+}
+
+interface PetDetails {
+  petId: string
+  petName: string
+  petFirstImageUrl: string
+}
+
+interface ApplicationDetails {
+  applicationStatus: string
+  adopterDetails: AdopterDetails
+  petDetails: PetDetails
+}
+
+const applicationDetails = reactive<ApplicationDetails>({
+  applicationStatus: '',
+  adopterDetails: {
+    adopterName: '',
+    adopterGender: '',
+    adopterPhoneNumber: '',
+    adopterBirthDate: '',
+    adopterEmail: '',
+    adopterTotalApplications: 0,
+    adopterAcceptedApplications: 0,
+  },
+  petDetails: {
+    petId: '',
+    petName: '',
+    petFirstImageUrl: '',
+  },
+})
+
+const route = useRoute()
+
+const applicationId: string = route.params.applicationId as string
+
+const apiUrl: string = import.meta.env.VITE_API_URL
+
+onMounted(async () => {
+  try {
+    const applicationDetailsResponse = await axios.get(
+      `${apiUrl}/adoption-applications/get-application-details`,
+      {
+        params: {
+          applicationId: applicationId,
+        },
+      },
+    )
+
+    // while response.data gives what Pet interface wants, this approach is careless, will improve this soon
+    Object.assign(applicationDetails, applicationDetailsResponse.data)
+
+    console.log(applicationDetails)
+  } catch (error) {
+    console.error('Error retrieving pet details', error)
+  }
+})
+</script>
 
 <template>
   <section class="h-full">
@@ -20,40 +90,54 @@
               <div class="flex justify-center">
                 <div class="flex-1">
                   <p class="font-bold text-xl">Name</p>
-                  <p class="pl-5 font-semibold">Test Name</p>
+                  <p class="pl-5 font-semibold">
+                    {{ applicationDetails.adopterDetails.adopterName }}
+                  </p>
                 </div>
 
                 <div class="flex-1">
                   <p class="font-bold text-xl">Gender</p>
-                  <p class="pl-5 font-semibold">Prefer not to say</p>
+                  <p class="pl-5 font-semibold">
+                    {{ applicationDetails.adopterDetails.adopterGender }}
+                  </p>
                 </div>
               </div>
               <div class="flex justify-center">
                 <div class="flex-1">
                   <p class="font-bold text-xl">Phone Number</p>
-                  <p class="pl-5 font-semibold">651</p>
+                  <p class="pl-5 font-semibold">
+                    {{ applicationDetails.adopterDetails.adopterPhoneNumber }}
+                  </p>
                 </div>
 
                 <div class="flex-1">
                   <p class="font-bold text-xl">Birth Date</p>
-                  <p class="pl-5 font-semibold">Septeber 23, 2402</p>
+                  <p class="pl-5 font-semibold">
+                    {{ applicationDetails.adopterDetails.adopterBirthDate }}
+                  </p>
                 </div>
               </div>
               <div class="flex justify-center">
                 <div class="flex-1">
                   <p class="font-bold text-xl">Email</p>
-                  <p class="pl-5 font-semibold">testmail@gmail.com</p>
+                  <p class="pl-5 font-semibold">
+                    {{ applicationDetails.adopterDetails.adopterEmail }}
+                  </p>
                 </div>
               </div>
               <div class="flex justify-center">
                 <div class="flex-1">
                   <p class="font-bold text-xl">Total Applications</p>
-                  <p class="pl-5 font-semibold">56</p>
+                  <p class="pl-5 font-semibold">
+                    {{ applicationDetails.adopterDetails.adopterTotalApplications }}
+                  </p>
                 </div>
 
                 <div class="flex-1">
                   <p class="font-bold text-xl">Accepted Applications</p>
-                  <p class="pl-5 font-semibold">0</p>
+                  <p class="pl-5 font-semibold">
+                    {{ applicationDetails.adopterDetails.adopterAcceptedApplications }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -66,13 +150,17 @@
           <div class="flex flex-col bg-gray-400 h-60 rounded-lg p-5">
             <div class="flex dui-avatar justify-center">
               <div class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2">
-                <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
+                <img :src="applicationDetails.petDetails.petFirstImageUrl" />
               </div>
             </div>
 
             <div class="flex flex-col gap-y-1 pt-2 items-center">
-              <p class="text-2xl font-bold">Tabby</p>
-              <p class="font-bold">View details</p>
+              <p class="text-2xl font-bold">{{ applicationDetails.petDetails.petName }}</p>
+              <RouterLink
+                class="font-bold"
+                :to="`/pets/view/${applicationDetails.petDetails.petId}`"
+                >View details</RouterLink
+              >
             </div>
           </div>
         </div>

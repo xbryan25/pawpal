@@ -80,7 +80,7 @@ const routes: RouteRecordRaw[] = [
       })
     },
     {
-      path: '/applications/application-details/:id',
+      path: '/applications/application-details/:applicationId',
       name: 'applicationDetailsView',
       component: ApplicationDetailsView,
       meta: { title: 'Application Details' },
