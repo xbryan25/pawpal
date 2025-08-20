@@ -44,44 +44,15 @@ class AdoptionApplicationService:
         return adoption_applications_result_list
     
     @staticmethod
-    def get_shelter_applications(shelter_id):
+    def check_if_user_has_adoption_application(user_id, pet_id):
 
-        shelter_applications_result_list = []
+        adoption_application = AdoptionApplication.query.filter(
+            AdoptionApplication.user_id == user_id,
+            AdoptionApplication.pet_id == pet_id,
+        ).first()
 
-        pets_in_shelter = Pet.query.filter(Pet.shelter_id == shelter_id).all()
-
-        for pet in pets_in_shelter:
-
-            adoption_applications = AdoptionApplication.query.filter(AdoptionApplication.pet_id == pet.pet_id).all()
-
-            for adoption_application in adoption_applications:
-
-                user_id = adoption_application.user_id
-
-                user_name, user_profile_url = User.query.with_entities(User.name, User.profile_url).filter(User.user_id == user_id).first()
-
-                pet_id = adoption_application.pet_id
-
-                pet_details = Pet.query.filter(Pet.pet_id == pet_id).first()
-
-                shelter_id = pet_details.shelter_id
-
-                shelter_details = Shelter.query.filter(Shelter.shelter_id == shelter_id).first()
-
-                first_pet_image = PetImage.query.filter(PetImage.pet_id == pet_id, PetImage.sort_order == 1).first()
-
-                adoption_application_dict = {
-                    "userId": str(uuid.UUID(bytes=user_id)),
-                    "userName": user_name,
-                    "userProfileUrl": user_profile_url,
-                    "petId": str(uuid.UUID(bytes=pet_id)),
-                    "petFirstImageUrl": first_pet_image.image_url,
-                    "petName": pet_details.name,
-                    "shelterName": shelter_details.name,
-                    "applicationDate": adoption_application.application_date.strftime("%B %d, %Y %I:%M %p"),
-                    "status": adoption_application.status.value.capitalize()
-                }
-
-                shelter_applications_result_list.append(adoption_application_dict)
-
-        return shelter_applications_result_list
+        if adoption_application:
+            return adoption_application
+        else:
+            return False
+        

@@ -30,6 +30,7 @@ class PetController:
             pet_id = uuid.UUID(request.args.get("petId")).bytes
 
             pet_details = PetService.get_pet_details(pet_id)
+
             return jsonify(pet_details), 200
 
         except Exception as e:
@@ -144,6 +145,8 @@ class PetController:
 
         pet_id_str = request.args.get('petId')
         user_id_str = request.args.get('userId')
+
+        print(pet_id_str, user_id_str)
 
         if not user_id_str:
             return jsonify({"error": "userId is required."}), 400
