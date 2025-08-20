@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw} from 'vue-router'
 import { getToken } from '@/utils/getToken'
 import { isTokenValid } from '@/utils/isTokenValid'
+
 import AdopterLoginView from '@/views/AdopterLoginView.vue'
 import ShelterStaffLoginView from '@/views/ShelterStaffLoginView.vue'
 import PetsView from '@/views/PetsView.vue'
@@ -9,6 +10,7 @@ import ApplicationsView from '@/views/ApplicationsView.vue'
 import SignupView from '@/views/SignupView.vue'
 import AdopterReportsView from '@/views/AdopterReportsView.vue'
 import AddEditPetView from '@/views/AddEditPetView.vue'
+import ApplicationDetailsView from '@/views/ApplicationDetailsView.vue'
 
 
 const routes: RouteRecordRaw[] = [
@@ -76,6 +78,12 @@ const routes: RouteRecordRaw[] = [
         mode: 'edit-pet',
         petId: route.query.petId
       })
+    },
+    {
+      path: '/applications/application-details/:id',
+      name: 'applicationDetailsView',
+      component: ApplicationDetailsView,
+      meta: { title: 'Application Details' },
     },
   ]
 

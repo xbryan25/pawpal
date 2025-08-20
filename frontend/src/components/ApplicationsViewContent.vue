@@ -80,8 +80,9 @@ onMounted(async () => {
             <tr>
               <th class="text-center text-2xl w-1/4" v-if="auth.isShelterStaff">Adopter</th>
               <th class="text-center text-2xl w-1/4">Pet</th>
-              <th class="text-center text-2xl w-1/4">Application Date</th>
-              <th class="text-center text-2xl w-1/4">Application Status</th>
+              <th class="text-center text-2xl px-2 w-1/5">Application Date</th>
+              <th class="text-center text-2xl px-2 w-1/5">Application Status</th>
+              <th class="text-center text-2xl w-1/4" v-if="auth.isShelterStaff"></th>
             </tr>
           </thead>
           <tbody>
