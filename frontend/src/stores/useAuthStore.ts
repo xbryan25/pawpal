@@ -19,6 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = () => {
     role.value = null
     userId.value = null
+    shelterId.value = null
   }
 
   return {

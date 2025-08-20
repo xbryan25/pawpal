@@ -53,7 +53,7 @@ const handleSubmit = async () => {
 
     const accessToken = response.data.accessToken
     const role = response.data.userRole
-    const userId = response.data.userid
+    const userId = response.data.userId
     const shelterId = response.data.shelterId
 
     cookies.set('access_token', accessToken, {
@@ -77,8 +77,6 @@ const handleSubmit = async () => {
       icon: true,
       rtl: false,
     })
-
-    console.log(`roleee: ${role}`)
 
     auth.setAuth(role, userId, shelterId)
 
