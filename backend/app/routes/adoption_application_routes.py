@@ -15,3 +15,7 @@ def get_adopter_applications():
 @adoption_application_bp.route("/get-shelter-applications", methods=["GET"])
 def get_shelter_applications():
     return AdoptionApplicationController.get_shelter_applications_controller()
+
+@adoption_application_bp.route("/get-application-details", methods=["GET"])
+def get_application_details():
+    return AdoptionApplicationController.get_application_details_controller()

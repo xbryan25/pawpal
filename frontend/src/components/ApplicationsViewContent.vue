@@ -8,7 +8,7 @@ import SearchAndSortHeader from './SearchAndSortHeader.vue'
 import TableRow from './TableRow.vue'
 
 interface AdoptionApplicationDetails {
-  userId?: string
+  applicationId?: string
   userName?: string
   userProfileUrl?: string
   petId: string
@@ -57,10 +57,6 @@ onMounted(async () => {
         },
       )
     }
-
-    console.log(adoptionApplicationsResponse.data)
-
-    // console.log(adoptionApplications.value)
   } catch (error) {
     console.error('Error retrieving data from backend', error)
   }
@@ -80,14 +76,16 @@ onMounted(async () => {
             <tr>
               <th class="text-center text-2xl w-1/4" v-if="auth.isShelterStaff">Adopter</th>
               <th class="text-center text-2xl w-1/4">Pet</th>
-              <th class="text-center text-2xl w-1/4">Application Date</th>
-              <th class="text-center text-2xl w-1/4">Application Status</th>
+              <th class="text-center text-2xl px-2 w-1/5">Application Date</th>
+              <th class="text-center text-2xl px-2 w-1/5">Application Status</th>
+              <th class="text-center text-2xl w-1/4" v-if="auth.isShelterStaff"></th>
             </tr>
           </thead>
           <tbody>
             <TableRow
               v-for="(adoptionApplication, index) in adoptionApplications"
               :key="index"
+              :applicationId="adoptionApplication.applicationId"
               :userName="adoptionApplication.userName"
               :userProfileUrl="adoptionApplication.userProfileUrl"
               :petId="adoptionApplication.petId"

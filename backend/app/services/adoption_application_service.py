@@ -2,6 +2,7 @@
 from app.models import AdoptionApplication, Pet, Shelter, PetImage, User
 
 import uuid
+from sqlalchemy import func, case, cast, Integer
 
 class AdoptionApplicationService:
 
@@ -71,7 +72,7 @@ class AdoptionApplicationService:
                 first_pet_image = PetImage.query.filter(PetImage.pet_id == pet_id, PetImage.sort_order == 1).first()
 
                 adoption_application_dict = {
-                    "userId": str(uuid.UUID(bytes=user_id)),
+                    "applicationId": str(uuid.UUID(bytes=adoption_application.aa_id)),
                     "userName": user_name,
                     "userProfileUrl": user_profile_url,
                     "petId": str(uuid.UUID(bytes=pet_id)),
@@ -97,5 +98,56 @@ class AdoptionApplicationService:
         if adoption_application:
             return adoption_application
         else:
-            return False
-        
+            return None
+    
+    @staticmethod
+    def get_application_details(aa_id):
+
+        adoption_application = AdoptionApplication.query.filter(AdoptionApplication.aa_id == aa_id).first()
+
+        # Gets both the total applications and approved applications at the same time
+        application_counts = (
+            AdoptionApplication.query
+            .with_entities(
+                func.count().label("total"),
+                func.sum(case((AdoptionApplication.status == "approved", 1), else_=0)).cast(Integer).label("approved")
+            )
+            .filter(AdoptionApplication.user_id == adoption_application.user_id)
+            .first()
+        )
+
+        adopter = User.query.filter(User.user_id == adoption_application.user_id).first()
+
+        selected_pet = Pet.query.filter(Pet.pet_id == adoption_application.pet_id).first()
+
+        pet_first_image_url_row = PetImage.query.with_entities(PetImage.image_url).filter(PetImage.pet_id == adoption_application.pet_id, PetImage.sort_order == 1).first()
+
+        pet_first_image_url = pet_first_image_url_row[0] if pet_first_image_url_row else None
+
+        application_details_dict = {
+            "applicationStatus": adoption_application.status.value,
+
+            "adopterDetails": {
+                "adopterName": adopter.name,
+                "adopterGender": adopter.gender.value.capitalize(),
+                "adopterPhoneNumber": adopter.phone_number,
+                "adopterBirthDate": adopter.birth_date.strftime("%B %d, %Y"),
+                "adopterEmail": adopter.email,
+                "adopterTotalApplications": application_counts.total,
+                "adopterAcceptedApplications": application_counts.approved
+            },
+
+            "petDetails": {
+                "petId": str(uuid.UUID(bytes=selected_pet.pet_id)),
+                "petName": selected_pet.name,
+                "petFirstImageUrl": pet_first_image_url
+            }
+            
+        }
+
+        if application_details_dict:
+            return application_details_dict
+        else:
+            return None
+    
+
