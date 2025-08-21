@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import axios from 'axios'
 
@@ -49,6 +49,8 @@ const applicationId: string = route.params.applicationId as string
 
 const apiUrl: string = import.meta.env.VITE_API_URL
 
+const isLoading = ref(true)
+
 onMounted(async () => {
   try {
     const applicationDetailsResponse = await axios.get(
@@ -62,6 +64,8 @@ onMounted(async () => {
 
     // while response.data gives what Pet interface wants, this approach is careless, will improve this soon
     Object.assign(applicationDetails, applicationDetailsResponse.data)
+
+    isLoading.value = false
 
     console.log(applicationDetails)
   } catch (error) {
@@ -79,8 +83,13 @@ onMounted(async () => {
           <div class="text-center">
             <h2 class="text-4xl font-semibold">Adopter</h2>
           </div>
-          <div class="flex flex-col bg-gray-400 h-110 rounded-lg p-5">
-            <div class="flex dui-avatar justify-center">
+
+          <div class="flex flex-col bg-gray-400 h-115 rounded-lg" v-if="isLoading">
+            <div class="dui-skeleton w-full h-full rounded-lg bg-gray-400"></div>
+          </div>
+
+          <div class="flex flex-col bg-gray-400 h-115 rounded-lg p-5" v-else>
+            <div class="flex dui-avatar justify-center py-2">
               <div class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2">
                 <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
               </div>
@@ -91,14 +100,14 @@ onMounted(async () => {
                 <div class="flex-1">
                   <p class="font-bold text-xl">Name</p>
                   <p class="pl-5 font-semibold">
-                    {{ applicationDetails.adopterDetails.adopterName }}
+                    {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterName }}
                   </p>
                 </div>
 
                 <div class="flex-1">
                   <p class="font-bold text-xl">Gender</p>
                   <p class="pl-5 font-semibold">
-                    {{ applicationDetails.adopterDetails.adopterGender }}
+                    {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterGender }}
                   </p>
                 </div>
               </div>
@@ -106,14 +115,14 @@ onMounted(async () => {
                 <div class="flex-1">
                   <p class="font-bold text-xl">Phone Number</p>
                   <p class="pl-5 font-semibold">
-                    {{ applicationDetails.adopterDetails.adopterPhoneNumber }}
+                    {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterPhoneNumber }}
                   </p>
                 </div>
 
                 <div class="flex-1">
                   <p class="font-bold text-xl">Birth Date</p>
                   <p class="pl-5 font-semibold">
-                    {{ applicationDetails.adopterDetails.adopterBirthDate }}
+                    {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterBirthDate }}
                   </p>
                 </div>
               </div>
@@ -121,7 +130,7 @@ onMounted(async () => {
                 <div class="flex-1">
                   <p class="font-bold text-xl">Email</p>
                   <p class="pl-5 font-semibold">
-                    {{ applicationDetails.adopterDetails.adopterEmail }}
+                    {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterEmail }}
                   </p>
                 </div>
               </div>
@@ -129,14 +138,20 @@ onMounted(async () => {
                 <div class="flex-1">
                   <p class="font-bold text-xl">Total Applications</p>
                   <p class="pl-5 font-semibold">
-                    {{ applicationDetails.adopterDetails.adopterTotalApplications }}
+                    {{
+                      isLoading ? '-' : applicationDetails.adopterDetails.adopterTotalApplications
+                    }}
                   </p>
                 </div>
 
                 <div class="flex-1">
                   <p class="font-bold text-xl">Accepted Applications</p>
                   <p class="pl-5 font-semibold">
-                    {{ applicationDetails.adopterDetails.adopterAcceptedApplications }}
+                    {{
+                      isLoading
+                        ? '-'
+                        : applicationDetails.adopterDetails.adopterAcceptedApplications
+                    }}
                   </p>
                 </div>
               </div>
@@ -147,15 +162,30 @@ onMounted(async () => {
           <div class="text-center">
             <h2 class="text-4xl font-semibold">Pet</h2>
           </div>
-          <div class="flex flex-col bg-gray-400 h-60 rounded-lg p-5">
+
+          <div class="flex flex-col bg-gray-400 h-60 rounded-lg" v-if="isLoading">
+            <div class="dui-skeleton w-full h-full rounded-lg bg-gray-400"></div>
+          </div>
+
+          <div class="flex flex-col bg-gray-400 h-60 rounded-lg p-5" v-else>
             <div class="flex dui-avatar justify-center">
-              <div class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2">
+              <div
+                class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2 dui-skeleton"
+                v-if="isLoading"
+              ></div>
+
+              <div
+                class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2"
+                v-else
+              >
                 <img :src="applicationDetails.petDetails.petFirstImageUrl" />
               </div>
             </div>
 
             <div class="flex flex-col gap-y-1 pt-2 items-center">
-              <p class="text-2xl font-bold">{{ applicationDetails.petDetails.petName }}</p>
+              <p class="text-2xl font-bold">
+                {{ isLoading ? '-' : applicationDetails.petDetails.petName }}
+              </p>
               <RouterLink
                 class="font-bold"
                 :to="`/pets/view/${applicationDetails.petDetails.petId}`"
@@ -166,9 +196,8 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="flex gap-5 pt-10 px-[30%]">
+      <div class="flex gap-5 pt-10 px-[40%]">
         <button class="flex-1 dui-btn dui-btn-success text-3xl h-15">Approve</button>
-        <button class="flex-1 dui-btn dui-btn-error text-3xl h-15">Reject</button>
       </div>
     </div>
   </section>
