@@ -51,7 +51,7 @@ class UserController:
         
         try:
             UserService.user_signup(new_user_data, new_user_image)
-            return jsonify({"message": "User created successfully"}), 201
+            return jsonify({"message": "Account created successfully. Please login."}), 201
 
         except Exception as e:
             print(e)

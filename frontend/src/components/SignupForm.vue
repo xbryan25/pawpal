@@ -46,6 +46,8 @@ const apiUrl = import.meta.env.VITE_API_URL
 let shelters: { shelter_id: string; name: string }[] = []
 let shelter_names: string[] = []
 
+const isLoading = ref<boolean>(false)
+
 const handleImageChange = (event: Event) => {
   const MAX_SIZE_MB = 10
   const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
@@ -103,6 +105,8 @@ const handleImageChange = (event: Event) => {
 }
 
 const handleSubmit = async () => {
+  isLoading.value = true
+
   const shelterId =
     shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || ''
 
@@ -128,7 +132,24 @@ const handleSubmit = async () => {
   try {
     const response = await axios.post(`${apiUrl}/user/signup`, newUserFormData)
 
-    console.log(response.data)
+    const responseMessage = response.data.message
+
+    toast.success(responseMessage, {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+
+    isLoading.value = false
 
     router.push('/user/login')
   } catch (error) {
@@ -267,7 +288,7 @@ onMounted(async () => {
           </div>
 
           <div class="flex flex-row gap-2">
-            <label class="flex-1 dui-input w-full px-[6px]">
+            <label class="flex-1 dui-input w-full px-3">
               <input
                 v-model="newUserForm.address"
                 maxlength="255"
@@ -280,7 +301,7 @@ onMounted(async () => {
             <input
               type="file"
               accept="image/*"
-              class="flex-1 dui-file-input"
+              class="flex-1 dui-file-input pr-6"
               @change="handleImageChange"
               required
             />
@@ -384,6 +405,13 @@ onMounted(async () => {
         Already have an account?
         <RouterLink to="/user/login" class="ml-1 font-bold text-violet-500">Log in</RouterLink>
       </p>
+    </div>
+
+    <div
+      v-if="isLoading"
+      class="fixed inset-0 bg-white/50 flex items-center justify-center z-50 rounded-lg"
+    >
+      <span class="dui-loading dui-loading-spinner w-16 h-16 text-primary"></span>
     </div>
   </section>
 </template>
