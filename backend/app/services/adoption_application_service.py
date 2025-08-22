@@ -1,8 +1,10 @@
 
-from app.models import AdoptionApplication, Pet, Shelter, PetImage, User
+from app.models import AdoptionApplication, Pet, Shelter, PetImage, User, ApplicationStatusEnum, PetStatusEnum
+from app.extensions import db
 
 import uuid
 from sqlalchemy import func, case, cast, Integer
+from datetime import datetime
 
 class AdoptionApplicationService:
 
@@ -150,4 +152,25 @@ class AdoptionApplicationService:
         else:
             return None
     
+    @staticmethod
+    def approve_application(aa_id):
+
+        adoption_application = AdoptionApplication.query.filter(AdoptionApplication.aa_id == aa_id).first()
+
+        selected_pet = Pet.query.filter(Pet.pet_id == adoption_application.pet_id).first()
+
+        adoption_applications_for_pet = AdoptionApplication.query.filter(AdoptionApplication.aa_id != aa_id, 
+                                                                         AdoptionApplication.pet_id == adoption_application.pet_id, 
+                                                                         AdoptionApplication.status == ApplicationStatusEnum.pending).all()
+
+        adoption_application.status = ApplicationStatusEnum.approved
+        adoption_application.decision_date = datetime.now()
+
+        for adoption_application_for_pet in adoption_applications_for_pet:
+            adoption_application_for_pet.status = ApplicationStatusEnum.rejected
+            adoption_application_for_pet.decision_date = datetime.now()
+
+        selected_pet.status = PetStatusEnum.adopted
+
+        db.session.commit()
 

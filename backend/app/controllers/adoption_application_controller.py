@@ -83,3 +83,26 @@ class AdoptionApplicationController:
         except Exception as e:
             print(e)
             return jsonify({"error": str(e)}), 500
+
+    @staticmethod
+    def approve_application_controller():
+        data = request.json
+
+        aa_id_str = data["applicationId"]
+
+        if not aa_id_str:
+            return jsonify({"error": "applicationId is required"}), 400
+
+        try:
+
+            aa_id = uuid.UUID(aa_id_str).bytes
+
+            AdoptionApplicationService.approve_application(aa_id)
+
+            return jsonify({"message": "Adoption application is approved."}), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({"error": str(e)}), 500
+
+

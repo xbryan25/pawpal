@@ -19,3 +19,11 @@ def get_shelter_applications():
 @adoption_application_bp.route("/get-application-details", methods=["GET"])
 def get_application_details():
     return AdoptionApplicationController.get_application_details_controller()
+
+@adoption_application_bp.route("/approve-application", methods=["POST"])
+def approve_application():
+    return AdoptionApplicationController.approve_application_controller()
+
+@adoption_application_bp.route("/reject-application", methods=["POST"])
+def reject_application():
+    return AdoptionApplicationController.reject_application_controller()

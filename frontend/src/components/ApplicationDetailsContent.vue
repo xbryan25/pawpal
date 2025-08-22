@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
+import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
 interface AdopterDetails {
@@ -44,12 +45,78 @@ const applicationDetails = reactive<ApplicationDetails>({
 })
 
 const route = useRoute()
+const toast = useToast()
 
 const applicationId: string = route.params.applicationId as string
 
 const apiUrl: string = import.meta.env.VITE_API_URL
 
 const isLoading = ref(true)
+const isRequestLoading = ref(false)
+
+const approveApplication = async () => {
+  const decision = confirm('Are you sure you want to approve this application?')
+
+  if (decision) {
+    try {
+      isRequestLoading.value = true
+
+      const response = await axios.post(`${apiUrl}/adoption-applications/approve-application`, {
+        applicationId: applicationId,
+      })
+
+      const responseMessage = response.data.message
+
+      toast.success(responseMessage, {
+        position: POSITION.TOP_RIGHT,
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: true,
+        hideProgressBar: false,
+        closeButton: 'button',
+        icon: true,
+        rtl: false,
+      })
+
+      isRequestLoading.value = false
+    } catch (error) {
+      let errorMessage: string = ''
+
+      if (axios.isAxiosError(error) && error.response) {
+        errorMessage = error.response.data.error
+      } else {
+        errorMessage = 'Unexpected error.'
+      }
+
+      toast.error(`Failed to create an adoption application. ${errorMessage}`, {
+        position: POSITION.TOP_RIGHT,
+        timeout: 5000,
+        closeOnClick: true,
+        pauseOnFocusLoss: true,
+        pauseOnHover: true,
+        draggable: true,
+        draggablePercent: 0.6,
+        showCloseButtonOnHover: true,
+        hideProgressBar: false,
+        closeButton: 'button',
+        icon: true,
+        rtl: false,
+      })
+    }
+  }
+}
+
+const rejectApplication = () => {
+  const decision = confirm('Are you sure you want to reject this application?')
+
+  if (decision) {
+    console.log('Application rejected.')
+  }
+}
 
 onMounted(async () => {
   try {
@@ -75,7 +142,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="h-full">
+  <section class="relative h-[90vh] w-[87vw]">
     <div class="p-5 h-full flex flex-col">
       <h1 class="text-6xl font-semibold">Application Details</h1>
       <div class="flex pt-10 px-[15%] gap-x-[5%]">
@@ -196,9 +263,22 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="flex gap-5 pt-10 px-[40%]">
-        <button class="flex-1 dui-btn dui-btn-success text-3xl h-15">Approve</button>
+      <div class="flex gap-5 pt-10 px-[30%]">
+        <button class="flex-1 dui-btn dui-btn-success text-3xl h-15" @click="approveApplication">
+          Approve
+        </button>
+
+        <button class="flex-1 dui-btn dui-btn-error text-3xl h-15" @click="rejectApplication">
+          Reject
+        </button>
       </div>
+    </div>
+
+    <div
+      class="absolute inset-0 bg-white/50 flex items-center justify-center z-50 rounded-lg w-[87vw]"
+      v-if="isRequestLoading"
+    >
+      <span class="dui-loading dui-loading-spinner w-16 h-16 text-primary"></span>
     </div>
   </section>
 </template>
