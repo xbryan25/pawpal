@@ -54,16 +54,19 @@ const apiUrl: string = import.meta.env.VITE_API_URL
 const isLoading = ref(true)
 const isRequestLoading = ref(false)
 
-const approveApplication = async () => {
-  const decision = confirm('Are you sure you want to approve this application?')
+const handleDecision = async (decisionType: string) => {
+  const decision = confirm(`Are you sure you want to ${decisionType} this application?`)
 
   if (decision) {
     try {
       isRequestLoading.value = true
 
-      const response = await axios.post(`${apiUrl}/adoption-applications/approve-application`, {
-        applicationId: applicationId,
-      })
+      const response = await axios.post(
+        `${apiUrl}/adoption-applications/${decisionType}-application`,
+        {
+          applicationId: applicationId,
+        },
+      )
 
       const responseMessage = response.data.message
 
@@ -107,14 +110,6 @@ const approveApplication = async () => {
         rtl: false,
       })
     }
-  }
-}
-
-const rejectApplication = () => {
-  const decision = confirm('Are you sure you want to reject this application?')
-
-  if (decision) {
-    console.log('Application rejected.')
   }
 }
 
@@ -264,11 +259,17 @@ onMounted(async () => {
       </div>
 
       <div class="flex gap-5 pt-10 px-[30%]">
-        <button class="flex-1 dui-btn dui-btn-success text-3xl h-15" @click="approveApplication">
+        <button
+          class="flex-1 dui-btn dui-btn-success text-3xl h-15"
+          @click="handleDecision('approve')"
+        >
           Approve
         </button>
 
-        <button class="flex-1 dui-btn dui-btn-error text-3xl h-15" @click="rejectApplication">
+        <button
+          class="flex-1 dui-btn dui-btn-error text-3xl h-15"
+          @click="handleDecision('reject')"
+        >
           Reject
         </button>
       </div>

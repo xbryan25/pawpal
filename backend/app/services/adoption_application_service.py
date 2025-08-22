@@ -174,3 +174,12 @@ class AdoptionApplicationService:
 
         db.session.commit()
 
+    @staticmethod
+    def reject_application(aa_id):
+
+        adoption_application = AdoptionApplication.query.filter(AdoptionApplication.aa_id == aa_id).first()
+
+        adoption_application.status = ApplicationStatusEnum.rejected
+        adoption_application.decision_date = datetime.now()
+
+        db.session.commit()
