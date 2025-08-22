@@ -1,5 +1,6 @@
 from flask import request, jsonify
 
+from app.services import SpeciesService
 from app.extensions import db
 
 
@@ -8,7 +9,7 @@ class SpeciesController:
     @staticmethod
     def get_species_list_controller():
         try:
-            species_list = True
+            species_list = SpeciesService.get_species_list()
 
             return jsonify(species_list), 200
 
