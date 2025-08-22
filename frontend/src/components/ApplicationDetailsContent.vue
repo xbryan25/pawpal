@@ -86,6 +86,12 @@ const handleDecision = async (decisionType: string) => {
       })
 
       isRequestLoading.value = false
+
+      if (decisionType === 'approve') {
+        applicationDetails.applicationStatus = 'approved'
+      } else {
+        applicationDetails.applicationStatus = 'rejected'
+      }
     } catch (error) {
       let errorMessage: string = ''
 
@@ -221,6 +227,32 @@ onMounted(async () => {
           </div>
         </div>
         <div class="flex flex-col gap-y-[2%] justify-center flex-1">
+          <!-- Blank div to act as placeholder for application status -->
+          <div
+            class="h-15"
+            v-if="isLoading || applicationDetails.applicationStatus === 'pending'"
+          ></div>
+
+          <div
+            class="flex justify-center h-15"
+            v-if="applicationDetails.applicationStatus === 'approved'"
+          >
+            <div
+              class="flex justify-center items-center bg-green-600 text-stone-100 rounded-xl w-50"
+            >
+              <p class="text-4xl font-bold">Approved</p>
+            </div>
+          </div>
+
+          <div
+            class="flex justify-center h-15"
+            v-if="applicationDetails.applicationStatus === 'rejected'"
+          >
+            <div class="flex justify-center items-center bg-red-600 text-stone-100 rounded-xl w-50">
+              <p class="text-4xl font-bold">Rejected</p>
+            </div>
+          </div>
+
           <div class="text-center">
             <h2 class="text-4xl font-semibold">Pet</h2>
           </div>
@@ -258,7 +290,10 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="flex gap-5 pt-10 px-[30%]">
+      <div
+        class="flex gap-5 pt-10 px-[30%]"
+        v-if="applicationDetails.applicationStatus === 'pending'"
+      >
         <button
           class="flex-1 dui-btn dui-btn-success text-3xl h-15"
           @click="handleDecision('approve')"
