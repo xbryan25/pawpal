@@ -6,6 +6,8 @@ from app.extensions import db
 from datetime import datetime
 import uuid
 
+import cloudinary.uploader
+
 
 class UserService:
 
@@ -37,9 +39,14 @@ class UserService:
             return None
         
     @staticmethod
-    def user_signup(new_user_data):
+    def user_signup(new_user_data, new_user_image):
+
         if User.query.filter_by(email=new_user_data["email"]).first():
             return jsonify({"error": "Email already exists"}), 409
+        
+        user_image = new_user_image['selectedImage']
+        
+        result = cloudinary.uploader.upload(user_image, public_id=f"{str(uuid.uuid4())}")   
 
         new_user = User(
             name=f"{new_user_data['firstName']} {new_user_data['lastName']}",
@@ -49,7 +56,7 @@ class UserService:
             birth_date=datetime.strptime(new_user_data["birthDate"], "%Y-%m-%d").date(),
             email=new_user_data["email"],
             role=new_user_data["role"],
-            profile_url="https://placehold.co/128x128",
+            profile_url=result["secure_url"],
             shelter_id=None if new_user_data["role"] == "adopter" else uuid.UUID(new_user_data.get("shelterId")).bytes
         )
 

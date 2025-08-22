@@ -46,10 +46,11 @@ class UserController:
 
     @staticmethod
     def user_signup_controller():
-        new_user_data = request.json
-
+        new_user_data = request.form
+        new_user_image = request.files
+        
         try:
-            UserService.user_signup(new_user_data)
+            UserService.user_signup(new_user_data, new_user_image)
             return jsonify({"message": "User created successfully"}), 201
 
         except Exception as e:

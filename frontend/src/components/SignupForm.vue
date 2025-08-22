@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
 import lightModeImage from '@/assets/images/light-mode.png'
@@ -18,6 +19,7 @@ interface NewUser {
   password: string
   role: string
   shelterId: string
+  selectedImage: File | null
 }
 
 const newUserForm = reactive<NewUser>({
@@ -31,35 +33,100 @@ const newUserForm = reactive<NewUser>({
   password: '',
   role: '',
   shelterId: '',
+  selectedImage: null,
 })
 
 const selectedShelter = ref<string>('')
 
 const router = useRouter()
+const toast = useToast()
+
 const apiUrl = import.meta.env.VITE_API_URL
 
 let shelters: { shelter_id: string; name: string }[] = []
 let shelter_names: string[] = []
 
+const handleImageChange = (event: Event) => {
+  const MAX_SIZE_MB = 10
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024
+
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+
+  if (!file) return
+
+  if (!file.type.startsWith('image/')) {
+    toast.error('Please choose an image.', {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+
+    newUserForm.selectedImage = null
+    target.value = ''
+
+    return
+  }
+
+  if (file.size > MAX_SIZE_BYTES) {
+    toast.error('Images should not exceed 10 MB. Choose another image.', {
+      position: POSITION.TOP_RIGHT,
+      timeout: 5000,
+      closeOnClick: true,
+      pauseOnFocusLoss: true,
+      pauseOnHover: true,
+      draggable: true,
+      draggablePercent: 0.6,
+      showCloseButtonOnHover: true,
+      hideProgressBar: false,
+      closeButton: 'button',
+      icon: true,
+      rtl: false,
+    })
+
+    newUserForm.selectedImage = null
+    target.value = ''
+
+    return
+  }
+
+  newUserForm.selectedImage = file
+}
+
 const handleSubmit = async () => {
   const shelterId =
     shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || ''
 
-  const newUser: NewUser = {
-    firstName: newUserForm.firstName,
-    lastName: newUserForm.lastName,
-    gender: newUserForm.gender,
-    birthDate: newUserForm.birthDate,
-    address: newUserForm.address,
-    phoneNumber: newUserForm.phoneNumber,
-    email: newUserForm.email,
-    password: newUserForm.password,
-    role: newUserForm.role,
-    shelterId: shelterId,
+  const newUserFormData = new FormData()
+
+  newUserFormData.append('firstName', newUserForm.firstName)
+  newUserFormData.append('lastName', newUserForm.lastName)
+  newUserFormData.append('gender', newUserForm.gender)
+  newUserFormData.append('birthDate', newUserForm.birthDate)
+  newUserFormData.append('address', newUserForm.address)
+  newUserFormData.append('phoneNumber', newUserForm.phoneNumber)
+  newUserFormData.append('email', newUserForm.email)
+  newUserFormData.append('password', newUserForm.password)
+  newUserFormData.append('role', newUserForm.role)
+  newUserFormData.append('shelterId', shelterId)
+
+  if (newUserForm.selectedImage) {
+    newUserFormData.append('selectedImage', newUserForm.selectedImage)
+  } else {
+    throw new Error('Unexpected error.')
   }
 
   try {
-    const response = await axios.post(`${apiUrl}/user/signup`, newUser)
+    const response = await axios.post(`${apiUrl}/user/signup`, newUserFormData)
 
     console.log(response.data)
 
@@ -196,17 +263,28 @@ onMounted(async () => {
           <!-- Address label -->
           <div class="flex flex-row gap-2 mb-1">
             <h3 class="flex-1 font-medium">Address</h3>
+            <h3 class="flex-1 font-medium">Profile Picture</h3>
           </div>
 
-          <label class="dui-input w-full">
+          <div class="flex flex-row gap-2">
+            <label class="flex-1 dui-input w-full px-[6px]">
+              <input
+                v-model="newUserForm.address"
+                maxlength="255"
+                type="text"
+                placeholder="e.g. John"
+                required
+              />
+            </label>
+
             <input
-              v-model="newUserForm.address"
-              maxlength="255"
-              type="text"
-              placeholder="e.g. John"
+              type="file"
+              accept="image/*"
+              class="flex-1 dui-file-input"
+              @change="handleImageChange"
               required
             />
-          </label>
+          </div>
         </div>
 
         <!-- Phone number group -->
@@ -303,9 +381,8 @@ onMounted(async () => {
 
     <div class="mt-3 flex flex-col gap-1">
       <p>
-        Don't have an account?<RouterLink to="/user/login" class="ml-1 font-bold text-violet-500"
-          >Log in</RouterLink
-        >
+        Already have an account?
+        <RouterLink to="/user/login" class="ml-1 font-bold text-violet-500">Log in</RouterLink>
       </p>
     </div>
   </section>
