@@ -229,16 +229,3 @@ class PetService:
             adoption_application.status = 'cancelled'
 
         db.session.commit()
-
-    @staticmethod
-    def check_if_user_has_adoption_application(user_id, pet_id):
-
-        adoption_application = AdoptionApplication.query.filter(
-            AdoptionApplication.user_id == user_id,
-            AdoptionApplication.pet_id == pet_id,
-        ).first()
-
-        if adoption_application:
-            return adoption_application
-        else:
-            return False

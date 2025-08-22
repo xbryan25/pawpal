@@ -21,7 +21,6 @@ class SexEnum(enum.Enum):
 
 class PetStatusEnum(enum.Enum):
     available = "available"
-    pending = "pending"
     adopted = "adopted"
     unavailable = "unavailable"
 
