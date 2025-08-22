@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref, watch, onBeforeUnmount, onMounted, computed } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import axios from 'axios'
 
@@ -42,6 +42,9 @@ let shelters: { shelter_id: string; name: string }[] = []
 let shelter_names: string[] = []
 
 const handleSubmit = async () => {
+  const shelterId =
+    shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || ''
+
   const newUser: NewUser = {
     firstName: newUserForm.firstName,
     lastName: newUserForm.lastName,
@@ -52,7 +55,7 @@ const handleSubmit = async () => {
     email: newUserForm.email,
     password: newUserForm.password,
     role: newUserForm.role,
-    shelterId: shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || '',
+    shelterId: shelterId,
   }
 
   try {
@@ -69,8 +72,6 @@ const handleSubmit = async () => {
 onMounted(async () => {
   try {
     const response = await axios.get(`${apiUrl}/shelter/list`)
-
-    console.log(response.data)
 
     shelters = response.data
     shelter_names = shelters.map((shelter) => shelter.name)
