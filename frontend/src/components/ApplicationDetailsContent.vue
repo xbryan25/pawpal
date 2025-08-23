@@ -12,6 +12,7 @@ interface AdopterDetails {
   adopterEmail: string
   adopterTotalApplications: number
   adopterAcceptedApplications: number
+  adopterProfileImageUrl: string
 }
 
 interface PetDetails {
@@ -36,6 +37,7 @@ const applicationDetails = reactive<ApplicationDetails>({
     adopterEmail: '',
     adopterTotalApplications: 0,
     adopterAcceptedApplications: 0,
+    adopterProfileImageUrl: '',
   },
   petDetails: {
     petId: '',
@@ -159,7 +161,7 @@ onMounted(async () => {
           <div class="flex flex-col bg-gray-400 h-115 rounded-lg p-5" v-else>
             <div class="flex dui-avatar justify-center py-2">
               <div class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2">
-                <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
+                <img :src="applicationDetails.adopterDetails.adopterProfileImageUrl" />
               </div>
             </div>
 

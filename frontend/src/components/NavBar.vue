@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/useAuthStore'
 import Cookies from 'universal-cookie'
 
 const showDropdown = ref<boolean>(false)
 const dropdownRef = ref<HTMLElement | null>(null)
+
 const router = useRouter()
+const auth = useAuthStore()
+
+console.log(auth.profileImageUrl)
+
 const cookies = new Cookies()
 
 const toggleDropdown = () => {
@@ -50,9 +56,13 @@ onBeforeUnmount(() => {
       </div>
 
       <div ref="dropdownRef" class="relative h-[10vh] w-full bg-[#D9D9D9] flex items-center">
-        <div class="mx-2 w-full flex cursor-pointer" @click="toggleDropdown">
-          <div class="rounded-full bg-[#707070] h-15 min-w-15"></div>
-          <div class="w-full h-15 flex flex-col justify-center pl-2">
+        <div class="mx-2 w-full flex cursor-pointer gap-3" @click="toggleDropdown">
+          <div class="flex dui-avatar justify-center">
+            <div class="ring-primary ring-offset-base-100 w-15 rounded-full ring-2 ring-offset-2">
+              <img :src="auth.profileImageUrl || ''" />
+            </div>
+          </div>
+          <div class="w-full h-15 flex flex-col justify-center">
             <p class="font-bold max-h-5 text-sm">Bryan Agan</p>
             <p class="max-h-5 text-sm">Adopter</p>
           </div>

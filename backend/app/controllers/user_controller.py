@@ -31,12 +31,14 @@ class UserController:
 
             user_role = UserService.get_user_role(user_id)
             shelter_id = UserService.get_shelter_id_from_shelter_staff(user_id)
+            profile_image_url = UserService.get_user_profile_image_url(user_id)
 
             return jsonify({
                 "accessToken": access_token,
                 "userRole": user_role,
                 "userId": user_id_str,
-                "shelterId": str(uuid.UUID(bytes=shelter_id)) if shelter_id else None
+                "shelterId": str(uuid.UUID(bytes=shelter_id)) if shelter_id else None,
+                "profileImageUrl": profile_image_url
             }), 200
         
         except Exception as e:

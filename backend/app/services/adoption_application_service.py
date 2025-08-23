@@ -136,7 +136,8 @@ class AdoptionApplicationService:
                 "adopterBirthDate": adopter.birth_date.strftime("%B %d, %Y"),
                 "adopterEmail": adopter.email,
                 "adopterTotalApplications": application_counts.total,
-                "adopterAcceptedApplications": application_counts.approved
+                "adopterAcceptedApplications": application_counts.approved,
+                "adopterProfileImageUrl": adopter.profile_url
             },
 
             "petDetails": {
