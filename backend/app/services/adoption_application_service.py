@@ -184,3 +184,54 @@ class AdoptionApplicationService:
         adoption_application.decision_date = datetime.now()
 
         db.session.commit()
+
+    @staticmethod
+    def get_applications_frequency(selected_range, first_value):
+
+        applications_frequency_list = []
+
+        if selected_range == 'monthly':
+
+            months = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December']
+            
+            current_month_index = months.index(first_value[:-5]) + 1
+            current_year = int(first_value[-5:])
+
+            # 12 for 12 months
+            for _ in range(12):
+                
+                start_date = datetime(current_year, current_month_index, 1)
+
+                if current_month_index == 12:
+                    current_month_index = 1
+                    current_year += 1
+                else:
+                    current_month_index += 1
+
+                end_date = datetime(current_year, current_month_index, 1)
+
+                frequency = AdoptionApplication.query.filter(AdoptionApplication.application_date >= start_date, 
+                                                             AdoptionApplication.application_date < end_date).count()
+
+                applications_frequency_list.append(frequency)
+
+        else:
+            current_year = int(first_value)
+
+            # 5 for 5 years
+            for _ in range(5):
+                
+                start_date = datetime(current_year, 1, 1)
+
+                current_year += 1
+
+                end_date = datetime(current_year, 1, 1)
+
+
+                frequency = AdoptionApplication.query.filter(AdoptionApplication.application_date >= start_date, 
+                                                             AdoptionApplication.application_date < end_date).count()
+                
+                applications_frequency_list.append(frequency)
+
+        return applications_frequency_list

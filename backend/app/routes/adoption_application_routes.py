@@ -27,3 +27,7 @@ def approve_application():
 @adoption_application_bp.route("/reject-application", methods=["POST"])
 def reject_application():
     return AdoptionApplicationController.reject_application_controller()
+
+@adoption_application_bp.route("/get-applications-frequency", methods=["GET"])
+def get_applications_frequency():
+    return AdoptionApplicationController.get_applications_frequency_controller()

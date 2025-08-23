@@ -125,3 +125,21 @@ class AdoptionApplicationController:
         except Exception as e:
             print(e)
             return jsonify({"error": str(e)}), 500
+
+
+    @staticmethod
+    def get_applications_frequency_controller():
+
+        selected_range = request.args.get("selectedRange")
+        first_value = request.args.get("firstValue")
+
+
+        try:
+            applications_frequency = AdoptionApplicationService.get_applications_frequency(selected_range, first_value)
+
+            return jsonify({'applicationsFrequency': applications_frequency}), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({"error": str(e)}), 500
+        

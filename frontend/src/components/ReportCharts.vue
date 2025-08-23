@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { Line, Pie } from 'vue-chartjs'
+
+import axios from 'axios'
+import { useAuthStore } from '@/stores/useAuthStore'
+
 import {
   Chart as ChartJS,
   Title,
@@ -45,8 +49,8 @@ const lineData = reactive<ChartData<'line'>>({
   ],
   datasets: [
     {
-      label: 'Revenue',
-      data: [0, 2, 1, 2, 1, 0, 0, 1, 1, 0, 0, 1],
+      label: 'Frequency',
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       borderColor: '#42A5F5',
       backgroundColor: 'rgba(66, 165, 245, 0.2)',
       fill: true, // Area under the line
@@ -59,7 +63,7 @@ const lineOptions: ChartOptions<'line'> = {
   maintainAspectRatio: false,
   plugins: {
     legend: { position: 'top' },
-    title: { display: true, text: 'Monthly Revenue (Line)' },
+    title: { display: true, text: 'Number of applications (Line)' },
   },
   scales: {
     y: {
@@ -104,16 +108,22 @@ const pieOptions: ChartOptions<'pie'> = {
 const selectedRange = ref('monthly')
 const chartKey = ref(0)
 
-const updateChart = () => {
+const auth = useAuthStore()
+
+const apiUrl = import.meta.env.VITE_API_URL
+
+const updateChart = async () => {
   if (selectedRange.value === 'yearly') {
     lineData.labels = getLast5Years()
 
     lineData.datasets[0].data = [5, 8, 12, 10, 6]
   } else {
     lineData.labels = getLast12Months()
-
-    lineData.datasets[0].data = [0, 2, 1, 2, 1, 0, 0, 1, 1, 0, 0, 1]
   }
+
+  console.log(selectedRange.value)
+
+  await fetchApplicationsFrequency()
 
   chartKey.value++
 }
@@ -134,7 +144,7 @@ const getLast12Months = () => {
     'December',
   ]
 
-  let last12Months: string[] = []
+  const last12Months: string[] = []
 
   const now: Date = new Date()
   let currentMonth: number = now.getMonth()
@@ -155,10 +165,10 @@ const getLast12Months = () => {
 }
 
 const getLast5Years = () => {
-  let last5Years: string[] = []
+  const last5Years: string[] = []
 
   const now: Date = new Date()
-  let currentYear: number = now.getFullYear()
+  const currentYear: number = now.getFullYear()
 
   for (let i = 0; i < 5; i++) {
     last5Years.push(`${currentYear - i}`)
@@ -166,6 +176,29 @@ const getLast5Years = () => {
 
   return last5Years.reverse()
 }
+
+const fetchApplicationsFrequency = async () => {
+  const response = await axios.get(`${apiUrl}/adoption-applications/get-applications-frequency`, {
+    params: {
+      selectedRange: selectedRange.value,
+      firstValue: lineData.labels ? lineData.labels[0] : '',
+    },
+  })
+
+  lineData.datasets[0].data = response.data.applicationsFrequency
+
+  chartKey.value++
+}
+
+onMounted(async () => {
+  try {
+    updateChart()
+
+    await fetchApplicationsFrequency()
+  } catch (error) {
+    console.error('Error retrieving data from backend', error)
+  }
+})
 </script>
 
 <template>
@@ -174,7 +207,7 @@ const getLast5Years = () => {
       <h1 class="text-6xl font-semibold">Reports</h1>
 
       <div class="pt-5 flex flex-col flex-1 min-h-0">
-        <div class="mb-4">
+        <div class="mb-4" v-if="auth.isUser">
           <h1 class="font-bold text-xl">Longest Pet Ownership</h1>
           <p class="pl-5">
             Your first adopted pet, Max (Cat/Puspin), has been with you for
@@ -185,7 +218,7 @@ const getLast5Years = () => {
         <div class="flex-1 min-h-0 overflow-hidden">
           <div class="flex flex-row">
             <div class="flex-1">
-              <h1 class="font-bold text-xl">Adoption Timeline</h1>
+              <h1 class="font-bold text-xl">Application Frequency</h1>
             </div>
 
             <div class="flex-1">
