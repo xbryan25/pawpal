@@ -37,6 +37,16 @@ class UserService:
             return shelter_id
         else:
             return None
+    
+    @staticmethod
+    def get_user_profile_image_url(user_id):
+        user = User.query.filter(User.user_id == user_id).first()
+
+        if user:
+            profile_image_url = user.profile_url
+            return profile_image_url
+        else:
+            return None
         
     @staticmethod
     def user_signup(new_user_data, new_user_image):

@@ -55,6 +55,7 @@ const handleSubmit = async () => {
     const role = response.data.userRole
     const userId = response.data.userId
     const shelterId = response.data.shelterId
+    const profileImageUrl = response.data.profileImageUrl
 
     cookies.set('access_token', accessToken, {
       path: '/',
@@ -78,7 +79,7 @@ const handleSubmit = async () => {
       rtl: false,
     })
 
-    auth.setAuth(role, userId, shelterId)
+    auth.setAuth(profileImageUrl, role, userId, shelterId)
 
     router.push('/pets/view')
   } catch (error: unknown) {
