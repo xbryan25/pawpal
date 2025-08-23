@@ -29,5 +29,5 @@ def reject_application():
     return AdoptionApplicationController.reject_application_controller()
 
 @adoption_application_bp.route("/get-applications-frequency", methods=["GET"])
-def get_applications_frequency():
+def get_applications_frequency_for_shelter():
     return AdoptionApplicationController.get_applications_frequency_controller()

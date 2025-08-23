@@ -182,6 +182,7 @@ const fetchApplicationsFrequency = async () => {
     params: {
       selectedRange: selectedRange.value,
       firstValue: lineData.labels ? lineData.labels[0] : '',
+      shelterId: auth.isShelterStaff ? auth.shelterId : null,
     },
   })
 
@@ -193,8 +194,6 @@ const fetchApplicationsFrequency = async () => {
 onMounted(async () => {
   try {
     updateChart()
-
-    await fetchApplicationsFrequency()
   } catch (error) {
     console.error('Error retrieving data from backend', error)
   }

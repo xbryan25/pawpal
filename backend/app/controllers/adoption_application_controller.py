@@ -132,10 +132,13 @@ class AdoptionApplicationController:
 
         selected_range = request.args.get("selectedRange")
         first_value = request.args.get("firstValue")
-
+        shelter_id_str = request.args.get("shelterId")
 
         try:
-            applications_frequency = AdoptionApplicationService.get_applications_frequency(selected_range, first_value)
+            
+            shelter_id = uuid.UUID(shelter_id_str).bytes if shelter_id_str else None
+
+            applications_frequency = AdoptionApplicationService.get_applications_frequency(selected_range, first_value, shelter_id)
 
             return jsonify({'applicationsFrequency': applications_frequency}), 200
 

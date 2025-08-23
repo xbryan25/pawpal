@@ -186,7 +186,7 @@ class AdoptionApplicationService:
         db.session.commit()
 
     @staticmethod
-    def get_applications_frequency(selected_range, first_value):
+    def get_applications_frequency(selected_range, first_value, shelter_id):
 
         applications_frequency_list = []
 
@@ -211,8 +211,17 @@ class AdoptionApplicationService:
 
                 end_date = datetime(current_year, current_month_index, 1)
 
-                frequency = AdoptionApplication.query.filter(AdoptionApplication.application_date >= start_date, 
-                                                             AdoptionApplication.application_date < end_date).count()
+                if not shelter_id:
+
+                    frequency = AdoptionApplication.query.filter(AdoptionApplication.application_date >= start_date, 
+                                                                AdoptionApplication.application_date < end_date).count()
+                    
+                else:
+
+                    frequency = db.session.query(db.func.count(AdoptionApplication.aa_id)).join(Pet, 
+                                                                                           AdoptionApplication.pet_id == Pet.pet_id).filter(Pet.shelter_id == shelter_id,
+                                                                                                                                 AdoptionApplication.application_date >= start_date, AdoptionApplication.application_date < end_date).scalar()
+                    
 
                 applications_frequency_list.append(frequency)
 
@@ -228,10 +237,18 @@ class AdoptionApplicationService:
 
                 end_date = datetime(current_year, 1, 1)
 
+                if not shelter_id:
 
-                frequency = AdoptionApplication.query.filter(AdoptionApplication.application_date >= start_date, 
-                                                             AdoptionApplication.application_date < end_date).count()
-                
+                    frequency = AdoptionApplication.query.filter(AdoptionApplication.application_date >= start_date, 
+                                                                AdoptionApplication.application_date < end_date).count()
+                    
+                else:
+
+                    frequency = db.session.query(db.func.count(AdoptionApplication.aa_id)).join(Pet, 
+                                                                                           AdoptionApplication.pet_id == Pet.pet_id).filter(Pet.shelter_id == shelter_id,
+                                                                                                                                 AdoptionApplication.application_date >= start_date, AdoptionApplication.application_date < end_date).scalar()
+
+
                 applications_frequency_list.append(frequency)
 
         return applications_frequency_list
