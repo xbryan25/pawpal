@@ -1,9 +1,9 @@
 
-from app.models import AdoptionApplication, Pet, Shelter, PetImage, User, ApplicationStatusEnum, PetStatusEnum
+from app.models import AdoptionApplication, Pet, Shelter, PetImage, User, ApplicationStatusEnum, PetStatusEnum, Species
 from app.extensions import db
 
 import uuid
-from sqlalchemy import func, case, cast, Integer
+from sqlalchemy import func, case, cast, Integer, desc
 from datetime import datetime
 
 class AdoptionApplicationService:
@@ -270,3 +270,42 @@ class AdoptionApplicationService:
         
 
         return application_status_frequency_list
+    
+    @staticmethod
+    def get_preferred_pet_species_frequency(shelter_id):
+
+        preferred_pet_species_frequency_list = []
+
+        # Approach, get top 5 species name and count
+        # Then get grand total
+        # Subtract top_species_sum from grand_total, call it others_total
+        # If others_total is greater than 0, label others_total as 'Others'
+
+        top_species = (db.session.query(Pet.species_id, func.count(Pet.pet_id).label("total"))
+                       .select_from(AdoptionApplication)
+                       .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                       .filter(Pet.shelter_id == shelter_id)
+                       .group_by(Pet.species_id)
+                       .order_by(desc("total"))
+                       .limit(5)
+                       .all())
+        
+        grand_total = (db.session.query(func.count(Pet.pet_id))
+                        .select_from(AdoptionApplication)
+                        .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                        .filter(Pet.shelter_id == shelter_id)
+                        .scalar())
+        
+        top_species_sum = sum([row.total for row in top_species])
+        others_total = grand_total - top_species_sum
+
+        for species_id, total in top_species:
+            
+            species_name = Species.query.with_entities(Species.species_name).filter(Species.species_id == species_id).scalar()
+
+            preferred_pet_species_frequency_list.append({species_name : total})
+        
+        if others_total > 0:
+            preferred_pet_species_frequency_list.append({'Others' : others_total})
+
+        return preferred_pet_species_frequency_list

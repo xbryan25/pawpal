@@ -32,6 +32,10 @@ ChartJS.register(
   Filler,
 )
 
+type SpeciesFrequency = {
+  speciesFrequency: number
+}
+
 const lineData = reactive<ChartData<'line'>>({
   labels: [
     'January 2025',
@@ -86,13 +90,13 @@ const applicationStatusPieData: ChartData<'pie'> = {
   ],
 }
 
-const adoptedTypePieData: ChartData<'pie'> = {
-  labels: ['Cat', 'Dog', 'Bird', 'Guinea Pig', 'Others'],
+const preferredPetSpeciesPieData: ChartData<'pie'> = {
+  labels: [],
   datasets: [
     {
       label: 'Revenue',
-      data: [3, 7, 5, 5, 1],
-      backgroundColor: ['#825b57', '#BA2D1E', '#FFA726', '#95c91a', '#0f9482'],
+      data: [],
+      backgroundColor: ['#BA2D1E', '#825b57', '#FFA726', '#95c91a', '#0f9482'],
     },
   ],
 }
@@ -120,8 +124,6 @@ const updateChart = async () => {
   } else {
     lineData.labels = getLast12Months()
   }
-
-  console.log(selectedRange.value)
 
   await fetchApplicationReports()
 
@@ -190,8 +192,17 @@ const fetchApplicationReports = async () => {
 
   applicationStatusPieData.datasets[0].data = response.data.applicationStatusFrequency
 
-  console.log(response.data)
+  updatePreferredPetSpeciesPieData(response.data.preferredPetSpeciesFrequency)
   chartKey.value++
+}
+
+const updatePreferredPetSpeciesPieData = (preferredPetSpeciesData: SpeciesFrequency[]) => {
+  preferredPetSpeciesData.forEach((speciesFrequency: SpeciesFrequency) => {
+    Object.entries(speciesFrequency).forEach(([key, value]) => {
+      preferredPetSpeciesPieData.labels?.push(key)
+      preferredPetSpeciesPieData.datasets[0].data.push(value)
+    })
+  })
 }
 
 onMounted(async () => {
@@ -248,9 +259,9 @@ onMounted(async () => {
             </div>
           </div>
           <div class="flex-1 min-h-0 overflow-hidden">
-            <h1 class="font-bold text-xl">Types of Pets Adopted</h1>
+            <h1 class="font-bold text-xl">Preferred Pet Species</h1>
             <div class="w-full h-full relative pb-10">
-              <Pie :data="adoptedTypePieData" :options="pieOptions" />
+              <Pie :data="preferredPetSpeciesPieData" :options="pieOptions" :key="chartKey" />
             </div>
           </div>
         </div>

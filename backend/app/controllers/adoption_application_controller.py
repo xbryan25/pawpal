@@ -142,12 +142,11 @@ class AdoptionApplicationController:
 
             applications_status_frequency = AdoptionApplicationService.get_application_status_frequency(shelter_id)
 
-            # types_of_adopted_pets_frequency = AdoptionApplicationService.get_types_of_adopted_pets_frequency(shelter_id)
+            preferred_pet_species_frequency = AdoptionApplicationService.get_preferred_pet_species_frequency(shelter_id)
 
-            print(applications_status_frequency)
-
-
-            return jsonify({'applicationsFrequency': applications_frequency, 'applicationStatusFrequency': applications_status_frequency}), 200
+            return jsonify({'applicationsFrequency': applications_frequency, 
+                            'applicationStatusFrequency': applications_status_frequency,
+                            'preferredPetSpeciesFrequency': preferred_pet_species_frequency}), 200
 
         except Exception as e:
             print(e)
