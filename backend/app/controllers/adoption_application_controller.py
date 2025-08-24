@@ -132,17 +132,21 @@ class AdoptionApplicationController:
 
         selected_range = request.args.get("selectedRange")
         first_value = request.args.get("firstValue")
+        fetch_type = request.args.get("fetchType")
+
         shelter_id_str = request.args.get("shelterId")
+        user_id_str = request.args.get("userId")
 
         try:
             
             shelter_id = uuid.UUID(shelter_id_str).bytes if shelter_id_str else None
+            user_id = uuid.UUID(user_id_str).bytes if user_id_str else None
 
-            applications_frequency = AdoptionApplicationService.get_applications_frequency(selected_range, first_value, shelter_id)
+            applications_frequency = AdoptionApplicationService.get_applications_frequency(selected_range, first_value, shelter_id, user_id, fetch_type)
 
-            applications_status_frequency = AdoptionApplicationService.get_application_status_frequency(shelter_id)
+            applications_status_frequency = AdoptionApplicationService.get_application_status_frequency(shelter_id, user_id, fetch_type)
 
-            preferred_pet_species_frequency = AdoptionApplicationService.get_preferred_pet_species_frequency(shelter_id)
+            preferred_pet_species_frequency = AdoptionApplicationService.get_preferred_pet_species_frequency(shelter_id, user_id, fetch_type)
 
             return jsonify({'applicationsFrequency': applications_frequency, 
                             'applicationStatusFrequency': applications_status_frequency,

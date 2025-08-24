@@ -186,7 +186,7 @@ class AdoptionApplicationService:
         db.session.commit()
 
     @staticmethod
-    def get_applications_frequency(selected_range, first_value, shelter_id):
+    def get_applications_frequency(selected_range, first_value, shelter_id, user_id, fetch_type):
 
         applications_frequency_list = []
 
@@ -211,17 +211,25 @@ class AdoptionApplicationService:
 
                 end_date = datetime(current_year, current_month_index, 1)
 
-                if not shelter_id:
+                if fetch_type == 'adopter' and user_id:
 
-                    frequency = AdoptionApplication.query.filter(AdoptionApplication.application_date >= start_date, 
-                                                                AdoptionApplication.application_date < end_date).count()
+                    frequency = AdoptionApplication.query.filter(AdoptionApplication.user_id == user_id,
+                                                                AdoptionApplication.application_date >= start_date, 
+                                                                AdoptionApplication.application_date < end_date,
+                                                                AdoptionApplication.status != 'cancelled').count()
                     
-                else:
+                elif fetch_type == 'shelter_staff' and shelter_id:
 
-                    frequency = db.session.query(db.func.count(AdoptionApplication.aa_id)).join(Pet, 
-                                                                                           AdoptionApplication.pet_id == Pet.pet_id).filter(Pet.shelter_id == shelter_id,
-                                                                                                                                 AdoptionApplication.application_date >= start_date, AdoptionApplication.application_date < end_date).scalar()
-                    
+                    frequency = (db.session.query(db.func.count(AdoptionApplication.aa_id))
+                                 .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                                 .filter(Pet.shelter_id == shelter_id,
+                                         AdoptionApplication.application_date >= start_date, 
+                                         AdoptionApplication.application_date < end_date,
+                                         AdoptionApplication.status != 'cancelled')
+                                         .scalar())
+                
+                else: 
+                    frequency = 0
 
                 applications_frequency_list.append(frequency)
 
@@ -237,17 +245,24 @@ class AdoptionApplicationService:
 
                 end_date = datetime(current_year, 1, 1)
 
-                if not shelter_id:
+                if fetch_type == 'adopter' and user_id:
 
-                    frequency = AdoptionApplication.query.filter(AdoptionApplication.application_date >= start_date, 
-                                                                AdoptionApplication.application_date < end_date).count()
+                    frequency = AdoptionApplication.query.filter(AdoptionApplication.user_id == user_id,
+                                                                 AdoptionApplication.application_date >= start_date, 
+                                                                 AdoptionApplication.application_date < end_date,
+                                                                 AdoptionApplication.status != 'cancelled').count()
                     
+                elif fetch_type == 'shelter_staff' and shelter_id:
+
+                    frequency = (db.session.query(db.func.count(AdoptionApplication.aa_id))
+                                 .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                                 .filter(Pet.shelter_id == shelter_id, 
+                                         AdoptionApplication.application_date >= start_date, 
+                                         AdoptionApplication.application_date < end_date,
+                                         AdoptionApplication.status != 'cancelled')
+                                         .scalar())
                 else:
-
-                    frequency = db.session.query(db.func.count(AdoptionApplication.aa_id)).join(Pet, 
-                                                                                           AdoptionApplication.pet_id == Pet.pet_id).filter(Pet.shelter_id == shelter_id,
-                                                                                                                                 AdoptionApplication.application_date >= start_date, AdoptionApplication.application_date < end_date).scalar()
-
+                    frequency = 0
 
                 applications_frequency_list.append(frequency)
 
@@ -255,16 +270,29 @@ class AdoptionApplicationService:
 
 
     @staticmethod
-    def get_application_status_frequency(shelter_id):
+    def get_application_status_frequency(shelter_id, user_id, fetch_type):
 
         application_status_frequency_list = []
 
-        status = ['approved', 'rejected', 'pending']
+        status = ['approved', 'rejected', 'pending', 'cancelled']
 
         for one_status in status:
 
-            frequency = db.session.query(db.func.count(AdoptionApplication.aa_id)).join(Pet, 
-                                                                                        AdoptionApplication.pet_id == Pet.pet_id).filter(Pet.shelter_id == shelter_id, AdoptionApplication.status == one_status).scalar()
+            if fetch_type == 'adopter' and user_id:
+                frequency = (db.session.query(db.func.count(AdoptionApplication.aa_id))
+                             .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                             .filter(AdoptionApplication.user_id == user_id, AdoptionApplication.status == one_status)
+                             .scalar())
+            
+            elif fetch_type == 'shelter_staff' and shelter_id:
+
+                frequency = (db.session.query(db.func.count(AdoptionApplication.aa_id))
+                             .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                             .filter(Pet.shelter_id == shelter_id, AdoptionApplication.status == one_status)
+                             .scalar())
+
+            else: 
+                frequency = 0
 
             application_status_frequency_list.append(frequency)
         
@@ -272,7 +300,7 @@ class AdoptionApplicationService:
         return application_status_frequency_list
     
     @staticmethod
-    def get_preferred_pet_species_frequency(shelter_id):
+    def get_preferred_pet_species_frequency(shelter_id, user_id, fetch_type):
 
         preferred_pet_species_frequency_list = []
 
@@ -281,20 +309,45 @@ class AdoptionApplicationService:
         # Subtract top_species_sum from grand_total, call it others_total
         # If others_total is greater than 0, label others_total as 'Others'
 
-        top_species = (db.session.query(Pet.species_id, func.count(Pet.pet_id).label("total"))
-                       .select_from(AdoptionApplication)
-                       .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
-                       .filter(Pet.shelter_id == shelter_id)
-                       .group_by(Pet.species_id)
-                       .order_by(desc("total"))
-                       .limit(5)
-                       .all())
+        if fetch_type == 'adopter' and user_id:
+            top_species = (db.session.query(Pet.species_id, func.count(Pet.pet_id).label("total"))
+                           .select_from(AdoptionApplication)
+                           .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                           .filter(AdoptionApplication.user_id == user_id,
+                                   AdoptionApplication.status != 'cancelled')
+                           .group_by(Pet.species_id)
+                           .order_by(desc("total"))
+                           .limit(5)
+                           .all())
         
-        grand_total = (db.session.query(func.count(Pet.pet_id))
-                        .select_from(AdoptionApplication)
-                        .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
-                        .filter(Pet.shelter_id == shelter_id)
-                        .scalar())
+            grand_total = (db.session.query(func.count(Pet.pet_id))
+                           .select_from(AdoptionApplication)
+                           .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                           .filter(Pet.shelter_id == shelter_id,
+                                   AdoptionApplication.status != 'cancelled')
+                           .scalar())
+            
+        elif fetch_type == 'shelter_staff' and shelter_id:
+
+            top_species = (db.session.query(Pet.species_id, func.count(Pet.pet_id).label("total"))
+                           .select_from(AdoptionApplication)
+                           .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                           .filter(Pet.shelter_id == shelter_id,
+                                   AdoptionApplication.status != 'cancelled')
+                           .group_by(Pet.species_id)
+                           .order_by(desc("total"))
+                           .limit(5)
+                           .all())
+        
+            grand_total = (db.session.query(func.count(Pet.pet_id))
+                           .select_from(AdoptionApplication)
+                           .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                           .filter(Pet.shelter_id == shelter_id,
+                                   AdoptionApplication.status != 'cancelled')
+                           .scalar())
+
+        else: 
+            raise ValueError("Both shelter_id and user_id are blank")
         
         top_species_sum = sum([row.total for row in top_species])
         others_total = grand_total - top_species_sum

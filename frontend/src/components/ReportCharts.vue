@@ -37,20 +37,7 @@ type SpeciesFrequency = {
 }
 
 const lineData = reactive<ChartData<'line'>>({
-  labels: [
-    'January 2025',
-    'February 2025',
-    'March 2025',
-    'April 2025',
-    'May 2025',
-    'June 2025',
-    'July 2025',
-    'August 2025',
-    'September 2025',
-    'October 2025',
-    'November 2025',
-    'December 2025',
-  ],
+  labels: [],
   datasets: [
     {
       label: 'Frequency',
@@ -80,12 +67,12 @@ const lineOptions: ChartOptions<'line'> = {
 }
 
 const applicationStatusPieData: ChartData<'pie'> = {
-  labels: ['Approved', 'Rejected', 'Pending'],
+  labels: ['Approved', 'Rejected', 'Pending', 'Cancelled'],
   datasets: [
     {
       label: 'Frequency',
       data: [0, 0, 0],
-      backgroundColor: ['#66BB6A', '#BA2D1E', '#FFA726'],
+      backgroundColor: ['#66BB6A', '#BA2D1E', '#FFA726', '#B0BEC5'],
     },
   ],
 }
@@ -185,6 +172,8 @@ const fetchApplicationReports = async () => {
       selectedRange: selectedRange.value,
       firstValue: lineData.labels ? lineData.labels[0] : '',
       shelterId: auth.isShelterStaff ? auth.shelterId : null,
+      userId: auth.isUser ? auth.userId : null,
+      fetchType: auth.isShelterStaff ? 'shelter_staff' : 'adopter',
     },
   })
 
