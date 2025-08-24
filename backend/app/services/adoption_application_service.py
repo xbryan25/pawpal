@@ -1,10 +1,11 @@
 
-from app.models import AdoptionApplication, Pet, Shelter, PetImage, User, ApplicationStatusEnum, PetStatusEnum
+from app.models import AdoptionApplication, Pet, Shelter, PetImage, User, ApplicationStatusEnum, PetStatusEnum, Species, Breed
 from app.extensions import db
 
 import uuid
-from sqlalchemy import func, case, cast, Integer
+from sqlalchemy import func, case, cast, Integer, desc
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 class AdoptionApplicationService:
 
@@ -184,3 +185,233 @@ class AdoptionApplicationService:
         adoption_application.decision_date = datetime.now()
 
         db.session.commit()
+
+    @staticmethod
+    def get_applications_frequency(selected_range, first_value, shelter_id, user_id, fetch_type):
+
+        applications_frequency_list = []
+
+        if selected_range == 'monthly':
+
+            months = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December']
+            
+            current_month_index = months.index(first_value[:-5]) + 1
+            current_year = int(first_value[-5:])
+
+            # 12 for 12 months
+            for _ in range(12):
+                
+                start_date = datetime(current_year, current_month_index, 1)
+
+                if current_month_index == 12:
+                    current_month_index = 1
+                    current_year += 1
+                else:
+                    current_month_index += 1
+
+                end_date = datetime(current_year, current_month_index, 1)
+
+                if fetch_type == 'adopter' and user_id:
+
+                    frequency = AdoptionApplication.query.filter(AdoptionApplication.user_id == user_id,
+                                                                AdoptionApplication.application_date >= start_date, 
+                                                                AdoptionApplication.application_date < end_date,
+                                                                AdoptionApplication.status != 'cancelled').count()
+                    
+                elif fetch_type == 'shelter_staff' and shelter_id:
+
+                    frequency = (db.session.query(db.func.count(AdoptionApplication.aa_id))
+                                 .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                                 .filter(Pet.shelter_id == shelter_id,
+                                         AdoptionApplication.application_date >= start_date, 
+                                         AdoptionApplication.application_date < end_date,
+                                         AdoptionApplication.status != 'cancelled')
+                                         .scalar())
+                
+                else: 
+                    frequency = 0
+
+                applications_frequency_list.append(frequency)
+
+        else:
+            current_year = int(first_value)
+
+            # 5 for 5 years
+            for _ in range(5):
+                
+                start_date = datetime(current_year, 1, 1)
+
+                current_year += 1
+
+                end_date = datetime(current_year, 1, 1)
+
+                if fetch_type == 'adopter' and user_id:
+
+                    frequency = AdoptionApplication.query.filter(AdoptionApplication.user_id == user_id,
+                                                                 AdoptionApplication.application_date >= start_date, 
+                                                                 AdoptionApplication.application_date < end_date,
+                                                                 AdoptionApplication.status != 'cancelled').count()
+                    
+                elif fetch_type == 'shelter_staff' and shelter_id:
+
+                    frequency = (db.session.query(db.func.count(AdoptionApplication.aa_id))
+                                 .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                                 .filter(Pet.shelter_id == shelter_id, 
+                                         AdoptionApplication.application_date >= start_date, 
+                                         AdoptionApplication.application_date < end_date,
+                                         AdoptionApplication.status != 'cancelled')
+                                         .scalar())
+                else:
+                    frequency = 0
+
+                applications_frequency_list.append(frequency)
+
+        return applications_frequency_list
+
+
+    @staticmethod
+    def get_application_status_frequency(shelter_id, user_id, fetch_type):
+
+        application_status_frequency_list = []
+
+        status = ['approved', 'rejected', 'pending', 'cancelled']
+
+        for one_status in status:
+
+            if fetch_type == 'adopter' and user_id:
+                frequency = (db.session.query(db.func.count(AdoptionApplication.aa_id))
+                             .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                             .filter(AdoptionApplication.user_id == user_id, AdoptionApplication.status == one_status)
+                             .scalar())
+            
+            elif fetch_type == 'shelter_staff' and shelter_id:
+
+                frequency = (db.session.query(db.func.count(AdoptionApplication.aa_id))
+                             .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                             .filter(Pet.shelter_id == shelter_id, AdoptionApplication.status == one_status)
+                             .scalar())
+
+            else: 
+                frequency = 0
+
+            application_status_frequency_list.append(frequency)
+        
+
+        return application_status_frequency_list
+    
+    @staticmethod
+    def get_preferred_pet_species_frequency(shelter_id, user_id, fetch_type):
+
+        preferred_pet_species_frequency_list = []
+
+        # Approach, get top 5 species name and count
+        # Then get grand total
+        # Subtract top_species_sum from grand_total, call it others_total
+        # If others_total is greater than 0, label others_total as 'Others'
+
+        if fetch_type == 'adopter' and user_id:
+            top_species = (db.session.query(Pet.species_id, func.count(Pet.pet_id).label("total"))
+                           .select_from(AdoptionApplication)
+                           .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                           .filter(AdoptionApplication.user_id == user_id,
+                                   AdoptionApplication.status != 'cancelled')
+                           .group_by(Pet.species_id)
+                           .order_by(desc("total"))
+                           .limit(5)
+                           .all())
+        
+            grand_total = (db.session.query(func.count(Pet.pet_id))
+                           .select_from(AdoptionApplication)
+                           .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                           .filter(Pet.shelter_id == shelter_id,
+                                   AdoptionApplication.status != 'cancelled')
+                           .scalar())
+            
+        elif fetch_type == 'shelter_staff' and shelter_id:
+
+            top_species = (db.session.query(Pet.species_id, func.count(Pet.pet_id).label("total"))
+                           .select_from(AdoptionApplication)
+                           .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                           .filter(Pet.shelter_id == shelter_id,
+                                   AdoptionApplication.status != 'cancelled')
+                           .group_by(Pet.species_id)
+                           .order_by(desc("total"))
+                           .limit(5)
+                           .all())
+        
+            grand_total = (db.session.query(func.count(Pet.pet_id))
+                           .select_from(AdoptionApplication)
+                           .join(Pet, AdoptionApplication.pet_id == Pet.pet_id)
+                           .filter(Pet.shelter_id == shelter_id,
+                                   AdoptionApplication.status != 'cancelled')
+                           .scalar())
+
+        else: 
+            raise ValueError("Both shelter_id and user_id are blank")
+        
+        top_species_sum = sum([row.total for row in top_species])
+        others_total = grand_total - top_species_sum
+
+        for species_id, total in top_species:
+            
+            species_name = Species.query.with_entities(Species.species_name).filter(Species.species_id == species_id).scalar()
+
+            preferred_pet_species_frequency_list.append({species_name : total})
+        
+        if others_total > 0:
+            preferred_pet_species_frequency_list.append({'Others' : others_total})
+
+        return preferred_pet_species_frequency_list
+    
+
+    @staticmethod
+    def get_longest_pet_ownership(user_id):
+
+        longest_pet_ownership_details_dict = {}
+
+
+        first_approved_adoption_application = (AdoptionApplication.query
+                                               .filter(AdoptionApplication.user_id == user_id,
+                                                       AdoptionApplication.status == 'approved')
+                                               .order_by(AdoptionApplication.decision_date)
+                                               .first())
+        
+        if first_approved_adoption_application:
+        
+            adopted_pet = Pet.query.filter(Pet.pet_id == first_approved_adoption_application.pet_id).first()
+
+            breed_species_id, breed_name = Breed.query.with_entities(Breed.species_id, Breed.breed_name).filter(Breed.breed_id == adopted_pet.breed_id).first()
+
+            species_name = Species.query.with_entities(Species.species_name).filter(Species.species_id == breed_species_id).scalar()
+
+            delta = relativedelta(datetime.now(), first_approved_adoption_application.decision_date)
+
+            delta_str_parts = []
+
+            if delta.years:
+                delta_str_parts.append(f"{delta.years} year{'s' if delta.years > 1 else ''}")
+
+            if delta.months:
+                delta_str_parts.append(f"{delta.months} month{'s' if delta.months > 1 else ''}")
+
+            if delta.days:
+                delta_str_parts.append(f"{delta.days} day{'s' if delta.days > 1 else ''}")
+
+            if len(delta_str_parts) > 1:
+                delta_str = ", ".join(delta_str_parts[:-1]) + " and " + delta_str_parts[-1]
+            elif delta_str_parts:
+                delta_str = delta_str_parts[0]
+            else:
+                delta_str = "0 days"
+        
+
+            longest_pet_ownership_details_dict.update({'adoptedPetName': adopted_pet.name, 
+                                                    'breedName': breed_name, 
+                                                    'speciesName': species_name,
+                                                    'timeSinceAdoption': delta_str})
+
+            return longest_pet_ownership_details_dict
+        
+        else:
+            return None

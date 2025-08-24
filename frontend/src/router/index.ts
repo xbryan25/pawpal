@@ -8,7 +8,7 @@ import PetsView from '@/views/PetsView.vue'
 import PetProfileView from '@/views/PetProfileView.vue'
 import ApplicationsView from '@/views/ApplicationsView.vue'
 import SignupView from '@/views/SignupView.vue'
-import AdopterReportsView from '@/views/AdopterReportsView.vue'
+import ReportsView from '@/views/ReportsView.vue'
 import AddEditPetView from '@/views/AddEditPetView.vue'
 import ApplicationDetailsView from '@/views/ApplicationDetailsView.vue'
 
@@ -58,9 +58,9 @@ const routes: RouteRecordRaw[] = [
     },
     {
       path: '/reports/user/view',
-      name: 'adopterReportsView',
-      component: AdopterReportsView,
-      meta: { title: 'Adopter Reports View' },
+      name: 'reportsView',
+      component: ReportsView,
+      meta: { title: 'Reports View' },
     },
     {
       path: '/pets/add-pet',

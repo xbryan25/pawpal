@@ -125,3 +125,48 @@ class AdoptionApplicationController:
         except Exception as e:
             print(e)
             return jsonify({"error": str(e)}), 500
+
+
+    @staticmethod
+    def get_application_reports_controller():
+
+        selected_range = request.args.get("selectedRange")
+        first_value = request.args.get("firstValue")
+        fetch_type = request.args.get("fetchType")
+
+        shelter_id_str = request.args.get("shelterId")
+        user_id_str = request.args.get("userId")
+
+        try:
+            
+            shelter_id = uuid.UUID(shelter_id_str).bytes if shelter_id_str else None
+            user_id = uuid.UUID(user_id_str).bytes if user_id_str else None
+
+            applications_frequency = AdoptionApplicationService.get_applications_frequency(selected_range, first_value, shelter_id, user_id, fetch_type)
+
+            applications_status_frequency = AdoptionApplicationService.get_application_status_frequency(shelter_id, user_id, fetch_type)
+
+            preferred_pet_species_frequency = AdoptionApplicationService.get_preferred_pet_species_frequency(shelter_id, user_id, fetch_type)
+
+            return jsonify({'applicationsFrequency': applications_frequency, 
+                            'applicationStatusFrequency': applications_status_frequency,
+                            'preferredPetSpeciesFrequency': preferred_pet_species_frequency}), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({"error": str(e)}), 500
+
+    def get_longest_pet_ownership_controller():
+
+        user_id_str = request.args.get("userId")
+
+        try:
+            user_id = uuid.UUID(user_id_str).bytes if user_id_str else None
+
+            longest_pet_ownership = AdoptionApplicationService.get_longest_pet_ownership(user_id)
+
+            return jsonify({'longestPetOwnership': longest_pet_ownership}), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({"error": str(e)}), 500

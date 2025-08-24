@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { Line, Pie } from 'vue-chartjs'
+
+import axios from 'axios'
+import { useAuthStore } from '@/stores/useAuthStore'
+
 import {
   Chart as ChartJS,
   Title,
@@ -28,25 +32,16 @@ ChartJS.register(
   Filler,
 )
 
+type SpeciesFrequency = {
+  speciesFrequency: number
+}
+
 const lineData = reactive<ChartData<'line'>>({
-  labels: [
-    'January 2025',
-    'February 2025',
-    'March 2025',
-    'April 2025',
-    'May 2025',
-    'June 2025',
-    'July 2025',
-    'August 2025',
-    'September 2025',
-    'October 2025',
-    'November 2025',
-    'December 2025',
-  ],
+  labels: [],
   datasets: [
     {
-      label: 'Revenue',
-      data: [0, 2, 1, 2, 1, 0, 0, 1, 1, 0, 0, 1],
+      label: 'Frequency',
+      data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       borderColor: '#42A5F5',
       backgroundColor: 'rgba(66, 165, 245, 0.2)',
       fill: true, // Area under the line
@@ -59,7 +54,7 @@ const lineOptions: ChartOptions<'line'> = {
   maintainAspectRatio: false,
   plugins: {
     legend: { position: 'top' },
-    title: { display: true, text: 'Monthly Revenue (Line)' },
+    title: { display: true, text: 'Number of applications (Line)' },
   },
   scales: {
     y: {
@@ -72,23 +67,23 @@ const lineOptions: ChartOptions<'line'> = {
 }
 
 const applicationStatusPieData: ChartData<'pie'> = {
-  labels: ['Accepted', 'Rejected', 'Pending'],
+  labels: ['Approved', 'Rejected', 'Pending', 'Cancelled'],
   datasets: [
     {
-      label: 'Revenue',
-      data: [3, 7, 5],
-      backgroundColor: ['#66BB6A', '#BA2D1E', '#FFA726'],
+      label: 'Frequency',
+      data: [0, 0, 0],
+      backgroundColor: ['#66BB6A', '#BA2D1E', '#FFA726', '#B0BEC5'],
     },
   ],
 }
 
-const adoptedTypePieData: ChartData<'pie'> = {
-  labels: ['Cat', 'Dog', 'Bird', 'Guinea Pig', 'Others'],
+const preferredPetSpeciesPieData: ChartData<'pie'> = {
+  labels: [],
   datasets: [
     {
       label: 'Revenue',
-      data: [3, 7, 5, 5, 1],
-      backgroundColor: ['#825b57', '#BA2D1E', '#FFA726', '#95c91a', '#0f9482'],
+      data: [],
+      backgroundColor: ['#BA2D1E', '#825b57', '#FFA726', '#95c91a', '#0f9482'],
     },
   ],
 }
@@ -104,16 +99,29 @@ const pieOptions: ChartOptions<'pie'> = {
 const selectedRange = ref('monthly')
 const chartKey = ref(0)
 
-const updateChart = () => {
+const auth = useAuthStore()
+
+const apiUrl = import.meta.env.VITE_API_URL
+
+const longestPetOwnership = reactive({
+  adoptedPetName: '',
+  breedName: '',
+  speciesName: '',
+  timeSinceAdoption: '',
+})
+
+const showLongestPetOwnership = ref(false)
+
+const updateChart = async () => {
   if (selectedRange.value === 'yearly') {
     lineData.labels = getLast5Years()
 
     lineData.datasets[0].data = [5, 8, 12, 10, 6]
   } else {
     lineData.labels = getLast12Months()
-
-    lineData.datasets[0].data = [0, 2, 1, 2, 1, 0, 0, 1, 1, 0, 0, 1]
   }
+
+  await fetchApplicationReports()
 
   chartKey.value++
 }
@@ -134,7 +142,7 @@ const getLast12Months = () => {
     'December',
   ]
 
-  let last12Months: string[] = []
+  const last12Months: string[] = []
 
   const now: Date = new Date()
   let currentMonth: number = now.getMonth()
@@ -155,10 +163,10 @@ const getLast12Months = () => {
 }
 
 const getLast5Years = () => {
-  let last5Years: string[] = []
+  const last5Years: string[] = []
 
   const now: Date = new Date()
-  let currentYear: number = now.getFullYear()
+  const currentYear: number = now.getFullYear()
 
   for (let i = 0; i < 5; i++) {
     last5Years.push(`${currentYear - i}`)
@@ -166,6 +174,59 @@ const getLast5Years = () => {
 
   return last5Years.reverse()
 }
+
+const fetchApplicationReports = async () => {
+  const response = await axios.get(`${apiUrl}/adoption-applications/get-application-reports`, {
+    params: {
+      selectedRange: selectedRange.value,
+      firstValue: lineData.labels ? lineData.labels[0] : '',
+      shelterId: auth.isShelterStaff ? auth.shelterId : null,
+      userId: auth.isUser ? auth.userId : null,
+      fetchType: auth.isShelterStaff ? 'shelter_staff' : 'adopter',
+    },
+  })
+
+  lineData.datasets[0].data = response.data.applicationsFrequency
+
+  applicationStatusPieData.datasets[0].data = response.data.applicationStatusFrequency
+
+  updatePreferredPetSpeciesPieData(response.data.preferredPetSpeciesFrequency)
+  chartKey.value++
+}
+
+const updatePreferredPetSpeciesPieData = (preferredPetSpeciesData: SpeciesFrequency[]) => {
+  preferredPetSpeciesData.forEach((speciesFrequency: SpeciesFrequency) => {
+    Object.entries(speciesFrequency).forEach(([key, value]) => {
+      preferredPetSpeciesPieData.labels?.push(key)
+      preferredPetSpeciesPieData.datasets[0].data.push(value)
+    })
+  })
+}
+
+const fetchLongestPetOwnership = async () => {
+  const response = await axios.get(`${apiUrl}/adoption-applications/get-longest-pet-ownership`, {
+    params: {
+      userId: auth.isUser ? auth.userId : null,
+    },
+  })
+
+  if (response.data.longestPetOwnership) {
+    Object.assign(longestPetOwnership, response.data.longestPetOwnership)
+    showLongestPetOwnership.value = true
+  }
+}
+
+onMounted(async () => {
+  try {
+    if (auth.isUser) {
+      await fetchLongestPetOwnership()
+    }
+
+    updateChart()
+  } catch (error) {
+    console.error('Error retrieving data from backend', error)
+  }
+})
 </script>
 
 <template>
@@ -174,18 +235,20 @@ const getLast5Years = () => {
       <h1 class="text-6xl font-semibold">Reports</h1>
 
       <div class="pt-5 flex flex-col flex-1 min-h-0">
-        <div class="mb-4">
+        <div class="mb-4" v-if="auth.isUser && showLongestPetOwnership">
           <h1 class="font-bold text-xl">Longest Pet Ownership</h1>
           <p class="pl-5">
-            Your first adopted pet, Max (Cat/Puspin), has been with you for
-            <u>2 years and 4 months.</u>
+            {{
+              `Your first adopted pet, ${longestPetOwnership.adoptedPetName} (${longestPetOwnership.speciesName}/${longestPetOwnership.breedName}), has been with you for `
+            }}
+            <u>{{ `${longestPetOwnership.timeSinceAdoption}` }}.</u>
           </p>
         </div>
 
         <div class="flex-1 min-h-0 overflow-hidden">
           <div class="flex flex-row">
             <div class="flex-1">
-              <h1 class="font-bold text-xl">Adoption Timeline</h1>
+              <h1 class="font-bold text-xl">Application Frequency</h1>
             </div>
 
             <div class="flex-1">
@@ -209,13 +272,13 @@ const getLast5Years = () => {
           <div class="flex-1 min-h-0 overflow-hidden">
             <h1 class="font-bold text-xl">Application Status</h1>
             <div class="w-full h-full relative pb-10">
-              <Pie :data="applicationStatusPieData" :options="pieOptions" />
+              <Pie :data="applicationStatusPieData" :options="pieOptions" :key="chartKey" />
             </div>
           </div>
           <div class="flex-1 min-h-0 overflow-hidden">
-            <h1 class="font-bold text-xl">Types of Pets Adopted</h1>
+            <h1 class="font-bold text-xl">Preferred Pet Species</h1>
             <div class="w-full h-full relative pb-10">
-              <Pie :data="adoptedTypePieData" :options="pieOptions" />
+              <Pie :data="preferredPetSpeciesPieData" :options="pieOptions" :key="chartKey" />
             </div>
           </div>
         </div>
