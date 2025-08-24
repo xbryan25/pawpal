@@ -128,7 +128,7 @@ class AdoptionApplicationController:
 
 
     @staticmethod
-    def get_applications_frequency_controller():
+    def get_application_reports_controller():
 
         selected_range = request.args.get("selectedRange")
         first_value = request.args.get("firstValue")
@@ -140,7 +140,14 @@ class AdoptionApplicationController:
 
             applications_frequency = AdoptionApplicationService.get_applications_frequency(selected_range, first_value, shelter_id)
 
-            return jsonify({'applicationsFrequency': applications_frequency}), 200
+            applications_status_frequency = AdoptionApplicationService.get_application_status_frequency(shelter_id)
+
+            # types_of_adopted_pets_frequency = AdoptionApplicationService.get_types_of_adopted_pets_frequency(shelter_id)
+
+            print(applications_status_frequency)
+
+
+            return jsonify({'applicationsFrequency': applications_frequency, 'applicationStatusFrequency': applications_status_frequency}), 200
 
         except Exception as e:
             print(e)

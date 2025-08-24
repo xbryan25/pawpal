@@ -252,3 +252,21 @@ class AdoptionApplicationService:
                 applications_frequency_list.append(frequency)
 
         return applications_frequency_list
+
+
+    @staticmethod
+    def get_application_status_frequency(shelter_id):
+
+        application_status_frequency_list = []
+
+        status = ['approved', 'rejected', 'pending']
+
+        for one_status in status:
+
+            frequency = db.session.query(db.func.count(AdoptionApplication.aa_id)).join(Pet, 
+                                                                                        AdoptionApplication.pet_id == Pet.pet_id).filter(Pet.shelter_id == shelter_id, AdoptionApplication.status == one_status).scalar()
+
+            application_status_frequency_list.append(frequency)
+        
+
+        return application_status_frequency_list

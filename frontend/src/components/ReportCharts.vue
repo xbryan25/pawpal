@@ -76,11 +76,11 @@ const lineOptions: ChartOptions<'line'> = {
 }
 
 const applicationStatusPieData: ChartData<'pie'> = {
-  labels: ['Accepted', 'Rejected', 'Pending'],
+  labels: ['Approved', 'Rejected', 'Pending'],
   datasets: [
     {
-      label: 'Revenue',
-      data: [3, 7, 5],
+      label: 'Frequency',
+      data: [0, 0, 0],
       backgroundColor: ['#66BB6A', '#BA2D1E', '#FFA726'],
     },
   ],
@@ -123,7 +123,7 @@ const updateChart = async () => {
 
   console.log(selectedRange.value)
 
-  await fetchApplicationsFrequency()
+  await fetchApplicationReports()
 
   chartKey.value++
 }
@@ -177,8 +177,8 @@ const getLast5Years = () => {
   return last5Years.reverse()
 }
 
-const fetchApplicationsFrequency = async () => {
-  const response = await axios.get(`${apiUrl}/adoption-applications/get-applications-frequency`, {
+const fetchApplicationReports = async () => {
+  const response = await axios.get(`${apiUrl}/adoption-applications/get-application-reports`, {
     params: {
       selectedRange: selectedRange.value,
       firstValue: lineData.labels ? lineData.labels[0] : '',
@@ -188,6 +188,9 @@ const fetchApplicationsFrequency = async () => {
 
   lineData.datasets[0].data = response.data.applicationsFrequency
 
+  applicationStatusPieData.datasets[0].data = response.data.applicationStatusFrequency
+
+  console.log(response.data)
   chartKey.value++
 }
 
@@ -241,7 +244,7 @@ onMounted(async () => {
           <div class="flex-1 min-h-0 overflow-hidden">
             <h1 class="font-bold text-xl">Application Status</h1>
             <div class="w-full h-full relative pb-10">
-              <Pie :data="applicationStatusPieData" :options="pieOptions" />
+              <Pie :data="applicationStatusPieData" :options="pieOptions" :key="chartKey" />
             </div>
           </div>
           <div class="flex-1 min-h-0 overflow-hidden">
