@@ -31,3 +31,7 @@ def reject_application():
 @adoption_application_bp.route("/get-application-reports", methods=["GET"])
 def get_application_reports():
     return AdoptionApplicationController.get_application_reports_controller()
+
+@adoption_application_bp.route("/get-longest-pet-ownership", methods=["GET"])
+def get_longest_pet_ownership():
+    return AdoptionApplicationController.get_longest_pet_ownership_controller()

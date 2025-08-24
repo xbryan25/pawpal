@@ -1,10 +1,11 @@
 
-from app.models import AdoptionApplication, Pet, Shelter, PetImage, User, ApplicationStatusEnum, PetStatusEnum, Species
+from app.models import AdoptionApplication, Pet, Shelter, PetImage, User, ApplicationStatusEnum, PetStatusEnum, Species, Breed
 from app.extensions import db
 
 import uuid
 from sqlalchemy import func, case, cast, Integer, desc
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 class AdoptionApplicationService:
 
@@ -362,3 +363,55 @@ class AdoptionApplicationService:
             preferred_pet_species_frequency_list.append({'Others' : others_total})
 
         return preferred_pet_species_frequency_list
+    
+
+    @staticmethod
+    def get_longest_pet_ownership(user_id):
+
+        longest_pet_ownership_details_dict = {}
+
+
+        first_approved_adoption_application = (AdoptionApplication.query
+                                               .filter(AdoptionApplication.user_id == user_id,
+                                                       AdoptionApplication.status == 'approved')
+                                               .order_by(AdoptionApplication.decision_date)
+                                               .first())
+        
+        if first_approved_adoption_application:
+        
+            adopted_pet = Pet.query.filter(Pet.pet_id == first_approved_adoption_application.pet_id).first()
+
+            breed_species_id, breed_name = Breed.query.with_entities(Breed.species_id, Breed.breed_name).filter(Breed.breed_id == adopted_pet.breed_id).first()
+
+            species_name = Species.query.with_entities(Species.species_name).filter(Species.species_id == breed_species_id).scalar()
+
+            delta = relativedelta(datetime.now(), first_approved_adoption_application.decision_date)
+
+            delta_str_parts = []
+
+            if delta.years:
+                delta_str_parts.append(f"{delta.years} year{'s' if delta.years > 1 else ''}")
+
+            if delta.months:
+                delta_str_parts.append(f"{delta.months} month{'s' if delta.months > 1 else ''}")
+
+            if delta.days:
+                delta_str_parts.append(f"{delta.days} day{'s' if delta.days > 1 else ''}")
+
+            if len(delta_str_parts) > 1:
+                delta_str = ", ".join(delta_str_parts[:-1]) + " and " + delta_str_parts[-1]
+            elif delta_str_parts:
+                delta_str = delta_str_parts[0]
+            else:
+                delta_str = "0 days"
+        
+
+            longest_pet_ownership_details_dict.update({'adoptedPetName': adopted_pet.name, 
+                                                    'breedName': breed_name, 
+                                                    'speciesName': species_name,
+                                                    'timeSinceAdoption': delta_str})
+
+            return longest_pet_ownership_details_dict
+        
+        else:
+            return None

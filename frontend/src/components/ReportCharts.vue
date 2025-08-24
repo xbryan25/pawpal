@@ -103,6 +103,15 @@ const auth = useAuthStore()
 
 const apiUrl = import.meta.env.VITE_API_URL
 
+const longestPetOwnership = reactive({
+  adoptedPetName: '',
+  breedName: '',
+  speciesName: '',
+  timeSinceAdoption: '',
+})
+
+const showLongestPetOwnership = ref(false)
+
 const updateChart = async () => {
   if (selectedRange.value === 'yearly') {
     lineData.labels = getLast5Years()
@@ -194,8 +203,25 @@ const updatePreferredPetSpeciesPieData = (preferredPetSpeciesData: SpeciesFreque
   })
 }
 
+const fetchLongestPetOwnership = async () => {
+  const response = await axios.get(`${apiUrl}/adoption-applications/get-longest-pet-ownership`, {
+    params: {
+      userId: auth.isUser ? auth.userId : null,
+    },
+  })
+
+  if (response.data.longestPetOwnership) {
+    Object.assign(longestPetOwnership, response.data.longestPetOwnership)
+    showLongestPetOwnership.value = true
+  }
+}
+
 onMounted(async () => {
   try {
+    if (auth.isUser) {
+      await fetchLongestPetOwnership()
+    }
+
     updateChart()
   } catch (error) {
     console.error('Error retrieving data from backend', error)
@@ -209,11 +235,13 @@ onMounted(async () => {
       <h1 class="text-6xl font-semibold">Reports</h1>
 
       <div class="pt-5 flex flex-col flex-1 min-h-0">
-        <div class="mb-4" v-if="auth.isUser">
+        <div class="mb-4" v-if="auth.isUser && showLongestPetOwnership">
           <h1 class="font-bold text-xl">Longest Pet Ownership</h1>
           <p class="pl-5">
-            Your first adopted pet, Max (Cat/Puspin), has been with you for
-            <u>2 years and 4 months.</u>
+            {{
+              `Your first adopted pet, ${longestPetOwnership.adoptedPetName} (${longestPetOwnership.speciesName}/${longestPetOwnership.breedName}), has been with you for `
+            }}
+            <u>{{ `${longestPetOwnership.timeSinceAdoption}` }}.</u>
           </p>
         </div>
 

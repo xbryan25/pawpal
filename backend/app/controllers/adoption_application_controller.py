@@ -155,4 +155,18 @@ class AdoptionApplicationController:
         except Exception as e:
             print(e)
             return jsonify({"error": str(e)}), 500
-        
+
+    def get_longest_pet_ownership_controller():
+
+        user_id_str = request.args.get("userId")
+
+        try:
+            user_id = uuid.UUID(user_id_str).bytes if user_id_str else None
+
+            longest_pet_ownership = AdoptionApplicationService.get_longest_pet_ownership(user_id)
+
+            return jsonify({'longestPetOwnership': longest_pet_ownership}), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({"error": str(e)}), 500
