@@ -3,12 +3,11 @@
 @plugin "daisyui" {
   themes:
     caramellatte --default,
-    luxury ;
+    luxury;
 
   prefix: "dui-";
 }
 
-/* @custom-variant dark (&:where(.dark, .dark *)); */
 @custom-variant dark (&:where([data-theme=luxury], [data-theme=luxury] *));
 
 @font-face {

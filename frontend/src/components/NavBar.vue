@@ -52,8 +52,8 @@ onBeforeUnmount(() => {
       <div class="h-[2px] bg-secondary dark:bg-primary w-full"></div>
 
       <div class="flex-1 w-full">
-        <div class="mx-5 my-10 flex flex-col gap-3">
-          <div class="flex gap-2">
+        <div class="mx-5 my-7 flex flex-col gap-3">
+          <div class="flex gap-2 cursor-pointer transition-transform duration-300 hover:scale-110">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"
@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
             >
           </div>
 
-          <div class="flex gap-2">
+          <div class="flex gap-2 cursor-pointer transition-transform duration-300 hover:scale-110">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="25px"
@@ -95,7 +95,7 @@ onBeforeUnmount(() => {
             >
           </div>
 
-          <div class="flex gap-2">
+          <div class="flex gap-2 cursor-pointer transition-transform duration-300 hover:scale-110">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="26px"

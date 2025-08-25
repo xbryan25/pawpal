@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { Line, Pie } from 'vue-chartjs'
 
 import axios from 'axios'
 import { useAuthStore } from '@/stores/useAuthStore'
+import { useThemeStore } from '@/stores/useThemeStore'
 
 import {
   Chart as ChartJS,
@@ -36,35 +37,20 @@ type SpeciesFrequency = {
   speciesFrequency: number
 }
 
+// Chart data------------------------------------
+
 const lineData = reactive<ChartData<'line'>>({
   labels: [],
   datasets: [
     {
       label: 'Frequency',
       data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      borderColor: '#42A5F5',
-      backgroundColor: 'rgba(66, 165, 245, 0.2)',
-      fill: true, // Area under the line
+      borderColor: '#dca54d',
+      backgroundColor: '#152747',
+      fill: true,
     },
   ],
 })
-
-const lineOptions: ChartOptions<'line'> = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { position: 'top' },
-    title: { display: true, text: 'Number of applications (Line)' },
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-      ticks: {
-        stepSize: 1,
-      },
-    },
-  },
-}
 
 const applicationStatusPieData: ChartData<'pie'> = {
   labels: ['Approved', 'Rejected', 'Pending', 'Cancelled'],
@@ -81,25 +67,79 @@ const preferredPetSpeciesPieData: ChartData<'pie'> = {
   labels: [],
   datasets: [
     {
-      label: 'Revenue',
+      label: 'Frequency',
       data: [],
       backgroundColor: ['#BA2D1E', '#825b57', '#FFA726', '#95c91a', '#0f9482'],
     },
   ],
 }
 
-const pieOptions: ChartOptions<'pie'> = {
+// Chart options------------------------------------
+
+const lineOptions = reactive<ChartOptions<'line'>>({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    title: { display: true, text: 'Pie Chart' },
+    legend: {
+      labels: {
+        font: { family: 'RethinkSans, sans-serif', size: 14, weight: 500 },
+        color: '#000000',
+      },
+    },
+    tooltip: {
+      enabled: true,
+      bodyFont: { family: 'RethinkSans, sans-serif', size: 14, weight: 500 },
+      titleFont: { family: 'RethinkSans, sans-serif', size: 14, weight: 600 },
+      bodyColor: '#000000',
+      titleColor: '#000000',
+    },
   },
-}
+  scales: {
+    y: {
+      ticks: { font: { family: 'RethinkSans, sans-serif', size: 12 }, color: '#000000' },
+      grid: {
+        color: '#152747',
+      },
+    },
+    x: {
+      ticks: { font: { family: 'RethinkSans, sans-serif', size: 12 }, color: '#000000' },
+      grid: {
+        color: '#152747',
+      },
+    },
+  },
+})
+
+const pieOptions = reactive<ChartOptions<'pie'>>({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      labels: {
+        font: { family: 'RethinkSans, sans-serif', size: 14, weight: 500 },
+        color: '#000000',
+      },
+    },
+    tooltip: {
+      enabled: true,
+      bodyFont: { family: 'RethinkSans, sans-serif', size: 14, weight: 500 },
+      titleFont: { family: 'RethinkSans, sans-serif', size: 14, weight: 600 },
+      bodyColor: '#000000',
+      titleColor: '#000000',
+    },
+  },
+  elements: {
+    arc: {
+      borderWidth: 0,
+    },
+  },
+})
 
 const selectedRange = ref('monthly')
 const chartKey = ref(0)
 
 const auth = useAuthStore()
+const theme = useThemeStore()
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -111,6 +151,24 @@ const longestPetOwnership = reactive({
 })
 
 const showLongestPetOwnership = ref(false)
+
+function getAdditionalUiColors() {
+  if (theme.currentTheme == 'luxury') {
+    return {
+      fontColor: '#dca54d',
+      lineColor: '#dca54d',
+      fillColor: '#152747',
+      scalesColor: '#152747',
+    }
+  } else {
+    return {
+      fontColor: '#7c2808',
+      lineColor: '#7c2808',
+      fillColor: '#ffd6a7',
+      scalesColor: '#ffd6a7',
+    }
+  }
+}
 
 const updateChart = async () => {
   if (selectedRange.value === 'yearly') {
@@ -216,6 +274,32 @@ const fetchLongestPetOwnership = async () => {
   }
 }
 
+watch(
+  () => theme.currentTheme,
+  () => {
+    const additionalUiColors = getAdditionalUiColors()
+
+    lineOptions.plugins!.legend!.labels!.color = additionalUiColors.fontColor
+    lineOptions.plugins!.tooltip!.bodyColor = additionalUiColors.fontColor
+    lineOptions.plugins!.tooltip!.titleColor = additionalUiColors.fontColor
+    lineOptions.scales!.x!.ticks!.color = additionalUiColors.fontColor
+    lineOptions.scales!.y!.ticks!.color = additionalUiColors.fontColor
+
+    pieOptions.plugins!.legend!.labels!.color = additionalUiColors.fontColor
+    pieOptions.plugins!.tooltip!.bodyColor = additionalUiColors.fontColor
+    pieOptions.plugins!.tooltip!.titleColor = additionalUiColors.fontColor
+
+    lineOptions.scales!.x!.grid!.color = additionalUiColors.scalesColor
+    lineOptions.scales!.y!.grid!.color = additionalUiColors.scalesColor
+
+    lineData.datasets[0]!.borderColor = additionalUiColors.lineColor
+    lineData.datasets[0]!.backgroundColor = additionalUiColors.fillColor
+
+    chartKey.value++
+  },
+  { immediate: true },
+)
+
 onMounted(async () => {
   try {
     if (auth.isUser) {
@@ -230,14 +314,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="h-screen w-[87vw]">
+  <section class="h-screen w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col box-border">
-      <h1 class="text-6xl font-semibold">Reports</h1>
+      <h1 class="text-6xl font-semibold font-fredoka text-base-content">Reports</h1>
 
       <div class="pt-5 flex flex-col flex-1 min-h-0">
         <div class="mb-4" v-if="auth.isUser && showLongestPetOwnership">
-          <h1 class="font-bold text-xl">Longest Pet Ownership</h1>
-          <p class="pl-5">
+          <h1 class="font-semibold text-xl font-fredoka text-base-content">
+            Longest Pet Ownership
+          </h1>
+          <p class="pl-5 font-medium font-fredoka text-base-content">
             {{
               `Your first adopted pet, ${longestPetOwnership.adoptedPetName} (${longestPetOwnership.speciesName}/${longestPetOwnership.breedName}), has been with you for `
             }}
@@ -248,14 +334,16 @@ onMounted(async () => {
         <div class="flex-1 min-h-0 overflow-hidden">
           <div class="flex flex-row">
             <div class="flex-1">
-              <h1 class="font-bold text-xl">Application Frequency</h1>
+              <h1 class="font-semibold text-xl font-fredoka text-base-content">
+                Application Frequency
+              </h1>
             </div>
 
             <div class="flex-1">
               <select
                 v-model="selectedRange"
                 @change="updateChart"
-                class="dui-select ml-auto block"
+                class="dui-select ml-auto block font-fredoka font-medium text-base-content"
               >
                 <option value="monthly">Past 12 months</option>
                 <option value="yearly">Past 5 years</option>
@@ -270,13 +358,15 @@ onMounted(async () => {
 
         <div class="flex-1 flex min-h-0 overflow-hidden pt-5">
           <div class="flex-1 min-h-0 overflow-hidden">
-            <h1 class="font-bold text-xl">Application Status</h1>
+            <h1 class="font-semibold text-xl font-fredoka text-base-content">Application Status</h1>
             <div class="w-full h-full relative pb-10">
               <Pie :data="applicationStatusPieData" :options="pieOptions" :key="chartKey" />
             </div>
           </div>
           <div class="flex-1 min-h-0 overflow-hidden">
-            <h1 class="font-bold text-xl">Preferred Pet Species</h1>
+            <h1 class="font-semibold text-xl font-fredoka text-base-content">
+              Preferred Pet Species
+            </h1>
             <div class="w-full h-full relative pb-10">
               <Pie :data="preferredPetSpeciesPieData" :options="pieOptions" :key="chartKey" />
             </div>
