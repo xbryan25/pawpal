@@ -120,13 +120,13 @@ const handleSubmit = async () => {
     </label>
 
     <h2
-      class="text-xl my-10 font-semibold font-fredoka text-base-content"
+      class="text-2xl my-10 font-extrabold font-rethink text-base-content"
       v-if="loginType === 'adopter'"
     >
       PawPal
     </h2>
 
-    <h2 class="text-xl my-10 font-semibold font-fredoka text-base-content" v-else>
+    <h2 class="text-2xl my-10 font-extrabold font-rethink text-base-content" v-else>
       PawPal | Shelter Staff
     </h2>
 
@@ -134,10 +134,13 @@ const handleSubmit = async () => {
 
     <h1 class="text-5xl my-1 font-semibold font-fredoka text-base-content">welcome back!</h1>
 
-    <p class="text-black font-normal my-5 text-xl" v-if="loginType === 'adopter'">
+    <p
+      class="font-medium my-5 text-xl font-fredoka text-base-content"
+      v-if="loginType === 'adopter'"
+    >
       These pets need a loving home!
     </p>
-    <p class="font-normal my-5 text-xl font-fredoka text-base-content" v-else>
+    <p class="font-medium my-5 text-xl font-fredoka text-base-content" v-else>
       People are looking for pets to adopt!
     </p>
 
