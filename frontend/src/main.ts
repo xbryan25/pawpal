@@ -10,6 +10,8 @@ import 'vue-toastification/dist/index.css'
 import App from './App.vue'
 import router from './router'
 
+import { useThemeStore } from './stores/useThemeStore';
+
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
@@ -20,3 +22,5 @@ app.use(router)
 app.use(Toast)
 
 app.mount('#app')
+
+useThemeStore()

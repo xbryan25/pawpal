@@ -119,18 +119,27 @@ const handleSubmit = async () => {
       <img :src="lightModeImage" class="dui-swap-on h-10 w-10" />
     </label>
 
-    <h2 class="text-black text-xl font-semibold my-10" v-if="loginType === 'adopter'">PawPal</h2>
+    <h2
+      class="text-xl my-10 font-semibold font-fredoka text-base-content"
+      v-if="loginType === 'adopter'"
+    >
+      PawPal
+    </h2>
 
-    <h2 class="text-black text-xl font-semibold my-10" v-else>PawPal | Shelter Staff</h2>
+    <h2 class="text-xl my-10 font-semibold font-fredoka text-base-content" v-else>
+      PawPal | Shelter Staff
+    </h2>
 
-    <h1 class="text-black text-5xl font-bold my-1">Hello,</h1>
+    <h1 class="text-5xl my-1 font-semibold font-fredoka text-base-content">Hello,</h1>
 
-    <h1 class="text-black text-5xl font-bold">welcome back!</h1>
+    <h1 class="text-5xl my-1 font-semibold font-fredoka text-base-content">welcome back!</h1>
 
     <p class="text-black font-normal my-5 text-xl" v-if="loginType === 'adopter'">
       These pets need a loving home!
     </p>
-    <p class="text-black font-normal my-5 text-xl" v-else>People are looking for pets to adopt!</p>
+    <p class="font-normal my-5 text-xl font-fredoka text-base-content" v-else>
+      People are looking for pets to adopt!
+    </p>
 
     <form class="flex flex-col gap-4 my-10 mr-[25vw]" @submit.prevent="handleSubmit">
       <!-- Email field group -->
@@ -181,33 +190,32 @@ const handleSubmit = async () => {
         </label>
 
         <div>
-          <button class="mt-2 text-gray-500 font-semibold cursor-pointer" type="button">
+          <button class="mt-2 text-info font-semibold cursor-pointer font-fredoka" type="button">
             Forgot password?
           </button>
         </div>
 
-        <button class="dui-btn dui-btn-primary max-w-[7vw] mt-7" type="submit">Sign In</button>
+        <button class="dui-btn dark:dui-btn-secondary max-w-[7vw] mt-7 font-fredoka" type="submit">
+          Sign In
+        </button>
       </div>
     </form>
 
     <div class="mt-15 flex flex-col gap-1">
-      <p>
-        Don't have an account?<RouterLink to="/user/signup" class="ml-1 font-bold text-violet-500"
-          >Sign Up</RouterLink
-        >
+      <p class="font-fredoka font-medium text-base-content">
+        Don't have an account?
+        <RouterLink to="/user/signup" class="ml-1 font-semibold text-info">Sign Up</RouterLink>
       </p>
-      <p v-if="loginType === 'adopter'">
-        Are you a shelter staff?<RouterLink
-          to="/user/shelter-staff-login"
-          class="ml-1 font-bold text-violet-500"
+      <p class="font-fredoka font-medium text-base-content" v-if="loginType === 'adopter'">
+        Are you a shelter staff?
+        <RouterLink to="/user/shelter-staff-login" class="ml-1 font-semibold text-info"
           >Sign In Here</RouterLink
         >
       </p>
 
-      <p v-else>
-        Are you an adopter?<RouterLink to="/user/login" class="ml-1 font-bold text-violet-500"
-          >Sign In Here</RouterLink
-        >
+      <p class="font-fredoka font-medium text-base-content" v-else>
+        Are you an adopter?
+        <RouterLink to="/user/login" class="ml-1 font-semibold text-info">Sign In Here</RouterLink>
       </p>
     </div>
   </section>
