@@ -320,9 +320,7 @@ onMounted(async () => {
 
       <div class="pt-5 flex flex-col flex-1 min-h-0">
         <div class="mb-4" v-if="auth.isUser && showLongestPetOwnership">
-          <h1 class="font-semibold text-xl font-fredoka text-base-content">
-            Longest Pet Ownership
-          </h1>
+          <h1 class="font-medium text-xl font-fredoka text-base-content">Longest Pet Ownership</h1>
           <p class="pl-5 font-medium font-fredoka text-base-content">
             {{
               `Your first adopted pet, ${longestPetOwnership.adoptedPetName} (${longestPetOwnership.speciesName}/${longestPetOwnership.breedName}), has been with you for `
@@ -334,7 +332,7 @@ onMounted(async () => {
         <div class="flex-1 min-h-0 overflow-hidden">
           <div class="flex flex-row">
             <div class="flex-1">
-              <h1 class="font-semibold text-xl font-fredoka text-base-content">
+              <h1 class="font-medium text-xl font-fredoka text-base-content">
                 Application Frequency
               </h1>
             </div>
@@ -358,13 +356,13 @@ onMounted(async () => {
 
         <div class="flex-1 flex min-h-0 overflow-hidden pt-5">
           <div class="flex-1 min-h-0 overflow-hidden">
-            <h1 class="font-semibold text-xl font-fredoka text-base-content">Application Status</h1>
+            <h1 class="font-medium text-xl font-fredoka text-base-content">Application Status</h1>
             <div class="w-full h-full relative pb-10">
               <Pie :data="applicationStatusPieData" :options="pieOptions" :key="chartKey" />
             </div>
           </div>
           <div class="flex-1 min-h-0 overflow-hidden">
-            <h1 class="font-semibold text-xl font-fredoka text-base-content">
+            <h1 class="font-medium text-xl font-fredoka text-base-content">
               Preferred Pet Species
             </h1>
             <div class="w-full h-full relative pb-10">
