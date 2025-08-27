@@ -24,7 +24,7 @@ const auth = useAuthStore()
 
     <div class="w-[20%] min-w-0 flex-row px-[5%]" v-if="auth.isShelterStaff">
       <RouterLink
-        class="dui-btn w-full h-full font-fredoka font-medium text-base text-base-content hover:dark:bg-primary-content dark:bg-base-100 dark:border-base-content/25"
+        class="dui-btn w-full h-full font-fredoka font-medium text-base text-base-content hover:bg-primary-content bg-base-100 border-base-content/25"
         to="/pets/add-pet"
         >Add Pet</RouterLink
       >
