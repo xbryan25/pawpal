@@ -341,7 +341,7 @@ onMounted(async () => {
               <select
                 v-model="selectedRange"
                 @change="updateChart"
-                class="dui-select ml-auto block font-fredoka font-medium text-base-content"
+                class="dui-select ml-auto block font-fredoka font-medium text-base-content text-base"
               >
                 <option value="monthly">Past 12 months</option>
                 <option value="yearly">Past 5 years</option>

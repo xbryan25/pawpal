@@ -36,9 +36,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="h-[90vh] w-[87vw]">
+  <section class="h-[90vh] w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
-      <h1 class="text-6xl font-semibold">Pets</h1>
+      <h1 class="text-6xl font-semibold font-fredoka text-base-content">Pets</h1>
 
       <SearchAndSortHeader />
 
