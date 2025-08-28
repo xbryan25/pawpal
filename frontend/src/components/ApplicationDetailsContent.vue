@@ -4,6 +4,8 @@ import { RouterLink, useRoute } from 'vue-router'
 import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
+import ThemeToggle from './ThemeToggle.vue'
+
 interface AdopterDetails {
   adopterName: string
   adopterGender: string
@@ -147,7 +149,12 @@ onMounted(async () => {
 <template>
   <section class="relative h-[100vh] w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
-      <h1 class="text-6xl font-semibold font-fredoka text-base-content">Application Details</h1>
+      <div class="flex">
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">
+          Application Details
+        </h1>
+        <ThemeToggle />
+      </div>
       <div class="flex pt-10 px-[15%] gap-x-[5%]">
         <div class="flex flex-col gap-y-[2%] flex-[2]">
           <div class="text-center">

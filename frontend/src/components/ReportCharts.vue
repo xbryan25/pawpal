@@ -6,6 +6,8 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { useThemeStore } from '@/stores/useThemeStore'
 
+import ThemeToggle from './ThemeToggle.vue'
+
 import {
   Chart as ChartJS,
   Title,
@@ -316,7 +318,10 @@ onMounted(async () => {
 <template>
   <section class="h-screen w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col box-border">
-      <h1 class="text-6xl font-semibold font-fredoka text-base-content">Reports</h1>
+      <div class="flex">
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">Reports</h1>
+        <ThemeToggle />
+      </div>
 
       <div class="pt-5 flex flex-col flex-1 min-h-0">
         <div class="mb-4" v-if="auth.isUser && showLongestPetOwnership">

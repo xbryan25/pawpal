@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 
 import SearchAndSortHeader from './SearchAndSortHeader.vue'
 import TableRow from './TableRow.vue'
+import ThemeToggle from './ThemeToggle.vue'
 
 interface AdoptionApplicationDetails {
   applicationId?: string
@@ -66,7 +67,10 @@ onMounted(async () => {
 <template>
   <section class="h-[90vh] w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
-      <h1 class="text-6xl font-fredoka font-semibold text-base-content">Applications</h1>
+      <div class="flex">
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">Applications</h1>
+        <ThemeToggle />
+      </div>
 
       <SearchAndSortHeader />
 

@@ -4,9 +4,8 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
-import lightModeImage from '@/assets/images/light-mode.png'
-import darkModeImage from '@/assets/images/dark-mode.png'
 import SearchableCombobox from './SearchableCombobox.vue'
+import ThemeToggle from './ThemeToggle.vue'
 
 interface NewUser {
   firstName: string
@@ -175,11 +174,7 @@ onMounted(async () => {
   >
     <div class="flex flex-row w-full">
       <h2 class="flex-1 text-base-content text-2xl font-extrabold font-rethink">PawPal</h2>
-      <label class="dui-swap dui-swap-rotate">
-        <input type="checkbox" class="dui-theme-controller" value="synthwave" />
-        <img :src="darkModeImage" class="dui-swap-off h-10 w-10" />
-        <img :src="lightModeImage" class="dui-swap-on h-10 w-10" />
-      </label>
+      <ThemeToggle />
     </div>
 
     <h1 class="text-center text-5xl font-semibold text-base-content font-fredoka">

@@ -6,8 +6,7 @@ import Cookies from 'universal-cookie'
 import { useToast, POSITION } from 'vue-toastification'
 import { useAuthStore } from '@/stores/useAuthStore'
 
-import lightModeImage from '@/assets/images/light-mode.png'
-import darkModeImage from '@/assets/images/dark-mode.png'
+import ThemeToggle from './ThemeToggle.vue'
 
 interface Props {
   loginType?: string
@@ -113,11 +112,13 @@ const handleSubmit = async () => {
 
 <template>
   <section class="flex-1 max-w-[50vw] h-[calc(100vh-2rem)] m-4 pl-10 pt-5">
-    <label class="dui-swap dui-swap-rotate">
+    <!-- <label class="dui-swap dui-swap-rotate">
       <input type="checkbox" class="dui-theme-controller" value="synthwave" />
       <img :src="darkModeImage" class="dui-swap-off h-10 w-10" />
       <img :src="lightModeImage" class="dui-swap-on h-10 w-10" />
-    </label>
+    </label> -->
+
+    <ThemeToggle />
 
     <h2
       class="text-2xl my-10 font-extrabold font-rethink text-base-content"

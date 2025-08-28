@@ -7,6 +7,7 @@ import * as uuid from 'uuid'
 
 import SearchableCombobox from './SearchableCombobox.vue'
 import ImageInput from './ImageInput.vue'
+import ThemeToggle from './ThemeToggle.vue'
 
 interface PetImage {
   imageUrl: string
@@ -402,14 +403,17 @@ onMounted(async () => {
 <template>
   <section class="relative h-full w-[87vw] bg-primary-content">
     <div class="flex flex-col">
-      <div class="p-5 h-full">
+      <div class="p-5 h-full flex">
         <h1
-          class="text-6xl font-semibold font-fredoka text-base-content"
+          class="flex-1 text-6xl font-semibold font-fredoka text-base-content"
           v-if="props.mode === 'add-pet'"
         >
           Add Pet
         </h1>
-        <h1 class="text-6xl font-semibold font-fredoka text-base-content" v-else>Edit Pet</h1>
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content" v-else>
+          Edit Pet
+        </h1>
+        <ThemeToggle />
       </div>
 
       <form @submit.prevent="handleSubmit" enctype="multipart/form-data">

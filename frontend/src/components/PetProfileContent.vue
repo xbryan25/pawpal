@@ -6,6 +6,7 @@ import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
 import PetProfileImageCard from './PetProfileImageCard.vue'
+import ThemeToggle from './ThemeToggle.vue'
 
 interface PetImage {
   image_url: string
@@ -205,7 +206,10 @@ onMounted(async () => {
 <template>
   <section class="h-full w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
-      <h1 class="text-6xl font-semibold font-fredoka text-base-content">Pets</h1>
+      <div class="flex">
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">Applications</h1>
+        <ThemeToggle />
+      </div>
 
       <div class="flex flex-row gap-4 mt-6 h-[80%] w-full">
         <div class="flex-1 flex flex-row gap-2">
