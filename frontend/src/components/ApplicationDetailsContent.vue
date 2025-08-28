@@ -145,22 +145,29 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="relative h-[90vh] w-[87vw]">
+  <section class="relative h-[100vh] w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
-      <h1 class="text-6xl font-semibold">Application Details</h1>
+      <h1 class="text-6xl font-semibold font-fredoka text-base-content">Application Details</h1>
       <div class="flex pt-10 px-[15%] gap-x-[5%]">
         <div class="flex flex-col gap-y-[2%] flex-[2]">
           <div class="text-center">
-            <h2 class="text-4xl font-semibold">Adopter</h2>
+            <h2 class="text-4xl font-medium font-fredoka text-base-content">Adopter</h2>
           </div>
 
           <div class="flex flex-col bg-gray-400 h-115 rounded-lg" v-if="isLoading">
-            <div class="dui-skeleton w-full h-full rounded-lg bg-gray-400"></div>
+            <div
+              class="dui-skeleton w-full h-full rounded-lg bg-base-100 border-base-content border-3"
+            ></div>
           </div>
 
-          <div class="flex flex-col bg-gray-400 h-115 rounded-lg p-5" v-else>
+          <div
+            class="flex flex-col h-115 rounded-lg p-5 border-base-content border-3 bg-base-100"
+            v-else
+          >
             <div class="flex dui-avatar justify-center py-2">
-              <div class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2">
+              <div
+                class="ring-base-content ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-3"
+              >
                 <img :src="applicationDetails.adopterDetails.adopterProfileImageUrl" />
               </div>
             </div>
@@ -168,46 +175,48 @@ onMounted(async () => {
             <div class="flex flex-col gap-y-2 px-10 pt-5">
               <div class="flex justify-center">
                 <div class="flex-1">
-                  <p class="font-bold text-xl">Name</p>
-                  <p class="pl-5 font-semibold">
+                  <p class="font-semibold text-xl font-fredoka text-base-content">Name</p>
+                  <p class="pl-5 font-normal text-base font-fredoka text-base-content">
                     {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterName }}
                   </p>
                 </div>
 
                 <div class="flex-1">
-                  <p class="font-bold text-xl">Gender</p>
-                  <p class="pl-5 font-semibold">
+                  <p class="font-semibold text-xl font-fredoka text-base-content">Gender</p>
+                  <p class="pl-5 font-normal text-base font-fredoka text-base-content">
                     {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterGender }}
                   </p>
                 </div>
               </div>
               <div class="flex justify-center">
                 <div class="flex-1">
-                  <p class="font-bold text-xl">Phone Number</p>
-                  <p class="pl-5 font-semibold">
+                  <p class="font-semibold text-xl font-fredoka text-base-content">Phone Number</p>
+                  <p class="pl-5 font-normal text-base font-fredoka text-base-content">
                     {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterPhoneNumber }}
                   </p>
                 </div>
 
                 <div class="flex-1">
-                  <p class="font-bold text-xl">Birth Date</p>
-                  <p class="pl-5 font-semibold">
+                  <p class="font-semibold text-xl font-fredoka text-base-content">Birth Date</p>
+                  <p class="pl-5 font-normal text-base font-fredoka text-base-content">
                     {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterBirthDate }}
                   </p>
                 </div>
               </div>
               <div class="flex justify-center">
                 <div class="flex-1">
-                  <p class="font-bold text-xl">Email</p>
-                  <p class="pl-5 font-semibold">
+                  <p class="font-semibold text-xl font-fredoka text-base-content">Email</p>
+                  <p class="pl-5 font-normal text-base font-fredoka text-base-content">
                     {{ isLoading ? '-' : applicationDetails.adopterDetails.adopterEmail }}
                   </p>
                 </div>
               </div>
               <div class="flex justify-center">
                 <div class="flex-1">
-                  <p class="font-bold text-xl">Total Applications</p>
-                  <p class="pl-5 font-semibold">
+                  <p class="font-semibold text-xl font-fredoka text-base-content">
+                    Total Applications
+                  </p>
+                  <p class="pl-5 font-normal text-base font-fredoka text-base-content">
                     {{
                       isLoading ? '-' : applicationDetails.adopterDetails.adopterTotalApplications
                     }}
@@ -215,8 +224,10 @@ onMounted(async () => {
                 </div>
 
                 <div class="flex-1">
-                  <p class="font-bold text-xl">Accepted Applications</p>
-                  <p class="pl-5 font-semibold">
+                  <p class="font-semibold text-xl font-fredoka text-base-content">
+                    Accepted Applications
+                  </p>
+                  <p class="pl-5 font-normal text-base font-fredoka text-base-content">
                     {{
                       isLoading
                         ? '-'
@@ -240,9 +251,9 @@ onMounted(async () => {
             v-if="applicationDetails.applicationStatus === 'approved'"
           >
             <div
-              class="flex justify-center items-center bg-green-600 text-stone-100 rounded-xl w-50"
+              class="flex justify-center items-center bg-green-400 dark:bg-green-900 rounded-xl w-50 border-base-content border-2"
             >
-              <p class="text-4xl font-bold">Approved</p>
+              <p class="text-4xl font-semibold font-fredoka text-base-content">Approved</p>
             </div>
           </div>
 
@@ -250,40 +261,41 @@ onMounted(async () => {
             class="flex justify-center h-15"
             v-if="applicationDetails.applicationStatus === 'rejected'"
           >
-            <div class="flex justify-center items-center bg-red-600 text-stone-100 rounded-xl w-50">
-              <p class="text-4xl font-bold">Rejected</p>
+            <div
+              class="flex justify-center items-center bg-red-400 dark:bg-red-900 rounded-xl w-50 border-base-content border-2"
+            >
+              <p class="text-4xl font-semibold font-fredoka text-base-content">Rejected</p>
             </div>
           </div>
 
           <div class="text-center">
-            <h2 class="text-4xl font-semibold">Pet</h2>
+            <h2 class="text-4xl font-medium font-fredoka text-base-content">Pet</h2>
           </div>
 
           <div class="flex flex-col bg-gray-400 h-60 rounded-lg" v-if="isLoading">
-            <div class="dui-skeleton w-full h-full rounded-lg bg-gray-400"></div>
+            <div
+              class="dui-skeleton w-full h-full rounded-lg bg-base-100 border-base-content border-3"
+            ></div>
           </div>
 
-          <div class="flex flex-col bg-gray-400 h-60 rounded-lg p-5" v-else>
+          <div
+            class="flex flex-col h-60 rounded-lg p-5 border-base-content border-3 bg-base-100"
+            v-else
+          >
             <div class="flex dui-avatar justify-center">
               <div
-                class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2 dui-skeleton"
-                v-if="isLoading"
-              ></div>
-
-              <div
-                class="ring-primary ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-2"
-                v-else
+                class="ring-base-content ring-offset-base-100 w-35 rounded-full ring-2 ring-offset-3"
               >
                 <img :src="applicationDetails.petDetails.petFirstImageUrl" />
               </div>
             </div>
 
             <div class="flex flex-col gap-y-1 pt-2 items-center">
-              <p class="text-2xl font-bold">
+              <p class="text-2xl font-medium font-fredoka text-base-content">
                 {{ isLoading ? '-' : applicationDetails.petDetails.petName }}
               </p>
               <RouterLink
-                class="font-bold"
+                class="font-medium text-base font-fredoka text-base-content"
                 :to="`/pets/view/${applicationDetails.petDetails.petId}`"
                 >View details</RouterLink
               >
@@ -297,14 +309,14 @@ onMounted(async () => {
         v-if="applicationDetails.applicationStatus === 'pending'"
       >
         <button
-          class="flex-1 dui-btn dui-btn-success text-3xl h-15"
+          class="flex-1 dui-btn bg-green-400 dark:bg-green-900 h-15 text-4xl font-semibold font-fredoka text-base-content border-base-content border-3"
           @click="handleDecision('approve')"
         >
           Approve
         </button>
 
         <button
-          class="flex-1 dui-btn dui-btn-error text-3xl h-15"
+          class="flex-1 dui-btn bg-red-400 dark:bg-red-900 h-15 text-4xl font-semibold font-fredoka text-base-content border-base-content border-3"
           @click="handleDecision('reject')"
         >
           Reject
