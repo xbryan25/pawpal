@@ -2,11 +2,13 @@
 
 @plugin "daisyui" {
   themes:
-    light --default,
-    dark --prefersdark;
+    caramellatte --default,
+    luxury;
 
   prefix: "dui-";
 }
+
+@custom-variant dark (&:where([data-theme=luxury], [data-theme=luxury] *));
 
 @font-face {
   font-family: 'RethinkSans';

@@ -4,9 +4,8 @@ import { RouterLink, useRouter } from 'vue-router'
 import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
-import lightModeImage from '@/assets/images/light-mode.png'
-import darkModeImage from '@/assets/images/dark-mode.png'
 import SearchableCombobox from './SearchableCombobox.vue'
+import ThemeToggle from './ThemeToggle.vue'
 
 interface NewUser {
   firstName: string
@@ -174,22 +173,20 @@ onMounted(async () => {
     class="flex flex-col items-center flex-1 max-w-[50vw] h-[calc(100vh-2rem)] m-4 mx-10 pl-10 pt-5"
   >
     <div class="flex flex-row w-full">
-      <h2 class="flex-1 text-black text-xl font-semibold">PawPal</h2>
-      <label class="dui-swap dui-swap-rotate">
-        <input type="checkbox" class="dui-theme-controller" value="synthwave" />
-        <img :src="darkModeImage" class="dui-swap-off h-10 w-10" />
-        <img :src="lightModeImage" class="dui-swap-on h-10 w-10" />
-      </label>
+      <h2 class="flex-1 text-base-content text-2xl font-extrabold font-rethink">PawPal</h2>
+      <ThemeToggle />
     </div>
 
-    <h1 class="text-black text-center text-5xl font-bold">Create an account</h1>
+    <h1 class="text-center text-5xl font-semibold text-base-content font-fredoka">
+      Create an account
+    </h1>
 
     <div class="flex flex-col items-center w-[80%]">
       <form class="flex flex-col gap-2 mb-2 w-full" @submit.prevent="handleSubmit">
         <div class="flex dui-join gap-2 pt-5 mb-3 w-full">
           <input
             v-model="newUserForm.role"
-            class="flex-1 dui-join-item dui-btn"
+            class="flex-1 dui-join-item dui-btn font-fredoka font-medium text-xl text-base-content hover:bg-primary-content bg-base-100 border-base-content/25"
             type="radio"
             name="options"
             value="adopter"
@@ -198,7 +195,7 @@ onMounted(async () => {
           />
           <input
             v-model="newUserForm.role"
-            class="flex-1 dui-join-item dui-btn"
+            class="flex-1 dui-join-item dui-btn font-fredoka font-medium text-xl text-base-content hover:bg-primary-content bg-base-100 border-base-content/25"
             type="radio"
             name="options"
             value="shelter_staff"
@@ -210,14 +207,14 @@ onMounted(async () => {
         <div>
           <!-- First name and last name labels -->
           <div class="flex flex-row gap-2 mb-1">
-            <h3 class="flex-1 font-medium">First Name</h3>
-            <h3 class="flex-1 font-medium">Last Name</h3>
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">First Name</h3>
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">Last Name</h3>
           </div>
 
           <div class="flex flex-row gap-2">
             <!-- First name input -->
             <div class="flex-1 flex flex-col">
-              <label class="dui-input w-full">
+              <label class="dui-input w-full text-base-content font-fredoka">
                 <input
                   v-model="newUserForm.firstName"
                   maxlength="127"
@@ -230,7 +227,7 @@ onMounted(async () => {
 
             <!-- Last name input -->
             <div class="flex-1 flex flex-col">
-              <label class="dui-input w-full">
+              <label class="dui-input w-full text-base-content font-fredoka">
                 <input
                   v-model="newUserForm.lastName"
                   maxlength="127"
@@ -247,8 +244,8 @@ onMounted(async () => {
         <div>
           <!-- Gender and birth date labels -->
           <div class="flex flex-row gap-2 mb-1">
-            <h3 class="flex-1 font-medium">Gender</h3>
-            <h3 class="flex-1 font-medium">Birth Date</h3>
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">Gender</h3>
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">Birth Date</h3>
           </div>
 
           <div class="flex gap-2">
@@ -256,7 +253,7 @@ onMounted(async () => {
             <div class="flex-1">
               <select
                 v-model="newUserForm.gender"
-                class="dui-select w-full appearance-none px-3 py-2"
+                class="dui-select w-full appearance-none px-3 py-2 text-base-content font-fredoka"
                 required
               >
                 <option value="" disabled selected>-</option>
@@ -272,7 +269,7 @@ onMounted(async () => {
               <input
                 v-model="newUserForm.birthDate"
                 type="date"
-                class="dui-input w-full px-3 py-2"
+                class="dui-input w-full px-3 py-2 text-base-content font-fredoka"
                 required
               />
             </div>
@@ -283,12 +280,12 @@ onMounted(async () => {
         <div>
           <!-- Address label -->
           <div class="flex flex-row gap-2 mb-1">
-            <h3 class="flex-1 font-medium">Address</h3>
-            <h3 class="flex-1 font-medium">Profile Picture</h3>
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">Address</h3>
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">Profile Picture</h3>
           </div>
 
           <div class="flex flex-row gap-2">
-            <label class="flex-1 dui-input w-full px-3">
+            <label class="flex-1 dui-input w-full px-3 text-base-content font-fredoka">
               <input
                 v-model="newUserForm.address"
                 maxlength="255"
@@ -301,7 +298,7 @@ onMounted(async () => {
             <input
               type="file"
               accept="image/*"
-              class="flex-1 dui-file-input pr-6"
+              class="flex-1 dui-file-input pr-6 text-base-content font-fredoka"
               @change="handleImageChange"
               required
             />
@@ -312,8 +309,11 @@ onMounted(async () => {
         <div>
           <!-- Phone number label -->
           <div class="flex flex-row gap-2 mb-1">
-            <h3 class="flex-1 font-medium">Phone Number</h3>
-            <h3 v-if="newUserForm.role === 'shelter_staff'" class="flex-1 font-medium">
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">Phone Number</h3>
+            <h3
+              v-if="newUserForm.role === 'shelter_staff'"
+              class="flex-1 font-medium text-base-content font-fredoka"
+            >
               Assigned Shelter
             </h3>
           </div>
@@ -321,7 +321,7 @@ onMounted(async () => {
           <div class="flex flex-row gap-2">
             <!-- Phone number input -->
             <div class="flex flex-col flex-1">
-              <label class="dui-input w-full">
+              <label class="dui-input w-full text-base-content font-fredoka">
                 <input
                   v-model="newUserForm.phoneNumber"
                   maxlength="11"
@@ -351,10 +351,10 @@ onMounted(async () => {
         <div>
           <!-- Email label -->
           <div class="flex flex-row gap-2 mb-1">
-            <h3 class="flex-1 font-medium">Email</h3>
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">Email</h3>
           </div>
 
-          <label class="dui-input w-full">
+          <label class="dui-input w-full text-base-content font-fredoka">
             <input
               v-model="newUserForm.email"
               maxlength="255"
@@ -369,10 +369,10 @@ onMounted(async () => {
         <div>
           <!-- Password label -->
           <div class="flex flex-row gap-2 mb-1">
-            <h3 class="flex-1 font-medium">Password</h3>
+            <h3 class="flex-1 font-medium text-base-content font-fredoka">Password</h3>
           </div>
 
-          <label class="dui-input w-full">
+          <label class="dui-input w-full text-base-content font-fredoka">
             <input
               v-model="newUserForm.password"
               minlength="8"
@@ -387,23 +387,18 @@ onMounted(async () => {
         </div>
 
         <button
-          v-if="newUserForm.role === 'adopter'"
-          class="dui-btn dui-btn-primary w-full mt-5 text-xl"
+          class="dui-btn w-full mt-5 text-xl font-fredoka font-semibold text-base-content hover:bg-primary-content bg-base-300 border-base-content/25"
           type="submit"
         >
           Create account
-        </button>
-
-        <button v-else class="dui-btn dui-btn-primary w-full mt-5 text-xl" type="submit">
-          Proceed
         </button>
       </form>
     </div>
 
     <div class="mt-3 flex flex-col gap-1">
-      <p>
+      <p class="text-base-content font-fredoka font-medium">
         Already have an account?
-        <RouterLink to="/user/login" class="ml-1 font-bold text-violet-500">Log in</RouterLink>
+        <RouterLink to="/user/login" class="ml-1 font-semibold text-info">Log in</RouterLink>
       </p>
     </div>
 

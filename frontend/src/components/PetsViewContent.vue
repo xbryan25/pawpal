@@ -6,6 +6,7 @@ import axios from 'axios'
 
 import PetCard from './PetCard.vue'
 import SearchAndSortHeader from './SearchAndSortHeader.vue'
+import ThemeToggle from './ThemeToggle.vue'
 
 const apiUrl = import.meta.env.VITE_API_URL
 
@@ -36,9 +37,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="h-[90vh] w-[87vw]">
+  <section class="h-[90vh] w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
-      <h1 class="text-6xl font-semibold">Pets</h1>
+      <div class="flex">
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">Pets</h1>
+        <ThemeToggle />
+      </div>
 
       <SearchAndSortHeader />
 

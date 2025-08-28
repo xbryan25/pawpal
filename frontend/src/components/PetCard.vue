@@ -18,7 +18,7 @@ const props = defineProps<Props>()
 
 <template>
   <div
-    class="dui-card relative flex flex-col bg-[#D9D9D9] w-full h-full items-center shadow-[6px_6px_4px_rgba(0,0,0,0.375)] transition-transform duration-300 hover:scale-105"
+    class="dui-card relative flex flex-col w-full h-full items-center transition-transform duration-300 hover:scale-105 hover:bg-base-100 border-base-content border-3"
     v-if="props.isNotDummy"
   >
     <div class="absolute w-full flex pt-2 pl-2">
@@ -27,7 +27,15 @@ const props = defineProps<Props>()
         v-if="props.status === 'available'"
       >
         <img :src="statusIcon" class="w-[15%] h-[50%] 2xl:w-[17%]" />
-        <p class="font-semibold text-white">Available</p>
+        <p class="font-medium text-white font-fredoka">Available</p>
+      </div>
+
+      <div
+        class="flex w-[40%] h-[90%] 2xl:w-[30%] bg-gray-500 rounded-full justify-center items-center"
+        v-if="props.status === 'adopted'"
+      >
+        <img :src="statusIcon" class="w-[15%] h-[50%] 2xl:w-[17%]" />
+        <p class="font-medium text-white font-fredoka">Adopted</p>
       </div>
     </div>
 
@@ -40,11 +48,17 @@ const props = defineProps<Props>()
     <div
       class="dui-card-body flex flex-col justify-center gap-[10%] p-0 pb-2 2xl:pb-3 pt-2 max-h-[40%]"
     >
-      <h2 class="dui-card-title justify-center text-xl 2xl:text-2xl font-bold">{{ props.name }}</h2>
-      <p class="text-center max-h-5 font-bold text-[#989595]">{{ props.petShelter }}</p>
+      <h2
+        class="dui-card-title justify-center text-xl 2xl:text-2xl font-medium font-fredoka text-base-content"
+      >
+        {{ props.name }}
+      </h2>
+      <p class="text-center max-h-5 font-medium font-fredoka text-warning dark:text-accent-content">
+        {{ props.petShelter }}
+      </p>
       <div class="dui-card-actions justify-center">
         <RouterLink
-          class="btn btn-primary font-bold cursor-pointer hover:underline"
+          class="btn btn-primary cursor-pointer font-medium font-fredoka hover:underline text-base-content"
           :to="`/pets/view/${props.petId}`"
         >
           View Details

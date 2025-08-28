@@ -6,6 +6,7 @@ import { useToast, POSITION } from 'vue-toastification'
 import axios from 'axios'
 
 import PetProfileImageCard from './PetProfileImageCard.vue'
+import ThemeToggle from './ThemeToggle.vue'
 
 interface PetImage {
   image_url: string
@@ -203,9 +204,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="h-full w-[87vw]">
+  <section class="h-full w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
-      <h1 class="text-6xl font-semibold">Pets</h1>
+      <div class="flex">
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">Applications</h1>
+        <ThemeToggle />
+      </div>
 
       <div class="flex flex-row gap-4 mt-6 h-[80%] w-full">
         <div class="flex-1 flex flex-row gap-2">
@@ -226,11 +230,18 @@ onMounted(async () => {
 
         <div class="flex flex-col w-[40%] pt-0">
           <div class="flex flex-row mr-10">
+            <!-- <div
+        class="flex w-[40%] h-[90%] 2xl:w-[30%] bg-gray-500 rounded-full justify-center items-center"
+        v-if="props.status === 'adopted'"
+      >
+        <img :src="statusIcon" class="w-[15%] h-[50%] 2xl:w-[17%]" />
+        <p class="font-medium text-white font-fredoka">Adopted</p>
+      </div> -->
+
             <div
               class="flex w-[22%] h-[100%] 2xl:w-[17%] bg-green-500 rounded-full justify-center items-center"
               v-if="selectedPet.status === 'available'"
             >
-              <!-- <img :src="statusIcon" class="w-[15%] h-[50%] 2xl:w-[17%]" /> -->
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="18px"
@@ -245,16 +256,33 @@ onMounted(async () => {
               <p class="font-semibold text-white">&nbsp;Available</p>
             </div>
 
+            <div
+              class="flex w-[22%] h-[100%] 2xl:w-[17%] bg-gray-500 rounded-full justify-center items-center"
+              v-if="selectedPet.status === 'adopted'"
+            >
+              <!-- <img :src="statusIcon" class="w-[15%] h-[50%] 2xl:w-[17%]" /> -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="18px"
+                viewBox="0 -960 960 960"
+                width="18px"
+                fill="#FFFFFF"
+              >
+                <path
+                  d="M480-280q83 0 141.5-58.5T680-480q0-83-58.5-141.5T480-680q-83 0-141.5 58.5T280-480q0 83 58.5 141.5T480-280Zm0 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Z"
+                />
+              </svg>
+              <p class="font-semibold text-white">&nbsp;Adopted</p>
+            </div>
+
             <div class="flex flex-1 gap-2 justify-end" v-if="auth.isShelterStaff">
               <!-- edit-icon.svg -->
               <RouterLink :to="{ path: '/pets/edit-pet', query: { petId } }">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
                   viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#000000"
-                  class="cursor-pointer"
+                  fill="currentColor"
+                  class="w-6 h-6 transition-transform duration-200 hover:scale-[1.25] text-accent dark:text-base-content cursor-pointer"
                 >
                   <path
                     d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"
@@ -265,12 +293,9 @@ onMounted(async () => {
               <!-- delete-icon.svg -->
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                height="24px"
                 viewBox="0 -960 960 960"
-                width="24px"
-                fill="#000000"
-                class="cursor-pointer"
-                @click="console.log('delete')"
+                fill="currentColor"
+                class="w-6 h-6 transition-transform duration-200 hover:scale-[1.25] text-accent dark:text-base-content cursor-pointer"
               >
                 <path
                   d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
@@ -279,43 +304,55 @@ onMounted(async () => {
             </div>
           </div>
 
-          <p class="font-bold text-6xl">{{ selectedPet.name }}</p>
+          <p class="text-6xl font-semibold font-fredoka text-base-content">
+            {{ selectedPet.name }}
+          </p>
 
           <div class="flex flex-col mt-5 mb-10 gap-3">
             <div class="flex-1">
-              <p class="font-bold text-xl">Shelter</p>
-              <p class="pl-5 font-semibold">{{ selectedPet.shelter }}</p>
+              <p class="font-semibold text-xl font-fredoka text-base-content">Shelter</p>
+              <p class="pl-5 font-medium text-base font-fredoka text-base-content">
+                {{ selectedPet.shelter }}
+              </p>
             </div>
 
             <div class="flex-1 flex flex-row">
               <div class="flex-1">
-                <p class="font-bold text-xl">Sex</p>
-                <p class="pl-5 font-semibold">
+                <p class="font-semibold text-xl font-fredoka text-base-content">Sex</p>
+                <p class="pl-5 font-medium text-base font-fredoka text-base-content">
                   {{ selectedPet.sex.charAt(0).toUpperCase() + selectedPet.sex.slice(1) }}
                 </p>
               </div>
 
               <div class="flex-1">
-                <p class="font-bold text-xl">Adoption Applications</p>
-                <p class="pl-5 font-semibold">{{ numOfAdoptionApplications }}</p>
+                <p class="font-semibold text-xl font-fredoka text-base-content">
+                  Adoption Applications
+                </p>
+                <p class="pl-5 font-medium text-base font-fredoka text-base-content">
+                  {{ numOfAdoptionApplications }}
+                </p>
               </div>
             </div>
 
             <div class="flex-1 flex flex-row">
               <div class="flex-1">
-                <p class="font-bold text-xl">Species</p>
-                <p class="pl-5 font-semibold">{{ selectedPet.species }}</p>
+                <p class="font-semibold text-xl font-fredoka text-base-content">Species</p>
+                <p class="pl-5 font-medium text-base font-fredoka text-base-content">
+                  {{ selectedPet.species }}
+                </p>
               </div>
 
               <div class="flex-1">
-                <p class="font-bold text-xl">Breed</p>
-                <p class="pl-5 font-semibold">{{ selectedPet.breed }}</p>
+                <p class="font-semibold text-xl font-fredoka text-base-content">Breed</p>
+                <p class="pl-5 font-medium text-base font-fredoka text-base-content">
+                  {{ selectedPet.breed }}
+                </p>
               </div>
             </div>
 
             <div class="flex-1">
-              <p class="font-bold text-xl">Description</p>
-              <p class="pl-5 font-semibold">
+              <p class="font-semibold text-xl font-fredoka text-base-content">Short Description</p>
+              <p class="pl-5 font-medium text-base font-fredoka text-base-content">
                 {{ selectedPet.description }}
               </p>
             </div>
@@ -325,7 +362,7 @@ onMounted(async () => {
           <div class="flex-1"></div>
 
           <button
-            class="h-[10%] bg-gray-200 font-bold text-3xl dui-btn"
+            class="h-[10%] font-semibold text-3xl dui-btn font-fredoka text-base-content hover:bg-primary-content bg-base-100 border-base-content/25"
             v-if="auth.isUser && adoptionStatus == 'notAdopted'"
             @click="adoptPet"
           >
@@ -333,7 +370,7 @@ onMounted(async () => {
           </button>
 
           <button
-            class="h-[10%] bg-gray-200 font-bold text-3xl dui-btn"
+            class="h-[10%] font-semibold text-3xl dui-btn font-fredoka text-base-content hover:bg-primary-content bg-base-100 border-base-content/25"
             v-if="auth.isUser && adoptionStatus == 'adopted'"
             @click="cancelPetAdoption"
           >

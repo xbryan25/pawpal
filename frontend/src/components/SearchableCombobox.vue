@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, defineProps, defineEmits, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, defineProps, defineEmits } from 'vue'
 
 const props = defineProps<{
   modelValue: string | null
@@ -67,12 +67,12 @@ onBeforeUnmount(() => {
         @input="handleTyping"
         @keydown.escape="isOpen = false"
         :placeholder="props.placeholder || 'Select an option'"
-        class="dui-input dui-input-bordered w-full"
+        class="dui-input dui-input-bordered w-full text-base-content font-fredoka"
         :disabled="props.isDisabled"
       />
 
       <svg
-        class="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500 transition-transform duration-200 cursor-pointer z-10"
+        class="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-base-content transition-transform duration-200 cursor-pointer z-10"
         :class="{ 'rotate-180': isOpen }"
         fill="none"
         stroke="currentColor"
@@ -86,7 +86,7 @@ onBeforeUnmount(() => {
 
     <ul
       v-if="isOpen && filteredOptions.length"
-      class="absolute z-10 mt-1 w-full bg-base-100 shadow rounded-box max-h-60 overflow-auto"
+      class="absolute z-10 mt-1 w-full bg-base-100 shadow rounded-lg max-h-60 overflow-auto text-base-content font-fredoka"
     >
       <li
         v-for="option in filteredOptions"

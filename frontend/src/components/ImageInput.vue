@@ -94,18 +94,20 @@ watch(
 
 <template>
   <div class="">
-    <h3 class="text-lg font-semibold">{{ numberToOrdinal(props.index) }} Photo</h3>
-    <div class="flex gap-4 h-10 border-1 border-gray-300 rounded-sm pr-4">
+    <h3 class="text-lg font-medium font-fredoka text-base-content">
+      {{ numberToOrdinal(props.index) }} Photo
+    </h3>
+    <div class="flex gap-4 h-10 border-1 bg-base-100 border-base-content/25 rounded-sm pr-4">
       <div class="flex rounded-xs w-[9rem]">
-        <div class="flex-1 flex justify-center items-center border-r-1 border-gray-300">
+        <div
+          class="flex-1 flex justify-center items-center border-r-1 bg-base-100 border-base-content/25 cursor-pointer"
+          @click="deleteImage"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            height="24px"
             viewBox="0 -960 960 960"
-            width="24px"
-            fill="#000000"
-            class="cursor-pointer"
-            @click="deleteImage"
+            fill="currentColor"
+            class="w-6 h-6 text-accent dark:text-base-content"
           >
             <path
               d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"
@@ -114,17 +116,15 @@ watch(
         </div>
 
         <div
-          class="flex-1 flex justify-center items-center border-r-1 border-gray-300"
+          class="flex-1 flex justify-center items-center border-r-1 bg-base-100 border-base-content/25 cursor-pointer"
+          @click="viewImage"
           v-if="props.mode === 'edit'"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            height="24px"
             viewBox="0 -960 960 960"
-            width="24px"
-            fill="#000000"
-            class="cursor-pointer"
-            @click="viewImage"
+            fill="currentColor"
+            class="w-6 h-6 text-accent dark:text-base-content"
           >
             <path
               d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"
@@ -132,15 +132,15 @@ watch(
           </svg>
         </div>
 
-        <div class="flex-1 flex justify-center items-center border-r-1 border-gray-300">
+        <div
+          class="flex-1 flex justify-center items-center border-r-1 bg-base-100 border-base-content/25 cursor-pointer"
+          @click="handleSelectFile"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            height="24px"
             viewBox="0 -960 960 960"
-            width="24px"
-            fill="#000000"
-            class="cursor-pointer"
-            @click="handleSelectFile"
+            fill="currentColor"
+            class="w-6 h-6 text-accent dark:text-base-content"
           >
             <path
               d="M440-320v-326L336-542l-56-58 200-200 200 200-56 58-104-104v326h-80ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"
@@ -148,15 +148,15 @@ watch(
           </svg>
         </div>
 
-        <div class="flex-1 flex justify-center items-center border-r-1 border-gray-300">
+        <div
+          class="flex-1 flex justify-center items-center border-r-1 bg-base-100 border-base-content/25 cursor-pointer"
+          @click="moveImageUp"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            height="24px"
             viewBox="0 -960 960 960"
-            width="24px"
-            fill="#000000"
-            class="cursor-pointer"
-            @click="moveImageUp"
+            fill="currentColor"
+            class="w-6 h-6 text-accent dark:text-base-content"
           >
             <path d="m280-400 200-200 200 200H280Z" />
           </svg>
@@ -164,7 +164,7 @@ watch(
       </div>
 
       <div
-        class="flex-1 flex items-center text-sm truncate whitespace-nowrap overflow-x-scroll overflow-y-hidden scrollbar-hide"
+        class="flex-1 flex items-center text-sm truncate whitespace-nowrap overflow-x-scroll overflow-y-hidden scrollbar-hide font-fredoka text-base-content"
       >
         {{ selectedImageFileName || 'No file chosen' }}
       </div>

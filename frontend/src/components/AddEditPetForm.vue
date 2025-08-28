@@ -7,18 +7,7 @@ import * as uuid from 'uuid'
 
 import SearchableCombobox from './SearchableCombobox.vue'
 import ImageInput from './ImageInput.vue'
-
-interface NewPet {
-  name: string
-  birthDate: string
-  sex: string
-  status: string
-  description: string
-  breed: string
-  species: string
-  shelter: string
-  petImages: File[]
-}
+import ThemeToggle from './ThemeToggle.vue'
 
 interface PetImage {
   imageUrl: string
@@ -412,19 +401,27 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="relative h-[90vh] w-[87vw]">
+  <section class="relative h-full w-[87vw] bg-primary-content">
     <div class="flex flex-col">
-      <div class="p-5 h-full">
-        <h1 class="text-6xl font-semibold" v-if="props.mode === 'add-pet'">Add Pet</h1>
-        <h1 class="text-6xl font-semibold" v-else>Edit Pet</h1>
+      <div class="p-5 h-full flex">
+        <h1
+          class="flex-1 text-6xl font-semibold font-fredoka text-base-content"
+          v-if="props.mode === 'add-pet'"
+        >
+          Add Pet
+        </h1>
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content" v-else>
+          Edit Pet
+        </h1>
+        <ThemeToggle />
       </div>
 
       <form @submit.prevent="handleSubmit" enctype="multipart/form-data">
         <div class="flex flex-1 pt-15 px-15 gap-20 w-full">
           <div class="flex flex-col gap-4 flex-1">
             <div>
-              <h3 class="text-lg font-semibold">Pet Name</h3>
-              <label class="dui-input w-full">
+              <h3 class="font-medium text-xl font-fredoka text-base-content">Pet Name</h3>
+              <label class="dui-input w-full font-fredoka text-base-content">
                 <input
                   v-model="petForm.name"
                   maxlength="127"
@@ -438,7 +435,7 @@ onMounted(async () => {
 
             <div class="flex gap-4">
               <div class="flex-1">
-                <h3 class="text-lg font-semibold">Species</h3>
+                <h3 class="font-medium text-xl font-fredoka text-base-content">Species</h3>
                 <SearchableCombobox
                   v-if="ready"
                   v-model="selectedSpecies"
@@ -449,7 +446,7 @@ onMounted(async () => {
               </div>
 
               <div class="flex-1">
-                <h3 class="text-lg font-semibold">Breed</h3>
+                <h3 class="font-medium text-xl font-fredoka text-base-content">Breed</h3>
                 <SearchableCombobox
                   v-if="ready"
                   v-model="selectedBreed"
@@ -462,10 +459,10 @@ onMounted(async () => {
 
             <div class="flex gap-4">
               <div class="flex-1">
-                <h3 class="text-lg font-semibold">Sex</h3>
+                <h3 class="font-medium text-xl font-fredoka text-base-content">Sex</h3>
                 <select
                   v-model="petForm.sex"
-                  class="dui-select w-full"
+                  class="dui-select w-full font-fredoka text-base-conten"
                   required
                   :disabled="isLoading"
                 >
@@ -475,11 +472,11 @@ onMounted(async () => {
               </div>
 
               <div class="flex-1">
-                <h3 class="text-lg font-semibold">Birth Date</h3>
+                <h3 class="font-medium text-xl font-fredoka text-base-content">Birth Date</h3>
                 <input
                   v-model="petForm.birthDate"
                   type="date"
-                  class="dui-input w-full px-3 py-2"
+                  class="dui-input w-full px-3 py-2 font-fredoka text-base-conten"
                   required
                   :disabled="isLoading"
                 />
@@ -487,7 +484,7 @@ onMounted(async () => {
             </div>
 
             <div>
-              <h3 class="text-lg font-semibold">Shelter</h3>
+              <h3 class="font-medium text-xl font-fredoka text-base-content">Shelter</h3>
               <SearchableCombobox
                 v-if="ready"
                 v-model="selectedShelter"
@@ -498,11 +495,11 @@ onMounted(async () => {
             </div>
 
             <div>
-              <h3 class="text-lg font-semibold">Description</h3>
+              <h3 class="font-medium text-xl font-fredoka text-base-content">Short Description</h3>
               <textarea
                 v-model="petForm.description"
-                class="dui-textarea resize-none w-full h-24"
-                placeholder="Bio"
+                class="dui-textarea resize-none w-full h-24 font-fredoka text-base-conten"
+                placeholder="Bio..."
                 :disabled="isLoading"
               ></textarea>
             </div>
@@ -525,34 +522,32 @@ onMounted(async () => {
             <div class="flex px-[40%] gap-[5%]">
               <button
                 :disabled="isAddImageInputDisabled"
-                class="flex-1 dui-btn dui-tooltip disabled:opacity-50"
+                class="flex-1 dui-btn dui-tooltip disabled:opacity-50 hover:bg-primary-content bg-base-100 border-base-content/25 transition-transform duration-200 hover:scale-[1.10]"
                 data-tip="Add image input"
                 type="button"
                 @click="addImageInput"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
                   viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#000000"
+                  fill="currentColor"
+                  class="w-6 h-6 text-accent dark:text-base-content"
                 >
                   <path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z" />
                 </svg>
               </button>
               <button
                 :disabled="hasNoImageChanges"
-                class="flex-1 dui-btn dui-tooltip disabled:opacity-50"
+                class="flex-1 dui-btn dui-tooltip disabled:opacity-50 hover:bg-primary-content bg-base-100 border-base-content/25 transition-transform duration-200 hover:scale-[1.10]"
                 data-tip="Reset changes"
                 type="button"
                 @click="resetImageInput"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  height="24px"
                   viewBox="0 -960 960 960"
-                  width="24px"
-                  fill="#000000"
+                  fill="currentColor"
+                  class="w-6 h-6 text-accent dark:text-base-content"
                 >
                   <path
                     d="m656-120-56-56 84-84-84-84 56-56 84 84 84-84 56 56-83 84 83 84-56 56-84-83-84 83Zm-176 0q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q11 0 20.5-.5T520-203v81q-10 1-19.5 1.5t-20.5.5ZM120-560v-240h80v94q51-64 124.5-99T480-840q150 0 255 105t105 255h-80q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120Zm414 190-94-94v-216h80v184l56 56-42 70Z"
@@ -565,14 +560,14 @@ onMounted(async () => {
 
         <div class="pt-15 flex gap-3 justify-center">
           <RouterLink
-            class="dui-btn dui-btn-soft w-[12%] text-xl"
+            class="dui-btn dark:bg-red-900 w-[12%] text-xl font-medium font-fredoka text-base-content border-base-content border-2"
             :to="`/pets/view/${props.petId}`"
           >
             Cancel
           </RouterLink>
 
           <button
-            class="dui-btn dui-btn-primary w-[12%] text-xl"
+            class="dui-btn dark:bg-green-900 w-[12%] text-xl font-medium font-fredoka text-base-content border-base-content border-2"
             type="submit"
             :disabled="isLoading"
           >

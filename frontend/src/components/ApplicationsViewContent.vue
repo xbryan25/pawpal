@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 
 import SearchAndSortHeader from './SearchAndSortHeader.vue'
 import TableRow from './TableRow.vue'
+import ThemeToggle from './ThemeToggle.vue'
 
 interface AdoptionApplicationDetails {
   applicationId?: string
@@ -64,9 +65,12 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="h-[90vh] w-[87vw]">
+  <section class="h-[90vh] w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
-      <h1 class="text-6xl font-semibold">Applications</h1>
+      <div class="flex">
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">Applications</h1>
+        <ThemeToggle />
+      </div>
 
       <SearchAndSortHeader />
 
@@ -74,11 +78,26 @@ onMounted(async () => {
         <table class="dui-table">
           <thead>
             <tr>
-              <th class="text-center text-2xl w-1/4" v-if="auth.isShelterStaff">Adopter</th>
-              <th class="text-center text-2xl w-1/4">Pet</th>
-              <th class="text-center text-2xl px-2 w-1/5">Application Date</th>
-              <th class="text-center text-2xl px-2 w-1/5">Application Status</th>
-              <th class="text-center text-2xl w-1/4" v-if="auth.isShelterStaff"></th>
+              <th
+                class="text-center text-3xl w-1/4 font-fredoka font-medium text-base-content"
+                v-if="auth.isShelterStaff"
+              >
+                Adopter
+              </th>
+              <th class="text-center text-3xl w-1/4 font-fredoka font-medium text-base-content">
+                Pet
+              </th>
+              <th
+                class="text-center text-3xl px-2 w-1/5 font-fredoka font-medium text-base-content"
+              >
+                Application Date
+              </th>
+              <th
+                class="text-center text-3xl px-2 w-1/5 font-fredoka font-medium text-base-content"
+              >
+                Application Status
+              </th>
+              <th class="text-center text-3xl w-1/4" v-if="auth.isShelterStaff"></th>
             </tr>
           </thead>
           <tbody>
