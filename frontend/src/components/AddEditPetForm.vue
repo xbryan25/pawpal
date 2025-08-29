@@ -9,6 +9,8 @@ import SearchableCombobox from './SearchableCombobox.vue'
 import ImageInput from './ImageInput.vue'
 import ThemeToggle from './ThemeToggle.vue'
 
+import { useAuthStore } from '@/stores/useAuthStore'
+
 interface PetImage {
   imageUrl: string
   sortOrder: number
@@ -43,8 +45,6 @@ interface ImageSlot {
 
 const props = defineProps<Props>()
 
-console.log('props.mode addeditform ' + props.mode)
-
 const petForm = reactive<ExistingPet>({
   petId: '',
   name: '',
@@ -63,6 +63,8 @@ const toast = useToast()
 const isLoading: Ref<boolean> = ref(false)
 const router = useRouter()
 
+const auth = useAuthStore()
+
 let originalImageSlots: ImageSlot[] = []
 const imageSlots = ref<ImageSlot[]>([])
 
@@ -73,10 +75,6 @@ const breed_names: Ref<string[]> = ref<string[]>([])
 const selectedSpecies = ref<string>('')
 let species: { species_id: string; species_name: string }[] = []
 const species_names: Ref<string[]> = ref<string[]>([])
-
-const selectedShelter = ref<string>('')
-let shelters: { shelter_id: string; name: string }[] = []
-const shelter_names: Ref<string[]> = ref<string[]>([])
 
 const ready = ref(false)
 
@@ -96,9 +94,6 @@ function loadPetForEdit(existing: ExistingPet) {
 
   petForm.breed = existing.breed
   selectedBreed.value = petForm.breed
-
-  petForm.shelter = existing.shelter
-  selectedShelter.value = petForm.shelter
 
   // Map each field to convert from snakecase to camelcase
   imageSlots.value = existing.petImages.map((img: any) => ({
@@ -144,10 +139,7 @@ const handleSubmit = async () => {
     species.find((species_singular) => species_singular.species_name === selectedSpecies.value)
       ?.species_id || '',
   )
-  petFormData.append(
-    'shelterId',
-    shelters.find((shelter) => shelter.name === selectedShelter.value)?.shelter_id || '',
-  )
+  petFormData.append('shelterId', auth.shelterId || '')
 
   // counter is put outside so that it won't increment if blank image file and image.mode == 'add'
   let counter: number = 0
@@ -375,13 +367,9 @@ watch(selectedSpecies, async (newVal) => {
 onMounted(async () => {
   try {
     const speciesResponse = await axios.get(`${apiUrl}/species/list`)
-    const shelterResponse = await axios.get(`${apiUrl}/shelter/list`)
 
     species = speciesResponse.data
     species_names.value = species.map((species_singular) => species_singular.species_name)
-
-    shelters = shelterResponse.data
-    shelter_names.value = shelters.map((shelter) => shelter.name)
 
     if (props.mode === 'edit-pet') {
       const petDetailsResponse = await axios.get(`${apiUrl}/pets/get-details`, {
@@ -481,17 +469,6 @@ onMounted(async () => {
                   :disabled="isLoading"
                 />
               </div>
-            </div>
-
-            <div>
-              <h3 class="font-medium text-xl font-fredoka text-base-content">Shelter</h3>
-              <SearchableCombobox
-                v-if="ready"
-                v-model="selectedShelter"
-                :options="shelter_names"
-                placeholder="Select a shelter"
-                :isDisabled="isLoading"
-              />
             </div>
 
             <div>
