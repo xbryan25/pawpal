@@ -18,3 +18,15 @@ class SpeciesController:
             db.session.rollback()
             return jsonify({"error": str(e)}), 500
 
+    @staticmethod
+    def get_all_species_details_controller():
+
+        try:
+            all_species_details = SpeciesService.get_all_species_details()
+            return jsonify({'allSpeciesDetails': all_species_details}), 200
+
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+            return jsonify({"error": str(e)}), 500
+        

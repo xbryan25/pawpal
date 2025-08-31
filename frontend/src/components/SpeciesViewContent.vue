@@ -3,28 +3,27 @@ import { onMounted, ref, type Ref } from 'vue'
 import axios from 'axios'
 
 import SearchAndSortHeader from './SearchAndSortHeader.vue'
-import BreedsTableRow from './BreedsSpeciesTableRow.vue'
+import SpeciesTableRow from './BreedsSpeciesTableRow.vue'
 import ThemeToggle from './ThemeToggle.vue'
 
-interface BreedDetails {
-  breedName: string
+interface SpeciesDetails {
   speciesName: string
   numOfRegisteredPets: number
 }
 
 const apiUrl = import.meta.env.VITE_API_URL
 
-const allBreedDetails: Ref<BreedDetails[]> = ref([])
+const allSpeciesDetails: Ref<SpeciesDetails[]> = ref([])
 
 onMounted(async () => {
   try {
-    const breedDetailsResponse = await axios.get(`${apiUrl}/breed/get-all-breed-details`)
+    const speciesDetailsResponse = await axios.get(`${apiUrl}/species/get-all-species-details`)
 
-    console.log(breedDetailsResponse.data)
-
-    breedDetailsResponse.data.allBreedDetails.forEach((breedDetails: BreedDetails) =>
-      allBreedDetails.value.push(breedDetails),
+    speciesDetailsResponse.data.allSpeciesDetails.forEach((speciesDetails: SpeciesDetails) =>
+      allSpeciesDetails.value.push(speciesDetails),
     )
+
+    console.log(allSpeciesDetails.value)
   } catch (error) {
     console.error('Error retrieving data from backend', error)
   }
@@ -35,7 +34,7 @@ onMounted(async () => {
   <section class="h-[90vh] w-[87vw] bg-primary-content">
     <div class="p-5 h-full flex flex-col">
       <div class="flex">
-        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">Breeds</h1>
+        <h1 class="flex-1 text-6xl font-semibold font-fredoka text-base-content">Species</h1>
         <ThemeToggle />
       </div>
 
@@ -45,9 +44,6 @@ onMounted(async () => {
         <table class="dui-table">
           <thead>
             <tr>
-              <th class="text-center text-3xl w-1/4 font-fredoka font-medium text-base-content">
-                Breed
-              </th>
               <th
                 class="text-center text-3xl px-2 w-1/5 font-fredoka font-medium text-base-content"
               >
@@ -61,13 +57,12 @@ onMounted(async () => {
             </tr>
           </thead>
           <tbody>
-            <BreedsTableRow
-              v-for="(breedDetails, index) in allBreedDetails"
+            <SpeciesTableRow
+              v-for="(speciesDetails, index) in allSpeciesDetails"
               :key="index"
-              :breedName="breedDetails.breedName"
-              :speciesName="breedDetails.speciesName"
-              :numOfRegisteredPets="breedDetails.numOfRegisteredPets"
-              :rowType="'breed'"
+              :speciesName="speciesDetails.speciesName"
+              :numOfRegisteredPets="speciesDetails.numOfRegisteredPets"
+              :rowType="'species'"
             />
           </tbody>
         </table>

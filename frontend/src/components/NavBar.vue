@@ -134,7 +134,7 @@ onBeforeUnmount(() => {
 
             <RouterLink
               class="font-fredoka font-medium text-xl text-accent dark:text-neutral-content"
-              to="/pets/view"
+              to="/breeds/view"
               >Breeds</RouterLink
             >
           </div>
@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
 
             <RouterLink
               class="font-fredoka font-medium text-xl text-accent dark:text-neutral-content"
-              to="/applications/view"
+              to="/species/view"
               >Species</RouterLink
             >
           </div>
