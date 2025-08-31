@@ -19,10 +19,9 @@ class UserController:
         try:
             user = UserService.authenticate_user(email, password)
             
-
             if not user:
                 return jsonify({"error": "Invalid credentials."}), 401
-            elif user.role.value != login_type:
+            elif user.role.value != login_type and user.role.value != 'admin':
                 return jsonify({"error": "Invalid login type."}), 401
             
             user_id = user.user_id

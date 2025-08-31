@@ -19,3 +19,14 @@ class BreedController:
             db.session.rollback()
             return jsonify({"error": str(e)}), 500
 
+    @staticmethod
+    def get_all_breed_details_controller():
+
+        try:
+            all_breed_details = BreedService.get_all_breed_details()
+            return jsonify({'allBreedDetails': all_breed_details}), 200
+
+        except Exception as e:
+            print(e)
+            db.session.rollback()
+            return jsonify({"error": str(e)}), 500
