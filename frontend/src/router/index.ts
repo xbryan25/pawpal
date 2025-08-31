@@ -11,6 +11,7 @@ import SignupView from '@/views/SignupView.vue'
 import ReportsView from '@/views/ReportsView.vue'
 import AddEditPetView from '@/views/AddEditPetView.vue'
 import ApplicationDetailsView from '@/views/ApplicationDetailsView.vue'
+import BreedsView from '@/views/BreedsView.vue'
 
 
 const routes: RouteRecordRaw[] = [
@@ -84,6 +85,12 @@ const routes: RouteRecordRaw[] = [
       name: 'applicationDetailsView',
       component: ApplicationDetailsView,
       meta: { title: 'Application Details' },
+    },
+    {
+      path: '/breeds/view',
+      name: 'breedsView',
+      component: BreedsView,
+      meta: { title: 'Breeds View' },
     },
   ]
 

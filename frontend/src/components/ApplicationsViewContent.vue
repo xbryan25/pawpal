@@ -5,7 +5,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/useAuthStore'
 
 import SearchAndSortHeader from './SearchAndSortHeader.vue'
-import TableRow from './TableRow.vue'
+import ApplicationsTableRow from './ApplicationsTableRow.vue'
 import ThemeToggle from './ThemeToggle.vue'
 
 interface AdoptionApplicationDetails {
@@ -101,7 +101,7 @@ onMounted(async () => {
             </tr>
           </thead>
           <tbody>
-            <TableRow
+            <ApplicationsTableRow
               v-for="(adoptionApplication, index) in adoptionApplications"
               :key="index"
               :applicationId="adoptionApplication.applicationId"

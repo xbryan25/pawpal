@@ -80,7 +80,11 @@ const handleSubmit = async () => {
 
     auth.setAuth(profileImageUrl, role, userId, shelterId)
 
-    router.push('/pets/view')
+    if (role === 'admin') {
+      router.push('/breeds/view')
+    } else {
+      router.push('/pets/view')
+    }
   } catch (error: unknown) {
     let errorMessage: string = ''
 
@@ -112,12 +116,6 @@ const handleSubmit = async () => {
 
 <template>
   <section class="flex-1 max-w-[50vw] h-[calc(100vh-2rem)] m-4 pl-10 pt-5">
-    <!-- <label class="dui-swap dui-swap-rotate">
-      <input type="checkbox" class="dui-theme-controller" value="synthwave" />
-      <img :src="darkModeImage" class="dui-swap-off h-10 w-10" />
-      <img :src="lightModeImage" class="dui-swap-on h-10 w-10" />
-    </label> -->
-
     <ThemeToggle />
 
     <h2
